@@ -1,0 +1,14 @@
+{
+  "name": "rock",
+  "version": "0.0.1",
+  "description": "Rock programming language",
+  "main": "rock.js",
+  "scripts": {
+    "test": "mocha test_rock.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "chai": "^3.5.0"
+  }
+}
