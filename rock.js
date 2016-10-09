@@ -65,7 +65,7 @@ class RockError extends Error {
 const keywords = [
   'class', 'trait', 'final',
   'if', 'else', 'for', 'while', 'break', 'continue',
-  'true', 'false',
+  'true', 'false', 'and', 'or',
 
   // unused but reserved
   'def', 'interface', 'do', 'null', 'goto', 'new', 'const', 'let', 'var',
@@ -74,7 +74,7 @@ const keywords = [
 
 const symbols = [
   '(', ')', '[', ']', '{', '}',
-  ';', ',',
+  ';', ',', '.', '->',
 ].sort().reverse();
 
 function _atStringStart(s, i) {
@@ -202,6 +202,246 @@ class Lexer {
     }
     tokens.push(this.peek);
     return tokens;
+  }
+}
+
+// NOTE: qualified_typename fields are always a string.
+// They represent either concrete types like rock.lang.Integer,
+// or generic types like rock.lang.List.$Item
+// qualified_typename values are set to null until the annotation
+// when they are filled in after types are resolved.
+
+class Ast {
+  constructor(token) {
+    this.token = token;
+  }
+
+  notImplementedError() {
+    return new RockError(
+        'Not implemented for ' + this.constructor.name,
+        [this.token]);
+  }
+}
+
+class Module extends Ast {
+  constructor(token, pkg, imports, classes) {
+    super(token);
+    this.pkg = pkg;  // String
+    this.imports = imports;  // [Import]
+    this.classes = classes;  // [Class]
+  }
+}
+
+class Import extends Ast {
+  constructor(token, pkg, name, alias) {
+    super(token);
+    this.pkg = pkg;  // String
+    this.name = name;  // String
+    this.alias = alias || name;  // String
+  }
+}
+
+class Class extends Ast {
+  constructor(token, name, args, fields, methods) {
+    super(token);
+    this.name = name;  // String
+    this.args = args;  // [GenericArgument]
+    this.fields = fields;  // [Field]
+    this.methods = methods;  // [Method]
+  }
+}
+
+class GenericArgument extends Ast {
+  constructor(token, variance, name, base) {
+    super(token);
+    this.variance = variance;  // 'covariant'/'contravariant'/'invariant'
+    this.name = name;  // String
+    this.base = base;  // null|Type
+  }
+}
+
+class Field extends Ast {
+  constructor(token, isStatic, type, name) {
+    super(token);
+    this.isStatic = isStatic;  // Boolean
+    this.type = type;  // Type
+    this.name = name;  // String
+  }
+}
+
+class Method extends Ast {
+  constructor(token, isStatic, type, name, args, body) {
+    super(token);
+    this.isStatic = isStatic;  // Boolean
+    this.type = type;  // Type
+    this.name = name;  // String
+    this.args = args;  // [Argument]
+    this.body = body;  // null|Block
+  }
+}
+
+class Argument extends Ast {
+  constructor(token, type, name) {
+    super(token);
+    this.type = type;  // Type
+    this.name = name;  // String
+  }
+}
+
+class Type extends Ast {
+  constructor(token) {
+    super(token);
+    this.qualified_typename = null;  // to be filled in during annotation
+  }
+}
+
+class Typename extends Type {
+  constructor(token, name) {
+    super(token);
+    this.name = name;  // String
+  }
+}
+
+class GenericType extends Type {
+  constructor(token, name, args) {
+    super(token);
+    this.name = name;  // String
+    this.args = args;  // [Type]
+  }
+}
+
+class Statement extends Ast {}
+
+class Declaration extends Statement {
+  constructor(token, isFinal, type, name, value) {
+    super(token);
+    this.isFinal = isFinal;  // Boolean
+    this.type = type;  // Type
+    this.name = name;  // String
+    this.value = value;  // Expression
+  }
+}
+
+class Block extends Statement {
+  constructor(token, statements) {
+    super(token);
+    this.statements = statements;  // [Statement]
+  }
+}
+
+class If extends Statement {
+  constructor(token, condition, body, other) {
+    super(token);
+    this.condition = condition;  // Expression
+    this.body = body;  // Block
+    this.other = other || new Block(token, []);  // Block
+  }
+}
+
+class While extends Statement {
+  constructor(token, condition, body) {
+    super(token);
+    this.condition = condition;  // Expression
+    this.body = body;  // Block
+  }
+}
+
+class Break extends Statement {}
+
+class Continue extends Statement {}
+
+class Expression extends Statement {
+  constructor(token) {
+    super(token);
+    this.qualified_typename = null;  // to be filled in during annotation
+  }
+}
+
+class Name extends Expression {
+  constructor(token, name) {
+    super(token);
+    this.name = name;  // String
+  }
+}
+
+class IntLiteral extends Expression {
+  constructor(token, value) {
+    super(token);
+    this.value = value;  // Int
+  }
+}
+
+class FloatLiteral extends Expression {
+  constructor(token, value) {
+    super(token);
+    this.value = value;  // Float
+  }
+}
+
+class StringLiteral extends Expression {
+  constructor(token, value) {
+    super(token);
+    this.value = value;  // String
+  }
+}
+
+class MethodCall extends Expression {
+  constructor(token, owner, name, args) {
+    super(token);
+    this.owner = owner;  // Expression
+    this.name = name;  // String
+    this.args = args;  // [Expression]
+  }
+}
+
+class GetAttribute extends Expression {
+  constructor(token, owner, name) {
+    super(token);
+    this.owner = owner;  // Expression
+    this.name = name;  // String
+  }
+}
+
+class SetAttribute extends Expression {
+  constructor(token, owner, name, value) {
+    super(token);
+    this.owner = owner;  // Expression
+    this.name = name;  // String
+    this.value = value;  // Expression
+  }
+}
+
+class Cast extends Expression {
+  constructor(token, value, type) {
+    super(token);
+    this.value = value;  // Expression
+    this.type = type;  // Type
+  }
+}
+
+class Assign extends Expression {
+  constructor(token, name, value) {
+    super(token);
+    this.name = name;  // String
+    this.value = value;  // Expression
+  }
+}
+
+class LogicalOperation extends Expression {
+  constructor(token, left, operand, right) {
+    super(token);
+    this.left = left;  // Expression
+    this.operand = operand;  // 'and'|'or'
+    this.right = right;  // Expression
+  }
+}
+
+class Ternary extends Expression {
+  constructor(token, condition, left, right) {
+    super(token);
+    this.condition = condition;  // Expression
+    this.left = left;  // Expression
+    this.right = right;  // Expression
   }
 }
 
