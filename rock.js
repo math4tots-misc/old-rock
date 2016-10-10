@@ -3,6 +3,13 @@
 (function() {
 'use strict';
 
+const openParenthesis = '(';
+const closeParenthesis = ')';
+const openBracket = '[';
+const closeBracket = ']';
+const openBrace = '{';
+const closeBrace = '}';
+
 class File {
   constructor(uri, contents) {
     this.uri = uri;
@@ -63,7 +70,7 @@ class RockError extends Error {
 }
 
 const keywords = [
-  'class', 'trait', 'final',
+  'package', 'import', 'as', 'class', 'trait', 'with', 'static', 'final',
   'if', 'else', 'for', 'while', 'break', 'continue',
   'true', 'false', 'and', 'or',
 
@@ -413,6 +420,40 @@ class SetAttribute extends Expression {
   }
 }
 
+class New extends Expression {
+  constructor(token, owner, args) {
+    super(token);
+    this.owner = owner;  // Type
+    this.args = args;  // [Expression]
+  }
+}
+
+class StaticMethodCall extends Expression {
+  constructor(token, owner, name, args) {
+    super(token);
+    this.owner = owner;  // Type
+    this.name = name;  // String
+    this.args = args;  // [Expression]
+  }
+}
+
+class StaticGetAttribute extends Expression {
+  constructor(token, owner, name) {
+    super(token);
+    this.owner = owner;  // Type
+    this.name = name;  // String
+  }
+}
+
+class StaticSetAttribute extends Expression {
+  constructor(token, owner, name, value) {
+    super(token);
+    this.owner = owner;  // Type
+    this.name = name;  // String
+    this.value = value;  // Expression
+  }
+}
+
 class Cast extends Expression {
   constructor(token, value, type) {
     super(token);
@@ -464,7 +505,7 @@ class Parser {
   at(types) {
     return typeof types === 'string' ?
            types === this.peek().type :
-           types.indexOf(this.peek().type);
+           types.indexOf(this.peek().type) !== -1;
   }
   expect(types) {
     if (this.at(types)) {
@@ -479,6 +520,120 @@ class Parser {
       return this.next();
     }
   }
+  parseModule() {
+    const token = this.peek();
+    const pkg = this.parsePackageDeclaration();
+    const imports = this.parseImports();
+    const classes = this.parseClasses();
+    if (!this.at('EOF')) {
+      throw new RockError(
+          'Expected class or trait but got "' + this.peek().type + '"',
+          [this.peek()]);
+    }
+    return new Module(token, pkg, imports, classes);
+  }
+  parsePackageDeclaration() {
+    if (this.consume('package')) {
+      const pkg = this.consumePackageName();
+      this.expect(';');
+      return pkg;
+    }
+    return '__default__';
+  }
+  consumePackageName() {
+    let pkg = this.expect('NAME').value;
+    while (this.consume('.')) {
+      pkg += '.' + this.expect('NAME').value;
+    }
+    return pkg;
+  }
+  parseImports() {
+    const imports = [];
+    while (this.at('import')) {
+      const tokne = this.consume('import');
+      const pkg = this.consumePackageName();
+      this.expect('.');
+      const className = this.expect('TYPENAME').value;
+      const alias = this.consume('as') ?
+                    this.expect('TYPENAME').value :
+                    className;
+      imports.push(new Import(token, pkg, className, alias));
+    }
+    return imports;
+  }
+  parseClasses() {
+    const classes = [];
+    while (this.at(['class', 'trait'])) {
+      classes.push(this.parseClass());
+    }
+    return classes;
+  }
+  parseClass() {
+    const token = this.peek();
+    const isTrait = !!this.consume('trait');
+    if (!isTrait) {
+      this.expect('class');
+    }
+    const name = this.expect('TYPENAME').value;
+    const args = this.parseGenericArguments();
+    const traits = this.parseWithDeclaration();
+    const fields = [];
+    const methods = [];
+    this.expect(openBrace);
+    while (!this.consume(closeBrace)) {
+      const token = this.peek();
+      const isStatic = !!this.consume('static');
+      const type = this.parseType();
+      const name = this.expect('NAME').value;
+      if (this.consume(';')) {
+        fields.push(new Field(token, isStatic, type, name));
+      } else {
+        methods.push(this.parseMethod(token, isStatic, type, name));
+      }
+    }
+    return new Class(token, isTrait, name, args, traits, fields, methods);
+  }
+  parseGenericArguments() {
+    if (!this.at(openBracket)) {
+      return null;
+    }
+    this.expect(openBracket);
+    const args = [];
+    while (!this.consume(closeBracket)) {
+      args.push(this.parseGenericArgument());
+      if (!this.consume(',')) {
+        this.expect(closeBracket);
+        break;
+      }
+    }
+    return args;
+  }
+  parseWithDeclaration() {
+    if (!this.consume('with')) {
+      return [];
+    }
+    const traits = [this.parseType()];
+    if (this.consume(',')) {
+      while (this.at('TYPENAME')) {
+        traits.push(this.parseType());
+        this.consume(',');
+      }
+    }
+    return traits;
+  }
+  parseType() {
+    const token = this.peek();
+    const name = this.expect('TYPENAME').value;
+    if (this.consume(openBracket)) {
+      const args = [];
+      while (!this.consume(closeBracket)) {
+        args.push(this.parseType());
+      }
+      return new GenericType(token, name, args);
+    } else {
+      return new Typename(token, name);
+    }
+  }
 }
 
 const exports =
@@ -487,5 +642,6 @@ exports.File = File;
 exports.Token = Token;
 exports.RockError = RockError;
 exports.Lexer = Lexer;
+exports.Parser = Parser;
 
 })();
