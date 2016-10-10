@@ -242,10 +242,12 @@ class Import extends Ast {
 }
 
 class Class extends Ast {
-  constructor(token, name, args, fields, methods) {
+  constructor(token, isTrait, name, args, traits, fields, methods) {
     super(token);
+    this.isTrait = isTrait;  // Boolean
     this.name = name;  // String
     this.args = args;  // [GenericArgument]
+    this.traits = traits;  // [Type]
     this.fields = fields;  // [Field]
     this.methods = methods;  // [Method]
   }
@@ -442,6 +444,40 @@ class Ternary extends Expression {
     this.condition = condition;  // Expression
     this.left = left;  // Expression
     this.right = right;  // Expression
+  }
+}
+
+class Parser {
+  constructor(file) {
+    this.file = file;
+    this.tokens = new Lexer(file).toArray();
+    this.i = 0;
+  }
+  peek() {
+    return this.tokens[this.i];
+  }
+  next() {
+    const token = this.peek();
+    this.i++;
+    return token;
+  }
+  at(types) {
+    return typeof types === 'string' ?
+           types === this.peek().type :
+           types.indexOf(this.peek().type);
+  }
+  expect(types) {
+    if (this.at(types)) {
+      return this.next();
+    }
+    throw new RockError(
+        'Expected ' + types + ' but got ' + this.peek().type,
+        [this.peek()]);
+  }
+  consume(types) {
+    if (this.at(types)) {
+      return this.next();
+    }
   }
 }
 
