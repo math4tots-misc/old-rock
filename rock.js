@@ -71,7 +71,7 @@ class RockError extends Error {
 
 const keywords = [
   'package', 'import', 'as', 'class', 'trait', 'with', 'static', 'final',
-  'if', 'else', 'for', 'while', 'break', 'continue',
+  'if', 'else', 'for', 'while', 'break', 'continue', 'return',
   'true', 'false', 'and', 'or',
 
   // unused but reserved
@@ -358,6 +358,13 @@ class While extends Statement {
 class Break extends Statement {}
 
 class Continue extends Statement {}
+
+class Return extends Statement {
+  constructor(token, value) {
+    super(token);
+    this.value = value;
+  }
+}
 
 class Expression extends Statement {
   constructor(token) {
@@ -671,11 +678,30 @@ class Parser {
     } else if (this.consume('continue')) {
       this.expect(';');
       return new Continue(token);
+    } else if (this.consume('return')) {
+      const expression = this.at(';') ? null : this.parseExpression();
+      this.expect(';');
+      return new Return(token, expression);
     } else {
       const expression = this.parseExpression();
       this.expect(';');
       return expression;
     }
+  }
+  parseExpression() {
+    return this.parsePrimaryExpression();
+  }
+  parsePrimaryExpression() {
+    const token = this.peek();
+    if (this.consume(openParenthesis)) {
+      const expression = this.parseExpression();
+      this.expect(closeParenthesis);
+      return expression;
+    }
+    if (this.consume('INT')) {
+      return new IntLiteral(token, token.value);
+    }
+    throw new RockError('Expected expression', [token]);
   }
 }
 
@@ -685,6 +711,9 @@ exports.File = File;
 exports.Token = Token;
 exports.RockError = RockError;
 exports.Lexer = Lexer;
+exports.Statement = Statement;
+exports.Return =  Return;
+exports.IntLiteral = IntLiteral;
 exports.Parser = Parser;
 
 })();

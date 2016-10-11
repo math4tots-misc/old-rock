@@ -112,4 +112,26 @@ describe('Parser', () => {
     const parser = new rock.Parser(file);
     const module = parser.parseModule();
   });
+  it('should parse Int expressions', () => {
+    const file = new rock.File('foo.txt', '261');
+    const parser = new rock.Parser(file);
+    const expression = parser.parseExpression();
+    expect(expression.constructor).to.equal(rock.IntLiteral);
+    expect(expression.value).to.equal(261);
+  });
+  it('should parse void return statements', () => {
+    const file = new rock.File('foo.txt', 'return;');
+    const parser = new rock.Parser(file);
+    const statement = parser.parseStatement();
+    expect(statement.constructor).to.equal(rock.Return);
+    expect(statement.value).to.equal(null);
+  });
+  it('should parse return statements with values', () => {
+    const file = new rock.File('foo.txt', 'return 5;');
+    const parser = new rock.Parser(file);
+    const statement = parser.parseStatement();
+    expect(statement.constructor).to.equal(rock.Return);
+    expect(statement.value.constructor).to.equal(rock.IntLiteral);
+    expect(statement.value.value).to.equal(5);
+  });
 });
