@@ -119,6 +119,13 @@ describe('Parser', () => {
     expect(expression.constructor).to.equal(rock.IntLiteral);
     expect(expression.value).to.equal(261);
   });
+  it('should parse name expressions', () => {
+    const file = new rock.File('foo.txt', 'hoi');
+    const parser = new rock.Parser(file);
+    const expression = parser.parseExpression();
+    expect(expression.constructor).to.equal(rock.Name);
+    expect(expression.name).to.equal('hoi');
+  });
   it('should parse void return statements', () => {
     const file = new rock.File('foo.txt', 'return;');
     const parser = new rock.Parser(file);

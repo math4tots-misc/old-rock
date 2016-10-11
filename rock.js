@@ -701,6 +701,10 @@ class Parser {
     if (this.consume('INT')) {
       return new IntLiteral(token, token.value);
     }
+    if (this.consume('NAME')) {
+      const name = token.value;
+      return new Name(token, name);
+    }
     throw new RockError('Expected expression', [token]);
   }
 }
@@ -713,6 +717,7 @@ exports.RockError = RockError;
 exports.Lexer = Lexer;
 exports.Statement = Statement;
 exports.Return =  Return;
+exports.Name = Name;
 exports.IntLiteral = IntLiteral;
 exports.Parser = Parser;
 
