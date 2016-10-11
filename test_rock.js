@@ -46,7 +46,7 @@ describe('Lexer', () => {
 });
 
 describe('Parser', () => {
-  it('should handle a parse with no methods', () => {
+  it('should handle a parse programs with no methods', () => {
     const file = new rock.File('foo.txt', `
     package foo.bar;
 
@@ -83,5 +83,33 @@ describe('Parser', () => {
         expect(type.name).to.equal('Baz');
       }
     }
+  });
+  it('should set a default package if none is set', () => {
+    const file = new rock.File('foo.txt', `
+    `);
+    const parser = new rock.Parser(file);
+    const module = parser.parseModule();
+    expect(module.pkg).to.equal('__default__');
+  });
+  it('should parse programs with an empty method', () => {
+    const file = new rock.File('foo.txt', `
+    class Foo {
+      Void bar(String a, String b) {}
+    }
+    `);
+    const parser = new rock.Parser(file);
+    const module = parser.parseModule();
+  });
+  it('should parse programs with a single method', () => {
+    const file = new rock.File('foo.txt', `
+    class Foo {
+      Void bar(String a, String b) {
+        break;
+        continue;
+      }
+    }
+    `);
+    const parser = new rock.Parser(file);
+    const module = parser.parseModule();
   });
 });

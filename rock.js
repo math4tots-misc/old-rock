@@ -76,7 +76,7 @@ const keywords = [
 
   // unused but reserved
   'def', 'interface', 'do', 'null', 'goto', 'new', 'const', 'let', 'var',
-  'public', 'private',
+  'public', 'private', 'extends', 'extend', 'implement', 'implements',
 ];
 
 const symbols = [
@@ -632,6 +632,49 @@ class Parser {
       return new GenericType(token, name, args);
     } else {
       return new Typename(token, name);
+    }
+  }
+  parseMethod(token, isStatic, type, name) {
+    const args = this.parseArguments();
+    const body = this.parseBlock();
+    return new Method(token, isStatic, type, name, args, body);
+  }
+  parseArguments() {
+    const args = [];
+    this.expect(openParenthesis);
+    while (!this.consume(closeParenthesis)) {
+      const token = this.peek();
+      const type = this.parseType();
+      const name = this.expect('NAME');
+      args.push(new Argument(token, type, name));
+      if (!this.consume(',')) {
+        this.expect(closeParenthesis);
+        break;
+      }
+    }
+    return args;
+  }
+  parseBlock() {
+    const token = this.peek();
+    this.expect(openBrace);
+    const statements = [];
+    while (!this.consume(closeBrace)) {
+      statements.push(this.parseStatement());
+    }
+    return new Block(token, statements);
+  }
+  parseStatement() {
+    const token = this.peek();
+    if (this.consume('break')) {
+      this.expect(';');
+      return new Break(token);
+    } else if (this.consume('continue')) {
+      this.expect(';');
+      return new Continue(token);
+    } else {
+      const expression = this.parseExpression();
+      this.expect(';');
+      return expression;
     }
   }
 }
