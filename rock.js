@@ -82,6 +82,7 @@ const keywords = [
 const symbols = [
   '(', ')', '[', ']', '{', '}', '=',
   ';', ',', '.', '->',
+  '+', '-',
 ].sort().reverse();
 
 function _atStringStart(s, i) {
@@ -618,6 +619,15 @@ class Parser {
     }
     return args;
   }
+  parseGenericArgument() {
+    const token = this.peek();
+    const variance = this.consume('+') ? 'covariant' :
+                     this.consume('-') ? 'contravariant' :
+                     'invariant';
+    const name = this.expect('TYPENAME').value;
+    const base = this.consume('extends') ? this.parseType() : null;
+    return new GenericArgument(token, variance, name, base);
+  }
   parseWithDeclaration() {
     if (!this.consume('with')) {
       return [];
@@ -782,6 +792,8 @@ exports.Lexer = Lexer;
 exports.Parser = Parser;
 
 exports.Import = Import;
+exports.Class = Class;
+exports.GenericArgument = GenericArgument;
 exports.Statement = Statement;
 exports.Return =  Return;
 exports.Declaration =  Declaration;

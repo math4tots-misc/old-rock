@@ -140,9 +140,43 @@ describe('Parser', () => {
       }
     });
   });
+  describe('parseClass', () => {
+    function parseClass(contents) {
+      const file = new rock.File('foo.txt', contents);
+      const parser = new rock.Parser(file);
+      return parser.parseClass();
+    }
+    it('should parse an empty class', () => {
+      const cls = parseClass('class Foo {}');
+      expect(cls.constructor).to.equal(rock.Class);
+      expect(cls.name).to.equal('Foo');
+    });
+    it('should parse an empty generic class', () => {
+      const cls = parseClass('class Map[Key extends Hashable, +Value] {}');
+      expect(cls.constructor).to.equal(rock.Class);
+      expect(cls.name).to.equal('Map');
+      expect(cls.args.length).to.equal(2);
+      {
+        const arg = cls.args[0];
+        expect(arg.constructor).to.equal(rock.GenericArgument);
+        expect(arg.variance).to.equal('invariant');
+        expect(arg.name).to.equal('Key');
+        const base = arg.base;
+        expect(base.constructor).to.equal(rock.Typename);
+        expect(base.name).to.equal('Hashable');
+      }
+      {
+        const arg = cls.args[1];
+        expect(arg.constructor).to.equal(rock.GenericArgument);
+        expect(arg.variance).to.equal('covariant');
+        expect(arg.name).to.equal('Value');
+        expect(arg.base).to.equal(null);
+      }
+    });
+  });
   describe('parseType', () => {
-    function parseType(string) {
-      const file = new rock.File('foo.txt', string);
+    function parseType(contents) {
+      const file = new rock.File('foo.txt', contents);
       const parser = new rock.Parser(file);
       return parser.parseType();
     }
