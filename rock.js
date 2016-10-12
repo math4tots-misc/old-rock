@@ -672,7 +672,14 @@ class Parser {
   }
   parseStatement() {
     const token = this.peek();
-    if (this.consume('break')) {
+    if (this.atDeclaration()) {
+      const isFinal = !!this.consume('final');
+      const type = this.at('TYPENAME') ? this.parseType() : null;
+      const name = this.expect('NAME').value;
+      const value = this.consume('=') ? this.parseExpression() : null;
+      this.expect(';');
+      return new Declaration(token, isFinal, type, name, value);
+    } else if (this.consume('break')) {
       this.expect(';');
       return new Break(token);
     } else if (this.consume('continue')) {
@@ -687,6 +694,23 @@ class Parser {
       this.expect(';');
       return expression;
     }
+  }
+  atDeclaration() {
+    if (this.at('final')) {
+      return true;
+    }
+    if (!this.at('TYPENAME')) {
+      return false;
+    }
+    const savedLocation = this.i;
+    try {
+      this.parseType();
+      this.expect('NAME');
+      return true;
+    } finally {
+      this.i = savedLocation;
+    }
+    return false;
   }
   parseExpression() {
     return this.parsePostfixExpression();
@@ -756,6 +780,7 @@ exports.Parser = Parser;
 
 exports.Statement = Statement;
 exports.Return =  Return;
+exports.Declaration =  Declaration;
 exports.Name = Name;
 exports.IntLiteral = IntLiteral;
 exports.Typename = Typename;

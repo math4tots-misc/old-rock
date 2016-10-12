@@ -136,6 +136,17 @@ describe('Parser', () => {
       expect(statement.constructor).to.equal(rock.IntLiteral);
       expect(statement.value).to.equal(415);
     });
+    it('should parse declaration statements', () => {
+      const statement = parseStatement('Int x = 5;');
+      expect(statement.constructor).to.equal(rock.Declaration);
+      expect(statement.name).to.equal('x');
+      const type = statement.type;
+      expect(type.constructor).to.equal(rock.Typename);
+      expect(type.name).to.equal('Int');
+      const value = statement.value;
+      expect(value.constructor).to.equal(rock.IntLiteral);
+      expect(value.value).to.equal(5);
+    });
   });
   describe('parseExpression', () => {
     function parseExpression(string) {
