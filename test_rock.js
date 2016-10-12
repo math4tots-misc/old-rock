@@ -46,99 +46,155 @@ describe('Lexer', () => {
 });
 
 describe('Parser', () => {
-  it('should handle a parse programs with no methods', () => {
-    const file = new rock.File('foo.txt', `
-    package foo.bar;
+  describe('parseModule', () => {
+    it('should handle programs with no methods', () => {
+      const file = new rock.File('foo.txt', `
+      package foo.bar;
 
-    trait Baz {
-      String x;
-    }
+      trait Baz {
+        String x;
+      }
 
-    class Foo[] with Bar[Int], Baz {}
-    `);
-    const parser = new rock.Parser(file);
-    const module = parser.parseModule();
-    expect(module.pkg).to.equal('foo.bar');
-    expect(module.classes.length).to.equal(2);
-    {
-      const cls = module.classes[0];
-      expect(cls.isTrait).to.equal(true);
-      expect(cls.name).to.equal('Baz');
-      expect(cls.traits.length).to.equal(0);
-    }
-    {
-      const cls = module.classes[1];
-      expect(cls.isTrait).to.equal(false);
-      expect(cls.name).to.equal('Foo');
-      expect(cls.traits.length).to.equal(2);
+      class Foo[] with Bar[Int], Baz {}
+      `);
+      const parser = new rock.Parser(file);
+      const module = parser.parseModule();
+      expect(module.pkg).to.equal('foo.bar');
+      expect(module.classes.length).to.equal(2);
       {
-        const type = cls.traits[0];
-        expect(type.name).to.equal('Bar');
-        expect(type.args.length).to.equal(1);
-        const argtype = type.args[0];
-        expect(argtype.name).to.equal('Int');
+        const cls = module.classes[0];
+        expect(cls.isTrait).to.equal(true);
+        expect(cls.name).to.equal('Baz');
+        expect(cls.traits.length).to.equal(0);
       }
       {
-        const type = cls.traits[1];
-        expect(type.name).to.equal('Baz');
+        const cls = module.classes[1];
+        expect(cls.isTrait).to.equal(false);
+        expect(cls.name).to.equal('Foo');
+        expect(cls.traits.length).to.equal(2);
+        {
+          const type = cls.traits[0];
+          expect(type.name).to.equal('Bar');
+          expect(type.args.length).to.equal(1);
+          const argtype = type.args[0];
+          expect(argtype.name).to.equal('Int');
+        }
+        {
+          const type = cls.traits[1];
+          expect(type.name).to.equal('Baz');
+        }
       }
-    }
-  });
-  it('should set a default package if none is set', () => {
-    const file = new rock.File('foo.txt', `
-    `);
-    const parser = new rock.Parser(file);
-    const module = parser.parseModule();
-    expect(module.pkg).to.equal('__default__');
-  });
-  it('should parse programs with an empty method', () => {
-    const file = new rock.File('foo.txt', `
-    class Foo {
-      Void bar(String a, String b) {}
-    }
-    `);
-    const parser = new rock.Parser(file);
-    const module = parser.parseModule();
-  });
-  it('should parse programs with a single method', () => {
-    const file = new rock.File('foo.txt', `
-    class Foo {
-      Void bar(String a, String b) {
-        break;
-        continue;
+    });
+    it('should set a default package if none is set', () => {
+      const file = new rock.File('foo.txt', `
+      `);
+      const parser = new rock.Parser(file);
+      const module = parser.parseModule();
+      expect(module.pkg).to.equal('__default__');
+    });
+    it('should parse programs with an empty method', () => {
+      const file = new rock.File('foo.txt', `
+      class Foo {
+        Void bar(String a, String b) {}
       }
+      `);
+      const parser = new rock.Parser(file);
+      const module = parser.parseModule();
+    });
+    it('should parse programs with a single method', () => {
+      const file = new rock.File('foo.txt', `
+      class Foo {
+        Void bar(String a, String b) {
+          break;
+          continue;
+        }
+      }
+      `);
+      const parser = new rock.Parser(file);
+      const module = parser.parseModule();
+    });
+  });
+  describe('parseStatement', () => {
+    it('should parse return statements without values', () => {
+      const file = new rock.File('foo.txt', 'return;');
+      const parser = new rock.Parser(file);
+      const statement = parser.parseStatement();
+      expect(statement.constructor).to.equal(rock.Return);
+      expect(statement.value).to.equal(null);
+    });
+    it('should parse return statements with values', () => {
+      const file = new rock.File('foo.txt', 'return 5;');
+      const parser = new rock.Parser(file);
+      const statement = parser.parseStatement();
+      expect(statement.constructor).to.equal(rock.Return);
+      expect(statement.value.constructor).to.equal(rock.IntLiteral);
+      expect(statement.value.value).to.equal(5);
+    });
+  });
+  describe('parseExpression', () => {
+    function parseExpression(string) {
+      const file = new rock.File('foo.txt', string);
+      const parser = new rock.Parser(file);
+      return parser.parseExpression();
     }
-    `);
-    const parser = new rock.Parser(file);
-    const module = parser.parseModule();
-  });
-  it('should parse Int expressions', () => {
-    const file = new rock.File('foo.txt', '261');
-    const parser = new rock.Parser(file);
-    const expression = parser.parseExpression();
-    expect(expression.constructor).to.equal(rock.IntLiteral);
-    expect(expression.value).to.equal(261);
-  });
-  it('should parse name expressions', () => {
-    const file = new rock.File('foo.txt', 'hoi');
-    const parser = new rock.Parser(file);
-    const expression = parser.parseExpression();
-    expect(expression.constructor).to.equal(rock.Name);
-    expect(expression.name).to.equal('hoi');
-  });
-  it('should parse void return statements', () => {
-    const file = new rock.File('foo.txt', 'return;');
-    const parser = new rock.Parser(file);
-    const statement = parser.parseStatement();
-    expect(statement.constructor).to.equal(rock.Return);
-    expect(statement.value).to.equal(null);
-  });
-  it('should parse return statements with values', () => {
-    const file = new rock.File('foo.txt', 'return 5;');
-    const parser = new rock.Parser(file);
-    const statement = parser.parseStatement();
-    expect(statement.constructor).to.equal(rock.Return);
-    expect(statement.value.constructor).to.equal(rock.IntLiteral);
-    expect(statement.value.value).to.equal(5);
+    it('should parse Int expressions', () => {
+      const file = new rock.File('foo.txt', '261');
+      const parser = new rock.Parser(file);
+      const expression = parser.parseExpression();
+      expect(expression.constructor).to.equal(rock.IntLiteral);
+      expect(expression.value).to.equal(261);
+    });
+    it('should parse Name expressions', () => {
+      const file = new rock.File('foo.txt', 'hoi');
+      const parser = new rock.Parser(file);
+      const expression = parser.parseExpression();
+      expect(expression.constructor).to.equal(rock.Name);
+      expect(expression.name).to.equal('hoi');
+    });
+    it('should parse GetField expressions', () => {
+      const expression = parseExpression('a.x');
+      expect(expression.constructor).to.equal(rock.GetField);
+      expect(expression.name).to.equal('x');
+      const owner = expression.owner;
+      expect(owner.constructor).to.equal(rock.Name);
+      expect(owner.name).to.equal('a');
+    });
+    it('should parse SetField expressions', () => {
+      const expression = parseExpression('a.x = b');
+      expect(expression.constructor).to.equal(rock.SetField);
+      expect(expression.name).to.equal('x');
+      const owner = expression.owner;
+      expect(owner.constructor).to.equal(rock.Name);
+      expect(owner.name).to.equal('a');
+      const value = expression.value;
+      expect(value.constructor).to.equal(rock.Name);
+      expect(value.name).to.equal('b');
+    });
+    it('should parse MethodCall expressions', () => {
+      const expression = parseExpression('a.f(1, 2)');
+      expect(expression.constructor).to.equal(rock.MethodCall);
+      expect(expression.name).to.equal('f');
+      const owner = expression.owner;
+      expect(owner.constructor).to.equal(rock.Name);
+      expect(owner.name).to.equal('a');
+      const args = expression.args;
+      expect(args.length).to.equal(2);
+      expect(args[0].constructor).to.equal(rock.IntLiteral);
+      expect(args[0].value).to.equal(1);
+      expect(args[1].constructor).to.equal(rock.IntLiteral);
+      expect(args[1].value).to.equal(2);
+    });
+    it('should parse Cast expressions', () => {
+      const file = new rock.File('foo.txt', '5 as Int');
+      const parser = new rock.Parser(file);
+      const expression = parser.parseExpression();
+      expect(expression.constructor).to.equal(rock.Cast);
+      const original = expression.value;
+      expect(original.constructor).to.equal(rock.IntLiteral);
+      expect(original.value).to.equal(5);
+      const type = expression.type;
+      expect(type.constructor).equals(rock.Typename);
+      expect(type.name).equals('Int');
+    });
   });
 });

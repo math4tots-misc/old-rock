@@ -80,7 +80,7 @@ const keywords = [
 ];
 
 const symbols = [
-  '(', ')', '[', ']', '{', '}',
+  '(', ')', '[', ']', '{', '}', '=',
   ';', ',', '.', '->',
 ].sort().reverse();
 
@@ -410,7 +410,7 @@ class MethodCall extends Expression {
   }
 }
 
-class GetAttribute extends Expression {
+class GetField extends Expression {
   constructor(token, owner, name) {
     super(token);
     this.owner = owner;  // Expression
@@ -418,7 +418,7 @@ class GetAttribute extends Expression {
   }
 }
 
-class SetAttribute extends Expression {
+class SetField extends Expression {
   constructor(token, owner, name, value) {
     super(token);
     this.owner = owner;  // Expression
@@ -444,7 +444,7 @@ class StaticMethodCall extends Expression {
   }
 }
 
-class StaticGetAttribute extends Expression {
+class StaticGetField extends Expression {
   constructor(token, owner, name) {
     super(token);
     this.owner = owner;  // Type
@@ -452,7 +452,7 @@ class StaticGetAttribute extends Expression {
   }
 }
 
-class StaticSetAttribute extends Expression {
+class StaticSetField extends Expression {
   constructor(token, owner, name, value) {
     super(token);
     this.owner = owner;  // Type
@@ -689,7 +689,44 @@ class Parser {
     }
   }
   parseExpression() {
-    return this.parsePrimaryExpression();
+    return this.parsePostfixExpression();
+  }
+  parsePostfixExpression() {
+    let expression = this.parsePrimaryExpression();
+    while (true) {
+      const token = this.peek();
+      if (this.consume('.')) {
+        const name = this.expect('NAME').value;
+        if (this.at(openParenthesis)) {
+          const args =
+              this.parseExpressionList(openParenthesis, closeParenthesis);
+          expression = new MethodCall(token, expression, name, args);
+        } else if (this.consume('=')) {
+          const value = this.parseExpression();
+          expression = new SetField(token, expression, name, value);
+        } else {
+          expression = new GetField(token, expression, name);
+        }
+      } else if (this.consume('as')) {
+        const type = this.parseType();
+        expression = new Cast(token, expression, type);
+      } else {
+        break;
+      }
+    }
+    return expression;
+  }
+  parseExpressionList(open, close) {
+    this.expect(open);
+    const exprs = [];
+    while (!this.consume(close)) {
+      exprs.push(this.parseExpression());
+      if (!this.consume(',')) {
+        this.expect(close);
+        break;
+      }
+    }
+    return exprs;
   }
   parsePrimaryExpression() {
     const token = this.peek();
@@ -715,10 +752,17 @@ exports.File = File;
 exports.Token = Token;
 exports.RockError = RockError;
 exports.Lexer = Lexer;
+exports.Parser = Parser;
+
 exports.Statement = Statement;
 exports.Return =  Return;
 exports.Name = Name;
 exports.IntLiteral = IntLiteral;
-exports.Parser = Parser;
+exports.Typename = Typename;
+exports.GenericType = GenericType;
+exports.Cast = Cast;
+exports.GetField = GetField;
+exports.SetField = SetField;
+exports.MethodCall = MethodCall;
 
 })();
