@@ -5,7 +5,7 @@ const rock = require('./rock.js');
 
 
 describe('Token', () => {
-  describe('#getLocationMessage', () => {
+  describe('getLocationMessage', () => {
     const file = new rock.File('foo.txt', 'hello\naa bb');
     it('should handle beginning of contents', () => {
       const token = new rock.Token('type', 'value', file, 0);
@@ -115,20 +115,26 @@ describe('Parser', () => {
     });
   });
   describe('parseStatement', () => {
-    it('should parse return statements without values', () => {
-      const file = new rock.File('foo.txt', 'return;');
+    function parseStatement(string) {
+      const file = new rock.File('foo.txt', string);
       const parser = new rock.Parser(file);
-      const statement = parser.parseStatement();
+      return parser.parseStatement();
+    }
+    it('should parse return statements without values', () => {
+      const statement = parseStatement('return;');
       expect(statement.constructor).to.equal(rock.Return);
       expect(statement.value).to.equal(null);
     });
     it('should parse return statements with values', () => {
-      const file = new rock.File('foo.txt', 'return 5;');
-      const parser = new rock.Parser(file);
-      const statement = parser.parseStatement();
+      const statement = parseStatement('return 5;');
       expect(statement.constructor).to.equal(rock.Return);
       expect(statement.value.constructor).to.equal(rock.IntLiteral);
       expect(statement.value.value).to.equal(5);
+    });
+    it('should parse expression statements', () => {
+      const statement = parseStatement('415;');
+      expect(statement.constructor).to.equal(rock.IntLiteral);
+      expect(statement.value).to.equal(415);
     });
   });
   describe('parseExpression', () => {
