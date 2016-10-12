@@ -501,18 +501,19 @@ class Parser {
     this.tokens = new Lexer(file).toArray();
     this.i = 0;
   }
-  peek() {
-    return this.tokens[this.i];
+  peek(lookahead) {
+    return this.tokens[this.i + (lookahead || 0)];
   }
   next() {
     const token = this.peek();
     this.i++;
     return token;
   }
-  at(types) {
+  at(types, lookahead) {
+    const token = this.peek(lookahead);
     return typeof types === 'string' ?
-           types === this.peek().type :
-           types.indexOf(this.peek().type) !== -1;
+           types === token.type :
+           types.indexOf(token.type) !== -1;
   }
   expect(types) {
     if (this.at(types)) {
@@ -549,7 +550,8 @@ class Parser {
   }
   consumePackageName() {
     let pkg = this.expect('NAME').value;
-    while (this.consume('.')) {
+    while (this.at('.') && this.at('NAME', 1)) {
+      this.expect('.');
       pkg += '.' + this.expect('NAME').value;
     }
     return pkg;
@@ -557,13 +559,14 @@ class Parser {
   parseImports() {
     const imports = [];
     while (this.at('import')) {
-      const tokne = this.consume('import');
+      const token = this.consume('import');
       const pkg = this.consumePackageName();
       this.expect('.');
       const className = this.expect('TYPENAME').value;
       const alias = this.consume('as') ?
                     this.expect('TYPENAME').value :
                     className;
+      this.expect(';');
       imports.push(new Import(token, pkg, className, alias));
     }
     return imports;
@@ -778,6 +781,7 @@ exports.RockError = RockError;
 exports.Lexer = Lexer;
 exports.Parser = Parser;
 
+exports.Import = Import;
 exports.Statement = Statement;
 exports.Return =  Return;
 exports.Declaration =  Declaration;

@@ -47,6 +47,11 @@ describe('Lexer', () => {
 
 describe('Parser', () => {
   describe('parseModule', () => {
+    function parseModule(contents) {
+      const file = new rock.File('foo.txt', contents);
+      const parser = new rock.Parser(file);
+      return parser.parseModule();
+    }
     it('should handle programs with no methods', () => {
       const file = new rock.File('foo.txt', `
       package foo.bar;
@@ -112,6 +117,48 @@ describe('Parser', () => {
       `);
       const parser = new rock.Parser(file);
       const module = parser.parseModule();
+    });
+    it('should parse programs with imports', () => {
+      const module = parseModule(`
+      import foo.bar.Baz;
+      import foo.bar.Baz as Bob;
+      `);
+      expect(module.imports.length).to.equal(2);
+      {
+        const imp = module.imports[0];
+        expect(imp.constructor).to.equal(rock.Import);
+        expect(imp.pkg).to.equal('foo.bar');
+        expect(imp.name).to.equal('Baz');
+        expect(imp.alias).to.equal('Baz');
+      }
+      {
+        const imp = module.imports[1];
+        expect(imp.constructor).to.equal(rock.Import);
+        expect(imp.pkg).to.equal('foo.bar');
+        expect(imp.name).to.equal('Baz');
+        expect(imp.alias).to.equal('Bob');
+      }
+    });
+  });
+  describe('parseType', () => {
+    function parseType(string) {
+      const file = new rock.File('foo.txt', string);
+      const parser = new rock.Parser(file);
+      return parser.parseType();
+    }
+    it('should parse Typename', () => {
+      const type = parseType('String');
+      expect(type.constructor).to.equal(rock.Typename);
+      expect(type.name).to.equal('String');
+    });
+    it('should parse GenericType', () => {
+      const type = parseType('List[Int]');
+      expect(type.constructor).to.equal(rock.GenericType);
+      expect(type.name).to.equal('List');
+      const args = type.args;
+      expect(args.length).to.equal(1);
+      expect(args[0].constructor).to.equal(rock.Typename);
+      expect(args[0].name).to.equal('Int');
     });
   });
   describe('parseStatement', () => {
