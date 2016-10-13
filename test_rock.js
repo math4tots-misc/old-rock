@@ -316,4 +316,14 @@ describe('TypeTag', () => {
           .to.equal('foo.Bar$T');
     });
   });
+  describe('equals', () => {
+    it('should handle simple case', () => {
+      const a = new rock.TypeTag('foo', 'Bar');
+      const b = new rock.TypeTag('foo', 'Bar');
+      const c = new rock.TypeTag('foo', 'Baz');
+      expect(a.equals(a)).to.equal(true);
+      expect(a.equals(b)).to.equal(true);
+      expect(a.equals(c)).to.equal(false);
+    });
+  });
 });
