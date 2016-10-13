@@ -296,3 +296,24 @@ describe('Parser', () => {
     });
   });
 });
+
+describe('TypeTag', () => {
+  describe('toString', () => {
+    it('should handle simple package/name case', () => {
+      expect(new rock.TypeTag('foo', 'Bar').toString()).to.equal('foo.Bar');
+    });
+    it('should handle type args', () => {
+      expect(new rock.TypeTag('foo', 'Bar', [
+        new rock.TypeTag('foo', 'Baz'),
+      ]).toString()).to.equal('foo.Bar[foo.Baz]');
+    });
+    it('should handle empty type args', () => {
+      expect(new rock.TypeTag('foo', 'Bar', []).toString())
+          .to.equal('foo.Bar[]');
+    });
+    it('should handle typevar', () => {
+      expect(new rock.TypeTag('foo', 'Bar', null, 'T').toString())
+          .to.equal('foo.Bar$T');
+    });
+  });
+});

@@ -213,11 +213,8 @@ class Lexer {
   }
 }
 
-// NOTE: qualified_typename fields are always a string.
-// They represent either concrete types like rock.lang.Integer,
-// or generic types like rock.lang.List.$Item
-// qualified_typename values are set to null until the annotation
-// when they are filled in after types are resolved.
+// NOTE: type_tag values are set to null until the annotation
+// when they are filled in as types are resolved.
 
 class Ast {
   constructor(token) {
@@ -301,7 +298,7 @@ class Argument extends Ast {
 class Type extends Ast {
   constructor(token) {
     super(token);
-    this.qualified_typename = null;  // to be filled in during annotation
+    this.type_tag = null;  // to be filled in during annotation
   }
 }
 
@@ -370,7 +367,7 @@ class Return extends Statement {
 class Expression extends Statement {
   constructor(token) {
     super(token);
-    this.qualified_typename = null;  // to be filled in during annotation
+    this.type_tag = null;  // to be filled in during annotation
   }
 }
 
@@ -783,6 +780,67 @@ class Parser {
   }
 }
 
+class TypeTag {
+  constructor(pkg, name, args, typevar) {
+    this.pkg = pkg;
+    this.name = name;
+    this.args = args;
+    this.typevar = typevar;
+  }
+  equals(other) {
+    return this.toString() === other.toString();
+  }
+  getName() {
+    const base = this.pkg + '.' + this.name;
+    const args = this.args ? '[' + this.args.join(',') + ']' : '';
+    return base + args;
+  }
+  toString() {
+    return this.getName() + (this.typevar ? '$' + this.typevar : '');
+  }
+}
+
+class Analyzer {
+  constructor(modules) {
+    this.name_to_ast = Object.create(null);
+    for (const mod of modules) {
+      this._readModule(mod);
+    }
+  }
+  _readModule(mod) {
+    const pkg = mod.pkg;
+    for (const cls of mod.classes) {
+      const name = pkg + '.' + cls.name;
+      if (this.name_to_ast[name]) {
+        throw new RockError(
+            'Duplicate definitiono of ' + name,
+            [this.name_to_ast[name].token, cls.token]);
+      }
+      this.name_to_ast[name] = cls;
+    }
+  }
+  getMethodReturnType(ownerTypeTag, name, argtypes) {
+  }
+  getFieldType(ownerTypeTag, name) {
+  }
+  getStaticMethodReturnType(ownerTypeTag, name, argtypes) {
+  }
+  getStaticFieldType(ownerTypeTag, name) {
+  }
+}
+
+class Annotator {
+  constructor(analyzer) {
+    this.analyzer = analyzer;
+  }
+  annotateModule(mod) {
+    for (const cls of mod.classes) {
+      this.annotateClass(cls);
+    }
+  }
+}
+
+
 const exports =
     typeof module === 'undefined' ? Object.create(null) : module.exports;
 exports.File = File;
@@ -790,6 +848,7 @@ exports.Token = Token;
 exports.RockError = RockError;
 exports.Lexer = Lexer;
 exports.Parser = Parser;
+exports.TypeTag = TypeTag;
 
 exports.Import = Import;
 exports.Class = Class;
