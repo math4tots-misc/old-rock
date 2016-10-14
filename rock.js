@@ -277,11 +277,12 @@ class Field extends Ast {
 }
 
 class Method extends Ast {
-  constructor(token, isStatic, type, name, args, body) {
+  constructor(token, isStatic, type, name, typeargs, args, body) {
     super(token);
     this.isStatic = isStatic;  // Boolean
     this.type = type;  // Type
     this.name = name;  // String
+    this.typeargs = typeargs;  // [GenericArgument]
     this.args = args;  // [Argument]
     this.body = body;  // null|Block
   }
@@ -652,9 +653,10 @@ class Parser {
     }
   }
   parseMethod(token, isStatic, type, name) {
+    const typeargs = this.parseGenericArguments();
     const args = this.parseArguments();
     const body = this.parseBlock();
-    return new Method(token, isStatic, type, name, args, body);
+    return new Method(token, isStatic, type, name, typeargs, args, body);
   }
   parseArguments() {
     const args = [];

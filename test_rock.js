@@ -173,6 +173,32 @@ describe('Parser', () => {
         expect(arg.base).to.equal(null);
       }
     });
+    it('should parse a class with a field', () => {
+      const cls = parseClass(`
+      class Foo {
+        Int x;
+      }
+      `);
+      expect(cls.fields.length).to.equal(1);
+      const field = cls.fields[0];
+      expect(field.name).to.equal('x');
+      expect(field.type.constructor).to.equal(rock.Typename);
+      expect(field.type.name).to.equal('Int');
+    });
+    it('should parse a class with a generic method', () => {
+      const cls = parseClass(`
+      class Foo {
+        T bar[T]() {}
+      }
+      `);
+      expect(cls.methods.length).to.equal(1);
+      const method = cls.methods[0];
+      expect(method.name).to.equal('bar');
+      expect(method.typeargs.length).to.equal(1);
+      const typearg = method.typeargs[0];
+      expect(typearg.constructor).to.equal(rock.GenericArgument);
+      expect(typearg.name).to.equal('T');
+    });
   });
   describe('parseType', () => {
     function parseType(contents) {
