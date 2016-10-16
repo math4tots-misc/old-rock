@@ -85,6 +85,10 @@ const symbols = [
   '+', '-',
 ].sort().reverse();
 
+const primitive_types = [
+  'void', 'bool', 'int', 'float', 'string',
+];
+
 function _atStringStart(s, i) {
   if (s[i] === '"' || s[i] === "'") {
     return true;
@@ -139,7 +143,8 @@ class Lexer {
       }
       const value = this.s.slice(j, this.i);
       if (keywords.indexOf(value) === -1) {
-        const kind = /[A-Z]/.test(value[0]) ? 'TYPENAME' : 'NAME';
+        const kind = /[A-Z]/.test(value[0]) || primitive_types[value] ?
+                     'TYPENAME' : 'NAME';
         return new Token(kind, value, this.file, j);
       } else {
         return new Token(value, null, this.file, j);
