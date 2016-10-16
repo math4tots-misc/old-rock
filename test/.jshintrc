@@ -1,0 +1,13 @@
+{
+  "node": true,
+  "camelcase": true,
+  "curly": true,
+  "eqeqeq": true,
+  "undef": true,
+  "asi": false,
+  "predef": [
+    "describe",
+    "it"
+  ],
+  "esversion": 6
+}

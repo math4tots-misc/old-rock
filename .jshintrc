@@ -1,0 +1,9 @@
+{
+  "node": true,
+  "camelcase": true,
+  "curly": true,
+  "eqeqeq": true,
+  "undef": true,
+  "asi": false,
+  "esversion": 6
+}

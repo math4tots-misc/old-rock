@@ -4,7 +4,7 @@
   "description": "Rock programming language",
   "main": "rock.js",
   "scripts": {
-    "test": "mocha test_rock.js"
+    "test": "mocha"
   },
   "author": "",
   "license": "MIT",

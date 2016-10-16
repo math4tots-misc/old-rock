@@ -220,12 +220,6 @@ class Ast {
   constructor(token) {
     this.token = token;
   }
-
-  notImplementedError() {
-    return new RockError(
-        'Not implemented for ' + this.constructor.name,
-        [this.token]);
-  }
 }
 
 class Module extends Ast {
@@ -233,88 +227,26 @@ class Module extends Ast {
     super(token);
     this.pkg = pkg;  // String
     this.imports = imports;  // [Import]
-    this.classes = classes;  // [Class]
+    this.functions = functions;  // [Function]
   }
 }
 
 class Import extends Ast {
-  constructor(token, pkg, name, alias) {
+  constructor(token, path, name, alias) {
     super(token);
-    this.pkg = pkg;  // String
+    this.path = path;  // String
     this.name = name;  // String
     this.alias = alias || name;  // String
   }
 }
 
-class Class extends Ast {
-  constructor(token, isTrait, name, typeargs, traits, fields, methods) {
+class Function extends Ast {
+  constructor(token, isExtern, returnType, name, args, body) {
     super(token);
-    this.isTrait = isTrait;  // Boolean
+    this.isExtern = isExtern;
+    this.returnType = returnType;  // String
     this.name = name;  // String
-    this.typeargs = typeargs;  // [GenericArgument]
-    this.traits = traits;  // [Type]
-    this.fields = fields;  // [Field]
-    this.methods = methods;  // [Method]
-  }
-}
-
-class GenericArgument extends Ast {
-  constructor(token, variance, name, base) {
-    super(token);
-    this.variance = variance;  // 'covariant'/'contravariant'/'invariant'
-    this.name = name;  // String
-    this.base = base;  // null|Type
-  }
-}
-
-class Field extends Ast {
-  constructor(token, isStatic, type, name) {
-    super(token);
-    this.isStatic = isStatic;  // Boolean
-    this.type = type;  // Type
-    this.name = name;  // String
-  }
-}
-
-class Method extends Ast {
-  constructor(token, isStatic, type, name, typeargs, args, body) {
-    super(token);
-    this.isStatic = isStatic;  // Boolean
-    this.type = type;  // Type
-    this.name = name;  // String
-    this.typeargs = typeargs;  // [GenericArgument]
-    this.args = args;  // [Argument]
-    this.body = body;  // null|Block
-  }
-}
-
-class Argument extends Ast {
-  constructor(token, type, name) {
-    super(token);
-    this.type = type;  // Type
-    this.name = name;  // String
-  }
-}
-
-class Type extends Ast {
-  constructor(token) {
-    super(token);
-    this.type_tag = null;  // to be filled in during annotation
-  }
-}
-
-class Typename extends Type {
-  constructor(token, name) {
-    super(token);
-    this.name = name;  // String
-  }
-}
-
-class GenericType extends Type {
-  constructor(token, name, args) {
-    super(token);
-    this.name = name;  // String
-    this.args = args;  // [Type]
+    this.args = args;  // []
   }
 }
 
@@ -324,7 +256,7 @@ class Declaration extends Statement {
   constructor(token, isFinal, type, name, value) {
     super(token);
     this.isFinal = isFinal;  // Boolean
-    this.type = type;  // Type
+    this.type = type;  // String
     this.name = name;  // String
     this.value = value;  // Expression
   }
@@ -423,48 +355,6 @@ class SetField extends Expression {
     this.owner = owner;  // Expression
     this.name = name;  // String
     this.value = value;  // Expression
-  }
-}
-
-class New extends Expression {
-  constructor(token, owner, args) {
-    super(token);
-    this.owner = owner;  // Type
-    this.args = args;  // [Expression]
-  }
-}
-
-class StaticMethodCall extends Expression {
-  constructor(token, owner, name, args) {
-    super(token);
-    this.owner = owner;  // Type
-    this.name = name;  // String
-    this.args = args;  // [Expression]
-  }
-}
-
-class StaticGetField extends Expression {
-  constructor(token, owner, name) {
-    super(token);
-    this.owner = owner;  // Type
-    this.name = name;  // String
-  }
-}
-
-class StaticSetField extends Expression {
-  constructor(token, owner, name, value) {
-    super(token);
-    this.owner = owner;  // Type
-    this.name = name;  // String
-    this.value = value;  // Expression
-  }
-}
-
-class Cast extends Expression {
-  constructor(token, value, type) {
-    super(token);
-    this.value = value;  // Expression
-    this.type = type;  // Type
   }
 }
 
