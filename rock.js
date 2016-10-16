@@ -247,11 +247,11 @@ class Import extends Ast {
 }
 
 class Class extends Ast {
-  constructor(token, isTrait, name, args, traits, fields, methods) {
+  constructor(token, isTrait, name, typeargs, traits, fields, methods) {
     super(token);
     this.isTrait = isTrait;  // Boolean
     this.name = name;  // String
-    this.args = args;  // [GenericArgument]
+    this.typeargs = typeargs;  // [GenericArgument]
     this.traits = traits;  // [Type]
     this.fields = fields;  // [Field]
     this.methods = methods;  // [Method]
@@ -584,7 +584,7 @@ class Parser {
       this.expect('class');
     }
     const name = this.expect('TYPENAME').value;
-    const args = this.parseGenericArguments();
+    const typeargs = this.parseGenericArguments();
     const traits = this.parseWithDeclaration();
     const fields = [];
     const methods = [];
@@ -600,7 +600,7 @@ class Parser {
         methods.push(this.parseMethod(token, isStatic, type, name));
       }
     }
-    return new Class(token, isTrait, name, args, traits, fields, methods);
+    return new Class(token, isTrait, name, typeargs, traits, fields, methods);
   }
   parseGenericArguments() {
     if (!this.at(openBracket)) {
@@ -782,23 +782,20 @@ class Parser {
   }
 }
 
+// NOTE: For now, to simplify implementation, assume no generic types.
+// This applies to TypeTag, Analyzer and Annotator.
+// TODO: Implement generic types.
+
 class TypeTag {
-  constructor(pkg, name, args, typevar) {
+  constructor(pkg, name) {
     this.pkg = pkg;
     this.name = name;
-    this.args = args;
-    this.typevar = typevar;
   }
   equals(other) {
     return this.toString() === other.toString();
   }
-  getName() {
-    const base = this.pkg + '.' + this.name;
-    const args = this.args ? '[' + this.args.join(',') + ']' : '';
-    return base + args;
-  }
   toString() {
-    return this.getName() + (this.typevar ? '$' + this.typevar : '');
+    return this.pkg + '.' + this.name;
   }
 }
 
@@ -815,7 +812,7 @@ class Analyzer {
       const name = pkg + '.' + cls.name;
       if (this.name_to_ast[name]) {
         throw new RockError(
-            'Duplicate definitiono of ' + name,
+            'Duplicate definition of ' + name,
             [this.name_to_ast[name].token, cls.token]);
       }
       this.name_to_ast[name] = cls;
@@ -831,13 +828,80 @@ class Analyzer {
   }
 }
 
+const GLOBAL_ALIASES = [
+  ['Self', new TypeTag('rock.lang', 'Self')],
+  ['Bool', new TypeTag('rock.lang', 'Bool')],
+  ['Int', new TypeTag('rock.lang', 'Int')],
+  ['Float', new TypeTag('rock.lang', 'Float')],
+  ['String', new TypeTag('rock.lang', 'String')],
+]
+
 class Annotator {
   constructor(analyzer) {
     this.analyzer = analyzer;
   }
   annotateModule(mod) {
+    const pkg = mod.pkg;
+    const aliases = Object.create(null);
+    const alias_to_ast = Object.create(null);
+    for (const imp of mod.imports) {
+      if (aliases[imp.alias]) {
+        throw new RockError(
+            'Name conflict',
+            [aliases_to_ast[imp.alias].token, imp.token]);
+      }
+      aliases[imp.alias] = new TypeTag(imp.pkg, imp.name);
+      alias_to_ast[imp.alias] = imp;
+    }
     for (const cls of mod.classes) {
-      this.annotateClass(cls);
+      if (aliases[cls.name]) {
+        throw new RockError(
+            'Name conflict',
+            [aliases_to_ast[cls.name].token, cls.token]);
+      }
+      aliases[cls.name] = new TypeTag(pkg, cls.name);
+      alias_to_ast[cls.name] = cls;
+    }
+    for (const [alias, tag] of GLOBAL_ALIASES) {
+      if (aliases[alias]) {
+        throw new RockError(
+            'This declaration shadows a global builtin name ' +
+                '(' + tag.toString() + ')',
+            [aliases_to_ast[alias].token]);
+      }
+      aliases[alias] = tag;
+    }
+    for (const cls of mod.classes) {
+      this.annotateClass(aliases, cls);
+    }
+  }
+  annotateClass(aliases, cls) {
+    for (const trait of cls.traits) {
+      this.annotateType(aliases, trait);
+    }
+    for (const field of cls.fields) {
+      this.annotateField(aliases, cls, field);
+    }
+    for (const method of cls.methods) {
+      this.annotateMethod(aliases, cls, method);
+    }
+  }
+  annotateType(aliases, type) {
+    if (!alises[type.name]) {
+      throw new RockError('Undeclared type: ' + type.name, [type.token]);
+    }
+    type.type_tag = aliases[type.name];
+  }
+  annotateField(alises, field) {
+    this.annotateType(field.type);
+  }
+  annotateMethod(alises, method) {
+    this.annotateType(method.type);
+    for (const arg of method.args) {
+      this.annotateArgument(aliases, args);
+    }
+    if (method.body) {
+      this.annotateStatement(method.body);
     }
   }
 }
