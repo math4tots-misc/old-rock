@@ -787,15 +787,22 @@ class Parser {
 // TODO: Implement generic types.
 
 class TypeTag {
-  constructor(pkg, name) {
+  constructor(pkg, name, args, typevar) {
     this.pkg = pkg;
     this.name = name;
+    this.args = args;
+    this.typevar = typevar;
   }
   equals(other) {
     return this.toString() === other.toString();
   }
+  getName() {
+    const base = this.pkg + '.' + this.name;
+    const args = this.args ? '[' + this.args.join(',') + ']' : '';
+    return base + args;
+  }
   toString() {
-    return this.pkg + '.' + this.name;
+    return this.getName() + (this.typevar ? '$' + this.typevar : '');
   }
 }
 

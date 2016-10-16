@@ -155,9 +155,9 @@ describe('Parser', () => {
       const cls = parseClass('class Map[Key extends Hashable, +Value] {}');
       expect(cls.constructor).to.equal(rock.Class);
       expect(cls.name).to.equal('Map');
-      expect(cls.args.length).to.equal(2);
+      expect(cls.typeargs.length).to.equal(2);
       {
-        const arg = cls.args[0];
+        const arg = cls.typeargs[0];
         expect(arg.constructor).to.equal(rock.GenericArgument);
         expect(arg.variance).to.equal('invariant');
         expect(arg.name).to.equal('Key');
@@ -166,7 +166,7 @@ describe('Parser', () => {
         expect(base.name).to.equal('Hashable');
       }
       {
-        const arg = cls.args[1];
+        const arg = cls.typeargs[1];
         expect(arg.constructor).to.equal(rock.GenericArgument);
         expect(arg.variance).to.equal('covariant');
         expect(arg.name).to.equal('Value');
