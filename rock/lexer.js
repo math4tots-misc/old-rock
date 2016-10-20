@@ -8,13 +8,14 @@ const openBrace = '{';
 const closeBrace = '}';
 
 const keywords = [
-  'package', 'import', 'as', 'class', 'trait', 'with', 'static', 'final',
+  'package', 'import', 'as', 'extern', 'class', 'trait', 'with', 'final',
   'if', 'else', 'for', 'while', 'break', 'continue', 'return',
   'true', 'false', 'and', 'or',
 
   // unused but reserved
   'def', 'interface', 'do', 'null', 'goto', 'new', 'const', 'let', 'var',
   'public', 'private', 'extends', 'extend', 'implement', 'implements',
+  'static',
 ];
 
 const symbols = [

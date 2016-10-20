@@ -32,37 +32,16 @@ class TemplateClass extends Ast {
     this.fields = fields;  // [Field]
     this.methods = methods;  // [Method]
   }
-  instantiateTemplateClass(callTokens, types) {
-    const tokens = callTokens.concat(this.tokens);
-    if (this.typeargs.length !== types.length) {
-      throw new RockError(
-          tokens,
-          'Expected ' + this.typeargs.length + 'args but got ' +
-          types.length + ' args');
-    }
-    const instantiatedType = new TemplateType(tokens, this.name, types);
-    const name = instantiatedType.toTypeString();
-    const mappings = Object.create(null);
-    for (let i = 0; i < types.length; i++) {
-      mappings[this.typeargs[i]] = types[i];
-    }
-    const traits = this.traits.map(
-        trait => trait.instantiateType(callTokens, mappings));
-    const fields = this.fields.map(
-        field => field.instantiateField(callTokens, mappings));
-    const methods = this.methods.map(
-        method => method.instantiateMethod(callTokens, mappings));
-    return new Class(
-        tokens, this.isExtern, this.isTrait, name, traits, fields, methods);
-  }
 }
 
 class Class extends Ast {
-  constructor(tokens, isExtern, isTrait, name, traits, fields, methods) {
+  constructor(tokens, isExtern, isTrait, type, traits, fields, methods) {
     super(tokens);
     this.isExtern = isExtern;  // boolean
     this.isTrait = isTrait;  // boolean
-    this.name = name;  // string
+    this.type = type;  // Type:
+                       //   Typename if normal class,
+                       //   TemplateType if instantiated from TemplateClass
     this.traits = traits;  // [Type]
     this.fields = fields;  // [Field]
     this.methods = methods;  // [Method]
@@ -75,14 +54,6 @@ class Typename extends Type {
   constructor(tokens, name) {
     super(tokens);
     this.name = name;  // string
-  }
-  copyTypeWithCallTokens(callTokens) {
-    return new Typename(callTokens.concat(this.tokens), this.name);
-  }
-  instantiateType(callTokens, mappings) {
-    return mappings[this.name] ?
-        mappings[this.name].copyTypeWithCallTokens(callTokens) :
-        this;
   }
   toTypeString() {
     return this.name;
@@ -98,23 +69,8 @@ class TemplateType extends Type {
     this.name = name;  // string
     this.args = args;  // [Type]
   }
-  copyTypeWithCallTokens(callTokens) {
-    return new TemplateType(
-        callTokens.concat(this.tokens),
-        this.args.map(arg => arg.copyTypeWithCallTokens(callTokens)));
-  }
-  instantiateType(callTokens, mappings) {
-    const tokens = callTokens.concat(this.tokens);
-    if (mappings[this.name]) {
-      throw new RockError(
-          tokens, 'Template arguments cannote be used as template types');
-    }
-    return new TemplateType(
-        tokens, this.name,
-        this.args.map(arg => arg.instantiateType(tokens, mappings)));
-  }
   toTypeString() {
-    return 'T' + this.args.length + '__' + this.name + '__' +
+    return 'T' + '__' + this.args.length + '__' + this.name + '__' +
            this.args.map(arg => arg.toTypeString()).join('__');
   }
   toString() {
@@ -129,10 +85,6 @@ class Field extends Ast {
     this.type = type;  // Type
     this.name = name;  // string
   }
-  instantiateField(callTokens, mappings) {
-    const type = this.type.instantiateType(callTokens, mappings);
-    return new Field(type, this.name);
-  }
 }
 
 class Method extends Ast {
@@ -143,14 +95,6 @@ class Method extends Ast {
     this.args = args;  // [Field]  # HACK: Don't reuse Field for Argument.
     this.body = body;  // Block
   }
-  instantiateMethod(callTokens, mappings) {
-    const tokens = callTokens.concat(this.tokens);
-    const returnType = this.returnType.instantiateType(callTokens, mappings);
-    const args = this.args.map(
-        field => field.instantiateField(callTokens, mappings));
-    const body = this.body.instantiateStatement(callTokens, mappings);
-    return new Method(tokens, returnType, this.name, args, body);
-  }
 }
 
 class Statement extends Ast {}
@@ -160,12 +104,6 @@ class Block extends Statement {
     super(tokens);
     this.statements = statements;  // [Statement]
   }
-  instantiateStatement(callTokens, mappings) {
-    const tokens = callTokens.concat(this.tokens);
-    const stmts = this.statements.map(
-        stmt => stmt.instantiateStatement(callTokens, mappings));
-    return new Block(tokens, stmts);
-  }
 }
 
 class Return extends Statement {
@@ -173,24 +111,11 @@ class Return extends Statement {
     super(tokens);
     this.value = value;  // Expression
   }
-  instantiateStatement(callTokens, mappings) {
-    const tokens = callTokens.concat(this.tokens);
-    const value = this.value.instantiateExpression(callTokens, mappings);
-    return new Return(tokens, value);
-  }
 }
 
-class Break extends Statement {
-  instantiateStatement(callTokens, mappings) {
-    return new Break(callTokens.concat(this.tokens));
-  }
-}
+class Break extends Statement {}
 
-class Continue extends Statement {
-  instantiateStatement(callTokens, mappings) {
-    return new Continue(callTokens.concat(this.tokens));
-  }
-}
+class Continue extends Statement {}
 
 class While extends Statement {
   constructor(tokens, condition, body) {
@@ -198,28 +123,14 @@ class While extends Statement {
     this.condition = condition;  // Expression
     this.body = body;  // Block
   }
-  instantiateStatement(callTokens, mappings) {
-    const tokens = callTokens.concat(this.tokens);
-    const condition = this.condition.instantiateExpression(
-        callTokens, mappings);
-    const body = this.body.instantiateStatement(callTokens, mappings);
-    return new While(tokens, condition, body);
-  }
 }
 
-class Expression extends Statement {
-  instantiateStatement(callTokens, mappings) {
-    return this.instantiateExpression(callTokens, mappings);
-  }
-}
+class Expression extends Statement {}
 
 class Int extends Expression {
   constructor(tokens, value) {
     super(tokens);
     this.value = value;
-  }
-  instantiateExpression(callTokens, mappings) {
-    return new Int(callTokens.concat(this.tokens), this.value);
   }
 }
 
@@ -228,9 +139,6 @@ class Float extends Expression {
     super(tokens);
     this.value = value;
   }
-  instantiateExpression(callTokens, mappings) {
-    return new Float(callTokens.concat(this.tokens), this.value);
-  }
 }
 
 class Text extends Expression {
@@ -238,18 +146,12 @@ class Text extends Expression {
     super(tokens);
     this.value = value;
   }
-  instantiateExpression(callTokens, mappings) {
-    return new Text(callTokens.concat(this.tokens), this.value);
-  }
 }
 
 class Name extends Expression {
   constructor(tokens, name) {
     super(tokens);
     this.name = name;  // string
-  }
-  instantiateExpression(callTokens, mappings) {
-    return new Name(callTokens.concat(this.tokens), this.name);
   }
 }
 
@@ -259,13 +161,6 @@ class MethodCall extends Expression {
     this.owner = owner;  // Expression
     this.name = name;  // string
     this.args = args;  // [Expression]
-  }
-  instantiateExpression(callTokens, mappings) {
-    const tokens = callTokens.concat(this.tokens);
-    const owner = this.owner.instantiateExpression(callTokens, mappings);
-    const args = this.args.map(
-        arg => arg.instantiateExpression(callTokens, mappings));
-    return new MethodCall(tokens, owner, this.name, args);
   }
 }
 
