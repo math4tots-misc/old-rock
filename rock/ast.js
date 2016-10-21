@@ -20,7 +20,7 @@ class Module extends Ast {
   }
 }
 
-class TemplateClass extends Ast {
+class ClassTemplate extends Ast {
   constructor(tokens, isExtern, isTrait, name,
               typeargs, traits, fields, methods) {
     super(tokens);
@@ -41,7 +41,7 @@ class Class extends Ast {
     this.isTrait = isTrait;  // boolean
     this.type = type;  // Type:
                        //   Typename if normal class,
-                       //   TemplateType if instantiated from TemplateClass
+                       //   TemplateType if instantiated from ClassTemplate
     this.traits = traits;  // [Type]
     this.fields = fields;  // [Field]
     this.methods = methods;  // [Method]
@@ -167,7 +167,7 @@ class MethodCall extends Expression {
 exports.Program = Program;
 exports.Ast = Ast;
 exports.Module = Module;
-exports.TemplateClass = TemplateClass;
+exports.ClassTemplate = ClassTemplate;
 exports.Class = Class;
 exports.Type = Type;
 exports.Typename = Typename;
