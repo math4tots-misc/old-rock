@@ -91,7 +91,7 @@ class Method extends Ast {
     this.returnType = returnType;  // Type
     this.name = name;  // string
     this.args = args;  // [Field]  # HACK: Don't reuse Field for Argument.
-    this.body = body;  // Block
+    this.body = body;  // Block|null
   }
 }
 

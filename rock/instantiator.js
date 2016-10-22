@@ -93,7 +93,9 @@ class Instantiator {
         this.instantiateType(returnType, callTokens, mappings);
     const args = this.args.map(
         field => this.instantiateField(field, callTokens, mappings));
-    const body = this.instantiateStatement(body, callTokens, mappings);
+    const body =
+        node.body ?
+        this.instantiateStatement(node.body, callTokens, mappings) : null;
     return new ast.Method(tokens, returnType, node.name, args, body);
   }
 

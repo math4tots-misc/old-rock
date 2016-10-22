@@ -199,7 +199,7 @@ class Parser {
     const type = this.parseType();
     const name = this.expect('NAME').value;
     const args = this.parseArguments();
-    const body = this.parseBlock();
+    const body = this.consume(';') ? null : this.parseBlock();
     return new ast.Method(tokens, type, name, args, body);
   }
   parseArguments() {
