@@ -1,0 +1,7 @@
+#include "rock/ast.hh"
+#include "rock/class.hh"
+#include "rock/file.hh"
+#include "rock/function.hh"
+#include "rock/scope.hh"
+#include "rock/string.hh"
+#include "rock/value.hh"
