@@ -37,6 +37,7 @@ class Class extends Ast {
     super(tokens);
     this.isExtern = isExtern;  // boolean
     this.isTrait = isTrait;  // boolean
+    this.name = type.name;  // string
     this.type = type;  // Type:
                        //   Typename if normal class,
                        //   TemplateType if instantiated from ClassTemplate
