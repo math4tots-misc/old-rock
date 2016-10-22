@@ -11,6 +11,7 @@ const keywords = [
   'package', 'import', 'as', 'extern', 'class', 'trait', 'with', 'final',
   'if', 'else', 'for', 'while', 'break', 'continue', 'return',
   'true', 'false', 'and', 'or',
+  'this',
 
   // unused but reserved
   'def', 'interface', 'do', 'null', 'goto', 'new', 'const', 'let', 'var',
@@ -100,8 +101,8 @@ class Lexer {
           this.i++;
           if (this.i >= this.s.length) {
             throw new RockError(
-                'Invalid escape',
-                [new Token('ERR', null, this.file, this.i)]);
+                [new Token('ERR', null, this.file, this.i)],
+                'Invalid escape');
           }
           switch (this.s[this.i]) {
           case 'n': value += '\n'; break;
@@ -111,8 +112,8 @@ class Lexer {
           case "'": value += '\''; break;
           default:
             throw new RockError(
-                'Invalid escape',
-                [new Token('ERR', null, this.file, this.i)]);
+                [new Token('ERR', null, this.file, this.i)],
+                'Invalid escape');
           }
           this.i++;
         } else {
@@ -122,8 +123,8 @@ class Lexer {
       }
       if (this.i >= this.s.length) {
         throw new RockError(
-            'Unfinished string literal',
-            [new Token('ERR', null, this.file, this.i)]);
+            [new Token('ERR', null, this.file, this.i)],
+            'Unfinished string literal');
       }
       this.i += quote.length;
       return new Token('STRING', value, this.file, j);
@@ -135,7 +136,7 @@ class Lexer {
       }
     }
     throw new RockError(
-        'Unrecognized token', [new Token('ERR', null, this.file, j)]);
+        [new Token('ERR', null, this.file, j)], 'Unrecognized token');
   }
   next() {
     const token = this.peek;

@@ -50,7 +50,7 @@ class Token {
 }
 
 class RockError extends Error {
-  constructor(message, tokens) {
+  constructor(tokens, message) {
     super(message +
           tokens.map(token => token.getLocationMessage()).join('') +
           '\n');

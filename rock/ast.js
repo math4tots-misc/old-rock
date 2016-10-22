@@ -1,5 +1,3 @@
-const {RockError} = require('./file.js');
-
 class Program {
   constructor(classes) {
     this.classes = classes;  // [Class]
@@ -125,6 +123,15 @@ class While extends Statement {
   }
 }
 
+class If extends Statement {
+  constructor(tokens, condition, body, other) {
+    super(tokens);
+    this.condition = condition;  // Expression
+    this.body = body;  // Block
+    this.other = other;  // Block|If|null
+  }
+}
+
 class Expression extends Statement {}
 
 class Int extends Expression {
@@ -141,12 +148,14 @@ class Float extends Expression {
   }
 }
 
-class Text extends Expression {
+class Str extends Expression {
   constructor(tokens, value) {
     super(tokens);
     this.value = value;
   }
 }
+
+class This extends Expression {}
 
 class Name extends Expression {
   constructor(tokens, name) {
@@ -161,6 +170,23 @@ class MethodCall extends Expression {
     this.owner = owner;  // Expression
     this.name = name;  // string
     this.args = args;  // [Expression]
+  }
+}
+
+class GetField extends Expression {
+  constructor(tokens, owner, name) {
+    super(tokens);
+    this.owner = owner;  // Expression
+    this.name = name;  // string
+  }
+}
+
+class SetField extends Expression {
+  constructor(tokens, owner, name, value) {
+    super(tokens);
+    this.owner = owner;  // Expression
+    this.name = name;  // string
+    this.value = value;  // Expression
   }
 }
 
@@ -180,9 +206,13 @@ exports.Return = Return;
 exports.Break = Break;
 exports.Continue = Continue;
 exports.While = While;
+exports.If = If;
 exports.Expression = Expression;
 exports.Int = Int;
 exports.Float = Float;
-exports.Text = Text;
+exports.Str = Str;
+exports.This = This;
 exports.Name = Name;
+exports.GetField = GetField;
+exports.SetField = SetField;
 exports.MethodCall = MethodCall;
