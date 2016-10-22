@@ -9,7 +9,7 @@ function unrecognized(tokens, kind, node) {
 /** Instantiates template classes into normal classes.
  *
  * Its constructor accepts an optional argument 'templateTypeCallback'.
- * This callback will get called with the TemplateType Asst node
+ * This callback will get called with the TemplateType Ast node
  * every time we encounter a template type.
  *
  * This is meant to be used by whoever is controlling the instantiation to
