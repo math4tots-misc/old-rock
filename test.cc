@@ -1,4 +1,4 @@
-// g++ test.cc --std=c++11 -Iinclude -Wall -Werror -Wpedantic && ./a.out 
+// g++ test.cc --std=c++11 -Iinclude -Wall -Werror -Wpedantic && ./a.out
 #include <iostream>
 #include "rock/all.hh"
 using namespace rock;
