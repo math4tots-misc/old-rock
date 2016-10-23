@@ -29,6 +29,7 @@ struct Nil final: Value {
 };
 
 Nil nil;  // TODO: cc
+P nilptr(&nil);  // TODO: cc
 
 inline P::P(): P(&nil) {}
 

@@ -4,26 +4,14 @@
 #include <vector>
 
 #include "rock/file.hh"
+#include "rock/result.hh"
 #include "rock/scope.hh"
 #include "rock/value/class.hh"
+#include "rock/value/exception.hh"
 #include "rock/value/string.hh"
 #include "rock/value/value.hh"
 
 namespace rock {
-
-constexpr long NORMAL = 1;
-constexpr long RETURN = 2;
-constexpr long BREAK = 3;
-constexpr long CONTINUE = 4;
-constexpr long EXCEPTION = 5;
-
-struct Result {
-  const long type;
-  const P value;
-
-  Result(long t): Result(t, P()) {}
-  Result(long t, P p): type(t), value(p) {}
-};
 
 struct Ast {
   const Token token;
@@ -65,9 +53,9 @@ struct Name final: Ast {
   Name(const Token& t, const std::string& n): Ast(t), name(n) {}
   Result eval(Scope& scope) override {
     if (!scope.has(name)) {
-      // TODO: Don't use string as exception
+      StackFrame sf(token);
       return Result(
-        EXCEPTION, String::from("No such variable: " + name));
+        EXCEPTION, new Exception("No such variable: " + name));
     }
     return Result(NORMAL, scope.get(name));
   }

@@ -13,6 +13,7 @@ struct Value {
 
   virtual Class& getClass() const=0;
   virtual size_t hash()=0;
+  virtual bool equals(Value *other) { return this == other; }
   virtual ~Value() {}
 };
 
@@ -45,6 +46,9 @@ struct P final {
     return *this;
   }
   Value *operator->() const { return ptr; }
+  bool operator==(const P& p) {
+    return ptr->equals(p);
+  }
 };
 
 }
