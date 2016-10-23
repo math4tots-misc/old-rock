@@ -27,37 +27,26 @@ struct Value {
   void incref() {
     refcnt++;
   }
-
   virtual std::unordered_map<std::string,Method>* getMeta()=0;
-
+  /** NOTE: Whoever calls 'call' should guarantee that 'this' and
+   * every element of 'args' is owned by the caller. Otherwise objects
+   * may be freed early and lead to weird behavior.
+   */
   Result call(const std::string& name, const std::vector<Value*>& args) {
-    incref();
-    for (Value *arg: args) {
-      arg->incref();
-    }
     auto meta = getMeta();
     auto pair = meta->find(name);
     if (pair == meta->end()) {
-      decref();  // TODO: Factor
-      for (Value *arg: args) {
-        arg->decref();
-      }
-      return Result(EXCEPTION, "No such method: " + name);
+      return Result(EXCEPTION, new Exception("No such method: " + name));
     }
-    Result result = pair->second->call(args);
-    decref();  // TODO: Factor
-    for (Value *arg: args) {
-      arg->decref();
-    }
-    return result;
+    return pair->second->call(args);
   }
 };
 }
 
 namespace std {
 template <>
-struct hash<rock::P> {
-  size_t operator()(const rock::P& p) const {
+struct hash<rock::Value*> {
+  size_t operator()(rock::Value* p) const {
     return p->hash();
   }
 };
