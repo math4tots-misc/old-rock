@@ -1,7 +1,7 @@
-#ifndef rock_class_hh
-#define rock_class_hh
+#ifndef rock_value_class_hh
+#define rock_value_class_hh
 
-#include "rock/value.hh"
+#include "rock/value/value.hh"
 
 namespace rock {
 
@@ -34,4 +34,4 @@ inline P::P(): P(&nil) {}
 
 }
 
-#endif//rock_class_hh
+#endif//rock_value_class_hh

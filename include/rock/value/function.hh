@@ -1,9 +1,9 @@
-#ifndef rock_function_hh
-#define rock_function_hh
+#ifndef rock_value_function_hh
+#define rock_value_function_hh
 
 #include <vector>
 
-#include "rock/class.hh"
+#include "rock/value/class.hh"
 
 namespace rock {
 
@@ -14,4 +14,4 @@ struct Function: Value {
 
 }
 
-#endif//rock_function_hh
+#endif//rock_value_function_hh

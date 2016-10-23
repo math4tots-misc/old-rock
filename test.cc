@@ -9,6 +9,7 @@ int main() {
   Token t(nullptr, 0);
   Ast *b = new Block(t, std::vector<Ast*>({}));
   Scope scope;
-  P result = b->eval(scope);
-  cout << (result.ptr == &nil) << endl;
+  Result result = b->eval(scope);
+  cout << (result.type == NORMAL) << endl;
+  cout << (result.value.ptr == &nil) << endl;
 }

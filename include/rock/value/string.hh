@@ -1,7 +1,7 @@
-#ifndef rock_string_hh
-#define rock_string_hh
+#ifndef rock_value_string_hh
+#define rock_value_string_hh
 
-#include "rock/class.hh"
+#include "rock/value/class.hh"
 
 namespace rock {
 
@@ -19,4 +19,4 @@ struct String final: Value {
 
 }
 
-#endif//rock_string_hh
+#endif//rock_value_string_hh

@@ -1,5 +1,5 @@
-#ifndef rock_value_hh
-#define rock_value_hh
+#ifndef rock_value_value_hh
+#define rock_value_value_hh
 
 #include <unordered_map>
 #include <string>
@@ -58,4 +58,4 @@ struct hash<rock::P> {
 };
 }
 
-#endif//rock_value_hh
+#endif//rock_value_value_hh
