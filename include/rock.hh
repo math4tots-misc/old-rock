@@ -70,6 +70,7 @@ void release(Value *v);
  */
 struct Reference final {
   Value *pointer;
+  Reference();  // NOTE: sets pointer to 'nil', NOT 'nullptr'
   Reference(Value *p): pointer(p) { acquire(pointer); }
   Reference(const Reference& r): Reference(r.pointer) {}
   ~Reference() { release(pointer); }
@@ -99,28 +100,88 @@ struct Result final {
 struct Value {
   long reference_count = 0;
   virtual ~Value() {}
-  virtual Class *getClass()=0;
+  virtual Class *getClass() noexcept=0;
 };
 
 struct Class final: Value {
   std::map<std::string,Method*> method_table;
-  Class *getClass() override { return classClass; }
+  Class *getClass() noexcept override { return classClass; }
 };
 
 struct Exception final: Value {
   const std::string message;
   Exception(const std::string& m): message(m) {}  // TODO: stacktrace
-  Class *getClass() override { return classException; }
+  Class *getClass() noexcept override { return classException; }
 };
 
 struct Nil final: Value {
-  Class *getClass() override { return classNil; }
+  Class *getClass() noexcept override { return classNil; }
 };
 
 struct String final: Value {
   const std::string value;
   String(const std::string& s): value(s) {}
-  Class *getClass() override { return classString; }
+  Class *getClass() noexcept override { return classString; }
+};
+
+//** scope
+
+struct Scope final {
+  Scope *const parent;
+  std::map<std::string, Reference> bindings;
+  Scope(Scope *p): parent(p) {}
+  Result get(const std::string& name) const noexcept {
+    auto pair = bindings.find(name);
+    if (pair != bindings.end()) {
+      return Result(NORMAL, pair->second);
+    }
+    if (!parent) {
+      return Result(EXCEPTION, new Exception("No such variable: " + name));
+    }
+    return parent->get(name);
+  }
+  Result set(const std::string& name, Reference value) noexcept {
+    auto pair = bindings.find(name);
+    if (pair != bindings.end()) {
+      bindings[name] = value;
+      return Result(NORMAL, value);
+    }
+    if (!parent) {
+      return Result(EXCEPTION, new Exception("No scuh variable: " + name));
+    }
+    return parent->set(name, value);
+  }
+  Result declare(const std::string& name, Reference value) noexcept {
+    auto pair = bindings.find(name);
+    if (pair != bindings.end()) {
+      return Result(
+          EXCEPTION, new Exception("Variable already declared: " + name));
+    }
+    bindings[name] = value;
+    return Result(NORMAL, value);
+  }
+};
+
+//** ast
+
+struct Ast {
+  Token *const token;
+  Ast(Token *t): token(t) {}
+  virtual Result eval(Scope *scope) const noexcept=0;
+};
+
+struct Literal final: Ast {
+  Reference value;
+  Literal(Token *t, Reference v): Ast(t), value(v) {}
+  Result eval(Scope *scope) const noexcept {
+    return Result(NORMAL, value);
+  }
+};
+
+struct Name final: Ast {
+  const std::string name;
+  Name(Token *t, const std::string& n): Ast(t), name(n) {}
+  Result eval(Scope *scope) const noexcept { return scope->get(name); }
 };
 
 }

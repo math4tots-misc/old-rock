@@ -5,4 +5,7 @@ using namespace std;
 using namespace rock;
 
 int main() {
+  Ast *literal = new Literal(nullptr, new String("Foo"));
+  Result result = literal->eval(nullptr);
+  cout << (result.type == NORMAL) << endl;
 }

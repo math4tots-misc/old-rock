@@ -15,6 +15,7 @@ Reference classNilReference(classNil);
 Reference classStringReference(classString);
 
 Nil *nil = new Nil();
+Reference nilReference(nil);
 
 void acquire(Value *v) {
   v->reference_count++;
@@ -26,6 +27,8 @@ void release(Value *v) {
     delete v;
   }
 }
+
+Reference::Reference(): Reference(nil) {}
 
 Result Reference::call(const std::string& name, const Args& args) const {
   Class *cls = pointer->getClass();
