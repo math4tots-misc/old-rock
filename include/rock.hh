@@ -23,6 +23,9 @@ constexpr long RETURN = 3;
 constexpr long BREAK = 4;
 constexpr long CONTINUE = 5;
 
+extern Class *classClass;
+extern Class *classException;
+
 void acquire(Value *v);
 void release(Value *v);
 
@@ -52,51 +55,16 @@ struct Value {
   virtual Class *getClass()=0;
 };
 
-extern Class *classClass;
-
 struct Class final: Value {
   std::map<std::string,Method*> method_table;
   Class *getClass() override { return classClass; }
 };
-
-extern Class *classException;
 
 struct Exception final: Value {
   const std::string message;
   Exception(const std::string& m): message(m) {}  // TODO: stacktrace
   Class *getClass() override { return classException; }
 };
-
-// --- cc ---
-
-Class *classClass = new Class();
-static Reference classClassReference(classClass);
-
-Class *classException = new Class();
-static Reference classExceptionReference(classException);
-
-void acquire(Value *v) {
-  v->reference_count++;
-}
-
-void release(Value *v) {
-  v->reference_count--;
-  if (v->reference_count <= 0) {
-    delete v;
-  }
-}
-
-Result Reference::call(const std::string& name, const Args& args) const {
-  Class *cls = pointer->getClass();
-  auto pair = cls->method_table.find(name);
-  if (pair == cls->method_table.end()) {
-    return Result(
-        EXCEPTION,
-        Reference(new Exception("No such method: " + name)));
-  }
-  Method *method = pair->second;
-  return (*method)(*this, args);
-}
 
 }
 
