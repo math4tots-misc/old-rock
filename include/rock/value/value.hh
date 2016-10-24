@@ -14,6 +14,8 @@ struct Method {
   virtual Result call(Value* owner, const std::vector<Value*>& args)=0;
 };
 
+struct Class;
+
 struct Value {
   long refcnt = 0;
 
@@ -27,6 +29,7 @@ struct Value {
   void incref() {
     refcnt++;
   }
+  virtual Class *getClass()=0;
   virtual std::unordered_map<std::string,Method>* getMeta()=0;
   /** NOTE: Whoever calls 'call' should guarantee that 'this' and
    * every element of 'args' is owned by the caller. Otherwise objects
