@@ -1,10 +1,16 @@
 #include "rock.hh"
 namespace rock {
 
+//** stack
+std::vector<Token*> stack;
+
+//** core
 Class *classClass = new Class();
 Class *classException = new Class();
+Class *classString = new Class();
 Reference classClassReference(classClass);
 Reference classExceptionReference(classException);
+Reference classStringReference(classString);
 
 void acquire(Value *v) {
   v->reference_count++;

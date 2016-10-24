@@ -8,11 +8,40 @@
 
 namespace rock {
 
+//** file
+
+struct File {
+  const std::string path, contents;
+  File(const std::string& p, const std::string& c): path(p), contents(c) {}
+};
+
+struct Token {
+  File *const file;
+  const long position;
+  Token(File *const f, long p): file(f), position(p) {}
+};
+
+//** stack
+
+extern std::vector<Token*> stack;
+
+struct StackFrame {
+  StackFrame(Token *t) {
+    stack.push_back(t);
+  }
+  ~StackFrame() {
+    stack.pop_back();
+  }
+};
+
+//** core
+
 struct Reference;
 struct Result;
 struct Value;
 struct Class;
 struct Exception;
+struct String;
 
 using Args = std::vector<Reference>;
 using Method = std::function<Result(const Reference&, const Args&)>;
@@ -25,10 +54,16 @@ constexpr long CONTINUE = 5;
 
 extern Class *classClass;
 extern Class *classException;
+extern Class *classString;
 
 void acquire(Value *v);
 void release(Value *v);
 
+/** Reference is basically a pointer to a Value with reference counting.
+ * The main way to interact with a reference is by calling methods on it
+ * using the 'call' method.
+ * The other main thing you can do is to directly access the Value pointer.
+ */
 struct Reference final {
   Value *pointer;
   Reference(Value *p): pointer(p) { acquire(pointer); }
@@ -43,12 +78,20 @@ struct Reference final {
   Result call(const std::string& name, const Args& args) const;
 };
 
+/** The Result type is the result of any calculation performed in Rock.
+ * We don't return just the Reference because there may be additional
+ * context associated with it, e.g. whether we are returning an EXCEPTION.
+ * If the result is just the value itself, type should be NORMAL.
+ */
 struct Result final {
   const long type;
   const Reference value;
   Result(long t, Reference r): type(t), value(r) {}
 };
 
+/** Value is the base class of all objects that are manipulated in a Rock
+ * program.
+ */
 struct Value {
   long reference_count = 0;
   virtual ~Value() {}
@@ -64,6 +107,12 @@ struct Exception final: Value {
   const std::string message;
   Exception(const std::string& m): message(m) {}  // TODO: stacktrace
   Class *getClass() override { return classException; }
+};
+
+struct String final: Value {
+  const std::string value;
+  String(const std::string& s): value(s) {}
+  Class *getClass() override { return classString; }
 };
 
 }
