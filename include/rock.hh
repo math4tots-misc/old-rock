@@ -41,6 +41,7 @@ struct Result;
 struct Value;
 struct Class;
 struct Exception;
+struct Nil;
 struct String;
 
 using Args = std::vector<Reference>;
@@ -54,7 +55,10 @@ constexpr long CONTINUE = 5;
 
 extern Class *classClass;
 extern Class *classException;
+extern Class *classNil;
 extern Class *classString;
+
+extern Nil *nil;
 
 void acquire(Value *v);
 void release(Value *v);
@@ -107,6 +111,10 @@ struct Exception final: Value {
   const std::string message;
   Exception(const std::string& m): message(m) {}  // TODO: stacktrace
   Class *getClass() override { return classException; }
+};
+
+struct Nil final: Value {
+  Class *getClass() override { return classNil; }
 };
 
 struct String final: Value {
