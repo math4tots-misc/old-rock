@@ -70,10 +70,10 @@ struct Exception final: Value {
 // --- cc ---
 
 Class *classClass = new Class();
-Reference classClassReference(classClass);
+static Reference classClassReference(classClass);
 
 Class *classException = new Class();
-Reference classExceptionReference(classException);
+static Reference classExceptionReference(classException);
 
 void acquire(Value *v) {
   v->reference_count++;
