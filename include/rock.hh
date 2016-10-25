@@ -176,6 +176,20 @@ struct Ast {
   virtual Result eval(Scope *scope) const noexcept=0;
 };
 
+struct Module final: Ast {
+  std::vector<Ast*> expressions;
+  Module(Token *t, const std::vector<Ast*>& es): Ast(t), expressions(es) {}
+  Result eval(Scope *scope) const noexcept {
+    for (Ast *e: expressions) {
+      Result result = e->eval(scope);
+      if (result.type != NORMAL) {
+        return result;
+      }
+    }
+    return Result(NORMAL, nil);
+  }
+};
+
 struct Block final: Ast {
   std::vector<Ast*> expressions;
   Block(Token *t, const std::vector<Ast*>& es): Ast(t), expressions(es) {}
