@@ -177,7 +177,7 @@ struct Ast {
 };
 
 struct Module final: Ast {
-  std::vector<Ast*> expressions;
+  const std::vector<Ast*> expressions;
   Module(Token *t, const std::vector<Ast*>& es): Ast(t), expressions(es) {}
   Result eval(Scope *scope) const noexcept {
     for (Ast *e: expressions) {
@@ -191,7 +191,7 @@ struct Module final: Ast {
 };
 
 struct Block final: Ast {
-  std::vector<Ast*> expressions;
+  const std::vector<Ast*> expressions;
   Block(Token *t, const std::vector<Ast*>& es): Ast(t), expressions(es) {}
   Result eval(Scope *parentScope) const noexcept {
     Scope scope(parentScope);
@@ -218,6 +218,26 @@ struct Name final: Ast {
   const std::string name;
   Name(Token *t, const std::string& n): Ast(t), name(n) {}
   Result eval(Scope *scope) const noexcept { return scope->get(name); }
+};
+
+struct Declare final: Ast {
+  const std::string name;
+  Ast *const value;
+  Declare(Token *t, Ast *const v): Ast(t), value(v) {}
+  Result eval(Scope *scope) const noexcept {
+    Result r = value->eval(scope);
+    return r.type == NORMAL ? scope->declare(name, r.value) : r;
+  }
+};
+
+struct Assign final: Ast {
+  const std::string name;
+  Ast *const value;
+  Assign(Token *t, Ast *const v): Ast(t), value(v) {}
+  Result eval(Scope *scope) const noexcept {
+    Result r = value->eval(scope);
+    return r.type == NORMAL ? scope->set(name, r.value) : r;
+  }
 };
 
 //** lexer
