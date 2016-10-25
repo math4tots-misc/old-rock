@@ -53,6 +53,22 @@ int main() {
     assert(tokens[3]->type == "EOF");
   }
 
+  {
+    File file("<test>", "'Hello world!'");
+    Ast *a = parse("Expression", &file);
+    assert(a);
+    assert(!a->isError());
+    Literal *lit = dynamic_cast<Literal*>(a);
+    assert(lit);
+    String *str = dynamic_cast<String*>(lit->value.pointer);
+    assert(str);
+    assert(str->value == "Hello world!");
+
+    Scope scope;
+    Result result = a->eval(&scope);
+    assert(result.type == NORMAL);
+    assert(result.value.pointer == str);
+  }
 
   cout << "Tests pass!" << endl;
 }

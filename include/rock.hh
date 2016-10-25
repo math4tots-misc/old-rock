@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cctype>
 #include <functional>
+#include <iostream>
 #include <map>
 #include <set>
 #include <string>
@@ -62,6 +63,7 @@ constexpr long CONTINUE = 5;
 extern Class *classClass;
 extern Class *classException;
 extern Class *classNil;
+extern Class *classNumber;
 extern Class *classString;
 
 extern Nil *nil;
@@ -106,28 +108,34 @@ struct Result final {
 struct Value {
   long reference_count = 0;
   virtual ~Value() {}
-  virtual Class *getClass() noexcept=0;
+  virtual Class *getClass()=0;
 };
 
 struct Class final: Value {
   std::map<std::string,Method*> method_table;
-  Class *getClass() noexcept override { return classClass; }
+  Class *getClass() override { return classClass; }
 };
 
 struct Exception final: Value {
   const std::string message;
   Exception(const std::string& m): message(m) {}  // TODO: stacktrace
-  Class *getClass() noexcept override { return classException; }
+  Class *getClass() override { return classException; }
 };
 
 struct Nil final: Value {
-  Class *getClass() noexcept override { return classNil; }
+  Class *getClass() override { return classNil; }
+};
+
+struct Number final: Value {
+  const double value;
+  Number(double v): value(v) {}
+  Class *getClass() override { return classNumber; }
 };
 
 struct String final: Value {
   const std::string value;
   String(const std::string& s): value(s) {}
-  Class *getClass() noexcept override { return classString; }
+  Class *getClass() override { return classString; }
 };
 
 //** scope
@@ -135,8 +143,9 @@ struct String final: Value {
 struct Scope final {
   Scope *const parent;
   std::map<std::string, Reference> bindings;
+  Scope(): Scope(nullptr) {}
   Scope(Scope *p): parent(p) {}
-  Result get(const std::string& name) const noexcept {
+  Result get(const std::string& name) const {
     auto pair = bindings.find(name);
     if (pair != bindings.end()) {
       return Result(NORMAL, pair->second);
@@ -146,7 +155,7 @@ struct Scope final {
     }
     return parent->get(name);
   }
-  Result set(const std::string& name, Reference value) noexcept {
+  Result set(const std::string& name, Reference value) {
     auto pair = bindings.find(name);
     if (pair != bindings.end()) {
       bindings[name] = value;
@@ -157,7 +166,7 @@ struct Scope final {
     }
     return parent->set(name, value);
   }
-  Result declare(const std::string& name, Reference value) noexcept {
+  Result declare(const std::string& name, Reference value) {
     auto pair = bindings.find(name);
     if (pair != bindings.end()) {
       return Result(
@@ -173,13 +182,22 @@ struct Scope final {
 struct Ast {
   Token *const token;
   Ast(Token *t): token(t) {}
-  virtual Result eval(Scope *scope) const noexcept=0;
+  virtual Result eval(Scope *scope) const=0;
+  virtual bool isError() const { return false; }
+};
+
+struct ParseError final: Ast {
+  const std::string message;
+  ParseError(Token *t, const std::string& m): Ast(t), message(m) {}
+  Result eval(Scope *scope) const override { return Result(EXCEPTION, nil); }
+  bool isError() const override { return true; }
 };
 
 struct Module final: Ast {
   const std::vector<Ast*> expressions;
-  Module(Token *t, const std::vector<Ast*>& es): Ast(t), expressions(es) {}
-  Result eval(Scope *scope) const noexcept {
+  Module(Token *t, const std::vector<Ast*>& es):
+      Ast(t), expressions(es) {}
+  Result eval(Scope *scope) const {
     for (Ast *e: expressions) {
       Result result = e->eval(scope);
       if (result.type != NORMAL) {
@@ -192,8 +210,9 @@ struct Module final: Ast {
 
 struct Block final: Ast {
   const std::vector<Ast*> expressions;
-  Block(Token *t, const std::vector<Ast*>& es): Ast(t), expressions(es) {}
-  Result eval(Scope *parentScope) const noexcept {
+  Block(Token *t, const std::vector<Ast*>& es):
+      Ast(t), expressions(es) {}
+  Result eval(Scope *parentScope) const {
     Scope scope(parentScope);
     Reference last(nil);
     for (Ast *e: expressions) {
@@ -209,7 +228,7 @@ struct Block final: Ast {
 struct Literal final: Ast {
   Reference value;
   Literal(Token *t, Reference v): Ast(t), value(v) {}
-  Result eval(Scope *scope) const noexcept {
+  Result eval(Scope *scope) const {
     return Result(NORMAL, value);
   }
 };
@@ -217,14 +236,14 @@ struct Literal final: Ast {
 struct Name final: Ast {
   const std::string name;
   Name(Token *t, const std::string& n): Ast(t), name(n) {}
-  Result eval(Scope *scope) const noexcept { return scope->get(name); }
+  Result eval(Scope *scope) const { return scope->get(name); }
 };
 
 struct Declare final: Ast {
   const std::string name;
   Ast *const value;
   Declare(Token *t, Ast *const v): Ast(t), value(v) {}
-  Result eval(Scope *scope) const noexcept {
+  Result eval(Scope *scope) const {
     Result r = value->eval(scope);
     return r.type == NORMAL ? scope->declare(name, r.value) : r;
   }
@@ -234,7 +253,7 @@ struct Assign final: Ast {
   const std::string name;
   Ast *const value;
   Assign(Token *t, Ast *const v): Ast(t), value(v) {}
-  Result eval(Scope *scope) const noexcept {
+  Result eval(Scope *scope) const {
     Result r = value->eval(scope);
     return r.type == NORMAL ? scope->set(name, r.value) : r;
   }
@@ -248,7 +267,8 @@ struct Lexer final {
   Token *last;
   bool doneFlag;
   std::vector<std::string> parenthesisStack;
-  Lexer(File *f): file(f), position(0), last(nullptr), doneFlag(false) {
+  Lexer(File *f):
+      file(f), position(0), last(nullptr), doneFlag(false) {
     last = extract();
   }
 
@@ -453,12 +473,102 @@ inline std::vector<Token*> lex(File *f) {
 
 struct Parser final {
   File *const file;
+  const std::vector<Token*> tokens;
   long position;
-  Parser(File *f): file(f), position(0) {}
+  Parser(File *f) : file(f), tokens(lex(f)), position(0) {}
+  ParseError *error(Token *t, const std::string& message) {
+    return new ParseError(t, message);
+  }
+  ParseError *error(const std::string& message) {
+    return error(peek(), message);
+  }
+  Token *peek() const {
+    return tokens[position];
+  }
+  Token *next() {
+    Token *t = peek();
+    position++;
+    return t;
+  }
+  bool at(const std::string& type) const {
+    return peek()->type == type;
+  }
+  bool consume(const std::string& type) {
+    if (at(type)) {
+      next();
+      return true;
+    }
+    return false;
+  }
+  void consumeStatementDelimiters() {
+    while (at("NEWLINE") || at(";")) {
+      next();
+    }
+  }
+  Ast *parseModule() {
+    Token *const token = peek();
+    std::vector<Ast*> exprs;
+    consumeStatementDelimiters();
+    while (!at("EOF")) {
+      Ast *e = parseExpression();
+      if (e->isError()) { return e; }
+      exprs.push_back(e);
+      consumeStatementDelimiters();
+    }
+    return new Module(token, exprs);
+  }
+  Ast *parseBlock() {
+    Token *const token = peek();
+    if (!at("{")) { return error("Expected open brace for Block"); } next();
+    std::vector<Ast*> exprs;
+    consumeStatementDelimiters();
+    while (!at("EOF")) {
+      Ast *e = parseExpression();
+      if (e->isError()) { return e; }
+      exprs.push_back(e);
+      consumeStatementDelimiters();
+    }
+    if (!at("}")) { return error("Expected close brace for Block"); } next();
+    return new Block(token, exprs);
+  }
   Ast *parseExpression() {
-    return nullptr;
+    return parsePrimaryExpression();
+  }
+  Ast *parsePrimaryExpression() {
+    if (consume("(")) {
+      Ast *expr = parseExpression();
+      if (expr->isError()) { return expr; }
+      if (!consume(")")) { return error("Expected close parenthesis"); }
+      return expr;
+    }
+    Token *t = peek();
+    if (at("NUMBER")) {
+      return new Literal(t, new Number(std::stod(next()->value)));
+    }
+    if (at("STRING")) {
+      return new Literal(t, new String(next()->value));
+    }
+    if (at("NAME")) {
+      return new Name(t, next()->value);
+    }
+    return error("Expected expression");
   }
 };
+
+inline Ast *parse(const std::string& type, File *file) {
+  Parser parser(file);
+  if (type == "Module") {
+    return parser.parseModule();
+  } else if (type == "Expression") {
+    return parser.parseExpression();
+  } else {
+    return parser.error("Unrecognized parse type: " + type);
+  }
+}
+
+inline Ast *parse(File *file) {
+  return parse("Module", file);
+}
 
 }
 

@@ -8,10 +8,12 @@ std::vector<Token*> stack;
 Class *classClass = new Class();
 Class *classException = new Class();
 Class *classNil = new Class();
+Class *classNumber = new Class();
 Class *classString = new Class();
 Reference classClassReference(classClass);
 Reference classExceptionReference(classException);
 Reference classNilReference(classNil);
+Reference classNumberReference(classNumber);
 Reference classStringReference(classString);
 
 Nil *nil = new Nil();
