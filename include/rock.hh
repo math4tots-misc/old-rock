@@ -206,13 +206,14 @@ struct Name final: Ast {
   Result eval(Scope *scope) const noexcept { return scope->get(name); }
 };
 
-//** lex
+//** lexer
 
 struct Lexer final {
   File *const file;
   long position;
   Token *last;
   bool doneFlag;
+  std::vector<std::string> parenthesisStack;
   Lexer(File *f): file(f), position(0), last(nullptr), doneFlag(false) {
     last = extract();
   }
@@ -261,8 +262,19 @@ private:
     }
     return true;
   }
+  // The rule for newline tokens:
+  // If the innermost grouping is '()' or '[]', newlines are ignored.
+  // If you are at the top level, or the innermost grouping is '{}',
+  // newline tokens are generated.
+  bool isSpace(char c) const {
+    return c == '\n' ?
+           !parenthesisStack.empty() && (
+              parenthesisStack.back() == "(" ||  // )
+              parenthesisStack.back() == "[") :  // ]
+           std::isspace(c);
+  }
   void skipWhitespace() {
-    while (std::isspace(ch())) {
+    while (isSpace(ch())) {
       position++;
     }
   }
@@ -273,16 +285,39 @@ private:
     std::vector<std::string> symbols({
       "(", ")", "[", "]", "{", "}", ";", "\\", ".",
     });
+    std::map<std::string, std::string> matches({
+      {"(", ")"},
+      {"[", "]"},
+      {"{", "}"},
+    });
+    std::set<std::string> openers({"(", "[", "{"});
+    std::set<std::string> closers({")", "]", "}"});
     std::sort(symbols.begin(), symbols.end());
     std::reverse(symbols.begin(), symbols.end());
 
     skipWhitespace();
 
     if (ch() == '\0') {
-      return new Token(file, position, "EOF");
+      if (!parenthesisStack.empty()) {
+        return new Token(
+            file, position, "ERR",
+            std::string("Mismatched parenthesis: ") +
+                parenthesisStack.back());
+      }
+      if (last && last->type == "NEWLINE") {
+        return new Token(file, position, "EOF");
+      } else {
+        return new Token(file, position, "NEWLINE");
+      }
     }
 
     const long p = position;
+
+    // NEWLINE
+    if (ch() == '\n') {
+      position++;
+      return new Token(file, p, "NEWLINE");
+    }
 
     // STRING
     if (startsWith("r'") || startsWith("'") ||
@@ -325,6 +360,15 @@ private:
     // SYMBOL
     for (const auto& symbol: symbols) {
       if (startsWith(symbol)) {
+        if (openers.find(symbol) != openers.end()) {
+          parenthesisStack.push_back(symbol);
+        } else if (closers.find(symbol) != closers.end()) {
+          if (matches[parenthesisStack.back()] != symbol) {
+            return new Token(file, p, "ERR", "Mismatched parenthesis");
+          } else {
+            parenthesisStack.pop_back();
+          }
+        }
         position += symbol.size();
         return new Token(file, p, symbol);
       }
@@ -370,6 +414,17 @@ inline std::vector<Token*> lex(File *f) {
   }
   return tokens;
 }
+
+//** parser
+
+struct Parser final {
+  File *const file;
+  long position;
+  Parser(File *f): file(f), position(0) {}
+  Ast *parseExpression() {
+    return nullptr;
+  }
+};
 
 }
 
