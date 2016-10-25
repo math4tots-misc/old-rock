@@ -1,9 +1,24 @@
 // g++ foo.cc src/rock.cc --std=c++11 -Iinclude -Wall -Werror -Wpedantic && ./a.out
 #include <iostream>
 #include <cassert>
+#include <typeinfo>
+#include <cxxabi.h>
+
 #include "rock.hh"
 using namespace std;
 using namespace rock;
+
+// static Result eval(Scope* scope, const std::string& code) {
+//   File file("<eval>", code);
+//   Result result = parse(&file)->eval(scope);
+//   return result;
+// }
+//
+// static Result eval(const std::string& code) {
+//   Scope scope;
+//   return eval(&scope, code);
+// }
+
 
 int main() {
   Ast *literal = new Literal(nullptr, new String("Foo"));
@@ -68,6 +83,56 @@ int main() {
     Result result = a->eval(&scope);
     assert(result.type == NORMAL);
     assert(result.value.pointer == str);
+  }
+
+  {
+    File file("<test>", "print('foo')");
+    Ast *a = parse(&file);
+    assert(a);
+    assert(!a->isError());
+    // cout << dynamic_cast<ParseError*>(a)->message << endl;
+    {
+      Scope scope;
+      Result result = a->eval(&scope);
+      assert(result.type == EXCEPTION);
+      assert(dynamic_cast<Exception*>(result.value.pointer)->message ==
+             "No such variable: print");
+    }
+  }
+
+  {
+    File file("<test>", "'foo'.add('bar')");
+    Ast *a = parse(&file);
+    assert(a);
+    assert(!a->isError());
+    // cout << dynamic_cast<ParseError*>(a)->message << endl;
+    {
+      Scope scope;
+      Result result = a->eval(&scope);
+      assert(result.type == EXCEPTION);
+      assert(dynamic_cast<Exception*>(result.value.pointer)->message ==
+             "No such method: add");
+    }
+  }
+
+  {
+    File file("<test>", "{ 5; 6 }");
+    Ast *a = parse("Expression", &file);
+    assert(a);
+    assert(!a->isError());
+    // cout << dynamic_cast<ParseError*>(a)->message << endl;
+    {
+      Scope scope;
+      assert(dynamic_cast<Block*>(a));
+      Result result = a->eval(&scope);
+      assert(result.type == NORMAL);
+      Number *n = dynamic_cast<Number*>(result.value.pointer);
+      assert(n);
+      assert(n->value == 6);
+      // assert(result.type == EXCEPTION);
+      // assert(dynamic_cast<Exception*>(result.value.pointer)->message ==
+      //        "No such method: add");
+    }
   }
 
   cout << "Tests pass!" << endl;

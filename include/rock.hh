@@ -220,6 +220,7 @@ struct Block final: Ast {
       if (result.type != NORMAL) {
         return result;
       }
+      last = result.value;
     }
     return Result(NORMAL, last);
   }
@@ -256,6 +257,27 @@ struct Assign final: Ast {
   Result eval(Scope *scope) const {
     Result r = value->eval(scope);
     return r.type == NORMAL ? scope->set(name, r.value) : r;
+  }
+};
+
+struct MethodCall final: Ast {
+  Ast *owner;
+  const std::string name;
+  std::vector<Ast*> args;
+  MethodCall(
+      Token *t, Ast *onr, const std::string& n, const std::vector<Ast*>& aa):
+      Ast(t), owner(onr), name(n), args(aa) {}
+  Result eval(Scope *scope) const {
+    std::vector<Reference> args;
+    Result ownerResult = this->owner->eval(scope);
+    if (ownerResult.type != NORMAL) { return ownerResult; }
+    Reference owner = ownerResult.value;
+    for (Ast *arg: this->args) {
+      Result r = arg->eval(scope);
+      if (r.type != NORMAL) { return r; }
+      args.push_back(r.value);
+    }
+    return owner.call(name, args);
   }
 };
 
@@ -471,6 +493,14 @@ inline std::vector<Token*> lex(File *f) {
 
 //** parser
 
+struct MaybeExpressionList {
+  const std::vector<Ast*> expressions;
+  Ast *error;
+  MaybeExpressionList(Ast *e): error(e) {}
+  MaybeExpressionList(const std::vector<Ast*>& es):
+      expressions(es), error(nullptr) {}
+};
+
 struct Parser final {
   File *const file;
   const std::vector<Token*> tokens;
@@ -510,7 +540,7 @@ struct Parser final {
     std::vector<Ast*> exprs;
     consumeStatementDelimiters();
     while (!at("EOF")) {
-      Ast *e = parseExpression();
+      Ast *e = parseStatement();
       if (e->isError()) { return e; }
       exprs.push_back(e);
       consumeStatementDelimiters();
@@ -522,17 +552,65 @@ struct Parser final {
     if (!at("{")) { return error("Expected open brace for Block"); } next();
     std::vector<Ast*> exprs;
     consumeStatementDelimiters();
-    while (!at("EOF")) {
-      Ast *e = parseExpression();
+    while (!consume("}")) {
+      Ast *e = parseStatement();
       if (e->isError()) { return e; }
       exprs.push_back(e);
       consumeStatementDelimiters();
     }
-    if (!at("}")) { return error("Expected close brace for Block"); } next();
     return new Block(token, exprs);
   }
+  Ast *parseStatement() {
+    Ast *e = parseExpression();
+    // {
+    if (!at("NEWLINE") && !at(";") && !at("}")) {
+      return error(
+          "Expected NEWLINE, ';' or close brace to delimit end of statement "
+          "but found: " + peek()->type);
+    }
+    return e;
+  }
   Ast *parseExpression() {
-    return parsePrimaryExpression();
+    return parsePostfixExpression();
+  }
+  MaybeExpressionList parseExpressionList(
+      const std::string& open, const std::string& close) {
+    if (!consume(open)) { return error("Expected " + open); }
+    std::vector<Ast*> exprs;
+    while (!consume(close)) {
+      Ast *e = parseExpression();
+      if (e->isError()) { return e; }
+      exprs.push_back(e);
+    }
+    return exprs;
+  }
+  Ast *parsePostfixExpression() {
+    Ast *e = parsePrimaryExpression();
+    while (true) {
+      Token *t = peek();
+      if (at("(")) {  // )
+        MaybeExpressionList mexprlist = parseExpressionList("(", ")");
+        if (mexprlist.error) { return mexprlist.error; }
+        e = new MethodCall(t, e, "__call", mexprlist.expressions);
+      } else if (consume(".")) {
+        if (!at("NAME")) { return error("Expected name"); }
+        const std::string name = next()->value;
+        if (at("(")) {  // )
+          MaybeExpressionList mexprlist = parseExpressionList("(", ")");
+          if (mexprlist.error) { return mexprlist.error; }
+          e = new MethodCall(t, e, name, mexprlist.expressions);
+        } else if (at("=")) {
+          Ast *v = parseExpression();
+          if (v->isError()) { return v; }
+          e = new MethodCall(t, e, "__set_" + name, {v});
+        } else {
+          e = new MethodCall(t, e, "__get_" + name, {});
+        }
+      } else {
+        break;
+      }
+    }
+    return e;
   }
   Ast *parsePrimaryExpression() {
     if (consume("(")) {
@@ -551,7 +629,10 @@ struct Parser final {
     if (at("NAME")) {
       return new Name(t, next()->value);
     }
-    return error("Expected expression");
+    if (at("{")) {  // }
+      return parseBlock();
+    }
+    return error("Expected expression but found: " + peek()->type);
   }
 };
 
