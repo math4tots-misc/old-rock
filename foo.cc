@@ -1,23 +1,24 @@
 // g++ foo.cc src/rock.cc --std=c++11 -Iinclude -Wall -Werror -Wpedantic && ./a.out
 #include <iostream>
 #include <cassert>
-#include <typeinfo>
-#include <cxxabi.h>
 
 #include "rock.hh"
 using namespace std;
 using namespace rock;
 
-// static Result eval(Scope* scope, const std::string& code) {
-//   File file("<eval>", code);
-//   Result result = parse(&file)->eval(scope);
-//   return result;
-// }
-//
-// static Result eval(const std::string& code) {
-//   Scope scope;
-//   return eval(&scope, code);
-// }
+static Result eval(Scope* scope, const std::string& code) {
+  File file("<eval>", code);
+  Ast *node = parse("Expression", &file);
+  Result result = node->eval(scope);
+  return result;
+}
+
+static Result eval(const std::string& code) {
+  Scope *scope = makeGlobalScope();
+  Result result = eval(scope, code);
+  delete scope;
+  return result;
+}
 
 
 int main() {
@@ -133,6 +134,19 @@ int main() {
       // assert(dynamic_cast<Exception*>(result.value.pointer)->message ==
       //        "No such method: add");
     }
+  }
+
+  {
+    Result result = eval("String");
+    assert(result.type == NORMAL);
+    Class *c = dynamic_cast<Class*>(result.value.pointer);
+    assert(c);
+    assert(c == classString);
+  }
+
+  {
+    Result result = eval("print('Hello world!')");
+    assert(result.type == NORMAL);
   }
 
   cout << "Tests pass!" << endl;

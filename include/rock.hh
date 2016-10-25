@@ -50,6 +50,7 @@ struct Class;
 struct Exception;
 struct Nil;
 struct String;
+struct NativeFunction;
 
 using Args = std::vector<Reference>;
 using Method = std::function<Result(const Reference&, const Args&)>;
@@ -65,6 +66,7 @@ extern Class *classException;
 extern Class *classNil;
 extern Class *classNumber;
 extern Class *classString;
+extern Class *classNativeFunction;
 
 extern Nil *nil;
 
@@ -112,7 +114,7 @@ struct Value {
 };
 
 struct Class final: Value {
-  std::map<std::string,Method*> method_table;
+  std::map<std::string,Method> method_table;
   Class *getClass() override { return classClass; }
 };
 
@@ -136,6 +138,12 @@ struct String final: Value {
   const std::string value;
   String(const std::string& s): value(s) {}
   Class *getClass() override { return classString; }
+};
+
+struct NativeFunction final: Value {
+  const std::function<Result(const Args&)> function;
+  NativeFunction(std::function<Result(const Args&)> f): function(f) {}
+  Class *getClass() override { return classNativeFunction; }
 };
 
 //** scope
@@ -176,6 +184,8 @@ struct Scope final {
     return Result(NORMAL, value);
   }
 };
+
+Scope *makeGlobalScope();
 
 //** ast
 
