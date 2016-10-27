@@ -2,6 +2,8 @@
 
 namespace rock {
 
+Reference<Class> classValue(new Class("Value"));
+
 Result<Ref> Value::call(const std::string& name, const Args& args) {
   Reference<Class> cls = getClass();
   auto pair = cls->method_table.find(name);

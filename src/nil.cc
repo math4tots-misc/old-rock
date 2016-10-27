@@ -2,7 +2,7 @@
 
 namespace rock {
 
-Reference<Class> classNil(new Class("Nil"));
+Reference<Class> classNil(new Class("Nil", {classValue}));
 Reference<Nil> nil(new Nil);
 
 }
