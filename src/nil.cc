@@ -1,11 +1,8 @@
-#include "rock/nil.hh"
-
-#include "rock/class.hh"
+#include "rock/all.hh"
 
 namespace rock {
 
-Class *classNil = new Class("Nil");
-Reference clasNilReference(classNil);
-Nil *nil = new Nil();
+Reference<Class> classNil(new Class("Nil"));
+Reference<Nil> nil(new Nil);
 
 }

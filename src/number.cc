@@ -1,10 +1,7 @@
-#include "rock/number.hh"
-
-#include "rock/class.hh"
+#include "rock/all.hh"
 
 namespace rock {
 
-Class *classNumber = new Class("Number");
-Reference clasNumberReference(classNumber);
+Reference<Class> classNumber(new Class("Number"));
 
 }

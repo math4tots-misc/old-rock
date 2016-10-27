@@ -1,8 +1,7 @@
-#include "rock/class.hh"
+#include "rock/all.hh"
 
 namespace rock {
 
-Class *classClass = new Class("Class");
-Reference clasClassReference(classClass);
+Reference<Class> classClass(new Class("Class"));
 
 }
