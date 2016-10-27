@@ -11,8 +11,11 @@ struct Class;
 struct Reference;
 using Args = std::vector<Reference>;
 
+extern std::vector<Reference> vals;
+
 struct Value {
   long reference_count = 0;
+  Value();
   virtual ~Value() {}
   virtual Class *getClass()=0;
 

@@ -8,5 +8,8 @@ int main() {
   // Scope *globals = makeGlobals();
   cout << "AAA" << eval("print('hi')").debugstr() << "BBBB" << endl;
   cout << "foo" << endl;
+  for (Reference r: vals) {
+    cout << r.debugstr() << endl;
+  }
   // eval(globals, "print('hi')");
 }
