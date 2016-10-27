@@ -32,13 +32,15 @@ struct Module final: Ast {
   Module(Token *t, const std::vector<Ast*>& es):
       Ast(t), expressions(es) {}
   Result<Ref> eval(Scope *scope) const {
+    Ref last(nil);
     for (Ast *e: expressions) {
       Result<Ref> result = e->eval(scope);
       if (result.type != NORMAL) {
         return result;
       }
+      last = result.value;
     }
-    return Result<Ref>(NORMAL, nil);
+    return Result<Ref>(NORMAL, last);
   }
 };
 

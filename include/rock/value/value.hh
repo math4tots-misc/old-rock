@@ -23,6 +23,8 @@ using Method = std::function<Result<Ref>(Ref, Args)>;
 struct Value: ReferenceCounted {
   virtual ~Value() {}
   virtual Reference<Class> getClass() const=0;
+
+  // Call a rock method.
   Result<Ref> call(const std::string& name, const Args& args);
 };
 

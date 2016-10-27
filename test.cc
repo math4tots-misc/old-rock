@@ -24,5 +24,15 @@ int main() {
     assert(result.value->debugstr() == "Number(714.000000)");
   }
 
+  {
+    Scope scope(nullptr);
+    File file("<test>", "'hello world!'");
+    Ast *node = parse(&file);
+    Result<Ref> result = node->eval(&scope);
+    assert(result.type == NORMAL);
+    cout << result.value->debugstr() << endl;
+    assert(result.value->debugstr() == "String(hello world!)");
+  }
+
   cout << "tests pass!" << endl;
 }
