@@ -7,6 +7,9 @@
 namespace rock {
 
 struct Class;
+struct Value;
+
+using Ref = Reference<Value>;
 
 /**
  * Base class for rock objects.
