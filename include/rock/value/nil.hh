@@ -5,6 +5,7 @@
 #include <map>
 
 #include "rock/value/value.hh"
+#include "rock/value/class.hh"
 
 namespace rock {
 

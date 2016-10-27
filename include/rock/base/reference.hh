@@ -14,12 +14,14 @@ struct Reference final {
       std::is_base_of<ReferenceCounted, T>::value,
       "Reference objects must point to ReferenceCounted objects");
   T *pointer;
+  Reference();
   Reference(T *p): pointer(p) { p->acquire(); }
   Reference(const Reference& r): Reference(r.pointer) {}
   Reference& operator=(const Reference& r) {
     r.pointer->acquire();
     pointer->release();
     pointer = r.pointer;
+    return *this;
   }
   T *operator->() const { return pointer; }
   template <class K>

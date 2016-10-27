@@ -16,5 +16,13 @@ int main() {
     assert(r->debugstr() == "Class(foo/bar.rock:Sample)");
   }
 
+  {
+    Scope scope(nullptr);
+    Ast *node = new Literal(nullptr, new Number(714));
+    Result<Ref> result = node->eval(&scope);
+    assert(result.type == NORMAL);
+    assert(result.value->debugstr() == "Number(714.000000)");
+  }
+
   cout << "tests pass!" << endl;
 }
