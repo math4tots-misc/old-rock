@@ -45,39 +45,6 @@ public:
   virtual std::string str() const;
 };
 
-class Reference final {
-  Object *pointer;
-  static void acquire(Object*);
-  static void release(Object*);
-public:
-  Reference();
-  Reference(Object*);
-  Reference(const Reference&);
-  ~Reference();
-  Reference &operator=(const Reference&);
-  Object *operator->() const;
-  template <class T> T *as() const { return static_cast<T*>(pointer); }
-};
-
-class Result final {
-public:
-  enum class Type {
-    OK, EXCEPTION, RETURN, BREAK, CONTINUE,
-  };
-  Type type;
-  Reference value;
-  Result(Reference);
-  Result(Type, Reference);
-  Reference get() const;
-  std::string debug() const;
-};
-
 }  // namespace rock
-
-namespace std {
-
-std::string to_string(rock::Result::Type);
-
-}  // namespace std
 
 #endif//rock_object_hh

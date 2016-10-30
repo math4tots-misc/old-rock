@@ -11,5 +11,7 @@
 #include "rock/number.hh"
 #include "rock/object.hh"
 #include "rock/parse.hh"
+#include "rock/reference.hh"
+#include "rock/result.hh"
 #include "rock/scope.hh"
 #include "rock/string.hh"

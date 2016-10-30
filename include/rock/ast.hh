@@ -1,10 +1,10 @@
 #ifndef rock_ast_hh
 #define rock_ast_hh
 
-#include <memory>
+#include <vector>
 
 #include "rock/file.hh"
-#include "rock/object.hh"
+#include "rock/reference.hh"
 
 namespace rock {
 
