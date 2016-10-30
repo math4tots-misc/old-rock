@@ -27,9 +27,17 @@ public:
 
   /** Return a simple string to debug this object.
    * Should be as dumb as possible and have no chance of throwing.
-   * It's less helpful if your debug string throws.
+   * It's less helpful if your debug string throws or can fail.
    */
   virtual std::string debug() const;
+
+  /*
+   * The C++ interface methods really should not error out.
+   * But some of them, I really do want users to be able to customize
+   * them (e.g. hash). But that leaves open the possibility of users
+   * throwing exceptions in their implementations.
+   * For now, we'll use real C++ exceptions in those cases.
+   */
 
   /* Everything should ideally be done through calling methods.
    * However, sometimes References must interact with C++ types during
