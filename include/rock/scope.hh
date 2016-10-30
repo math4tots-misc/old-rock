@@ -4,11 +4,13 @@
 #include <map>
 #include <string>
 
+#include "rock/object.hh"
+
 namespace rock {
 
-class Reference;
+extern Class *classScope;
 
-class Scope final {
+class Scope final: public Object {
   Scope *const parent;
   std::map<std::string, Reference> bindings;
 public:
@@ -18,6 +20,7 @@ public:
   Result set(const std::string&, Reference);
   Result declare(const std::string&);
   Result declare(const std::string&, Reference);
+  Reference getClass() const override;
 };
 
 }

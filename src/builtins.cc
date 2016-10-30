@@ -7,10 +7,14 @@
 namespace rock {
 
 namespace {
+
+Reference *brp;  // pointer to builtins reference
+
 Init init(5, __FILE__, []() {
   builtins = new Scope();
+  brp = new Reference(builtins);  // live until explicitly deleted
 }, []() {
-  delete builtins;
+  delete brp;
 });
 }
 

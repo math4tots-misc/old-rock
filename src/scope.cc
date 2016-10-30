@@ -2,6 +2,15 @@
 
 namespace rock {
 
+Class *classScope;
+
+namespace {
+Init init(10, __FILE__, []() {
+  classScope = new Class("Scope");
+  builtins->declare("Scope", classScope);
+});
+}  // namespace
+
 Scope::Scope(): Scope(nullptr) {}
 
 Scope::Scope(Scope *p): parent(p) {};
@@ -46,6 +55,10 @@ Result Scope::declare(const std::string &name, Reference value) {
   return Result(
       Result::Type::EXCEPTION,
       new Exception("Variable already declared: '" + name + "'"));
+}
+
+Reference Scope::getClass() const {
+  return classScope;
 }
 
 }

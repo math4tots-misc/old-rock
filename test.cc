@@ -22,11 +22,18 @@ int main() {
 
   File f("a", "b");
   File g(f);
-
-  std::unique_ptr<Unit> unit = parseFile("<test>", "a + b");
-  cout << unit->node->debug() << endl;
-  Scope scope;
-  cout << unit->node->eval(scope).debug() << endl;
+  {
+    std::unique_ptr<Unit> unit = parseFile("<test>", "a + b");
+    cout << unit->node->debug() << endl;
+    Scope scope;
+    cout << unit->node->eval(scope).debug() << endl;
+  }
+  {
+    std::unique_ptr<Unit> unit = parseFile("<test>", "String");
+    cout << unit->node->debug() << endl;
+    Scope scope(builtins);
+    cout << unit->node->eval(scope).debug() << endl;
+  }
 
   rock::finalize();
 }
