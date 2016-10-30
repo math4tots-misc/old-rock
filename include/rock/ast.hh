@@ -22,7 +22,7 @@ class ParseError final: public Ast {
 public:
   const std::string message;
   ParseError(const Token&, const std::string&);
-  virtual Result eval(Scope&);
+  Result eval(Scope&);
 };
 
 }
