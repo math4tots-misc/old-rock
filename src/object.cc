@@ -42,6 +42,10 @@ std::string Object::debug() const {
   return ss.str();
 }
 
+bool Object::truthy() const {
+  return true;
+}
+
 Reference::Reference(): pointer(nullptr) {}
 Reference::Reference(Object *p): pointer(p) { acquire(p); }
 Reference::Reference(const Reference &r): Reference(r.pointer) {}

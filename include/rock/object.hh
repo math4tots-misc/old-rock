@@ -30,6 +30,12 @@ public:
    * It's less helpful if your debug string throws.
    */
   virtual std::string debug() const;
+
+  /* Everything should ideally be done through calling methods.
+   * However, sometimes References must interact with C++ types during
+   * interpretation, e.g. to figure out the truthiness of a value.
+   */
+  virtual bool truthy() const;
 };
 
 class Reference final {
@@ -49,8 +55,8 @@ public:
   enum class Type {
     OK, EXCEPTION, RETURN, BREAK, CONTINUE,
   };
-  const Type type;
-  const Reference value;
+  Type type;
+  Reference value;
   Result(Reference);
   Result(Type, Reference);
   Reference get() const;

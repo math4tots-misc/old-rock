@@ -21,6 +21,7 @@ public:
   const Token token;
   Ast(const Token &t);
   virtual Result eval(Scope&) const=0;
+  virtual std::string debug() const;
 };
 
 class ParseError final: public Ast {
@@ -28,6 +29,7 @@ public:
   const std::string message;
   ParseError(const Token&, const std::string&);
   Result eval(Scope&) const override;
+  std::string debug() const override;
 };
 
 class Block final: public Ast {
