@@ -38,7 +38,7 @@ std::string Object::debug() const {
   std::stringstream ss;
   ss << "<Object("
       << std::string(typeid(*this).name())
-      << "/" << this << ")>";
+      << "," << this << ")>";
   return ss.str();
 }
 
