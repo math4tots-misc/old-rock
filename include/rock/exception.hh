@@ -9,6 +9,7 @@ class Class;
 
 extern Class *classException;
 
+// TODO: Save stack trace.
 class Exception final: public Object {
 public:
   const std::string message;
