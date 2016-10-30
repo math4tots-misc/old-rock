@@ -11,7 +11,6 @@ class Class;
 
 extern Class *classNumber;
 
-// TODO: Save stack trace.
 class Number final: public Object {
 public:
   const double value;

@@ -11,7 +11,6 @@ class Class;
 
 extern Class *classString;
 
-// TODO: Save stack trace.
 class String final: public Object {
 public:
   const std::string value;

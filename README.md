@@ -1,10 +1,6 @@
-dependencies
+# Rock programming language
 
-Things below depend on things on top
+## style
 
-  * Tier 0
-    * core.hh, file.hh
-  * Tier 1
-    * stack.hh (file.hh)
-    * core.cc (core.hh)
+Implementations should not live in headers unless they are templates.
 
