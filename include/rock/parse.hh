@@ -1,5 +1,5 @@
-#ifndef rock_parser_hh
-#define rock_parser_hh
+#ifndef rock_parse_hh
+#define rock_parse_hh
 
 #include <vector>
 #include <memory>
@@ -10,10 +10,10 @@ class Ast;
 class File;
 
 std::unique_ptr<Ast> parseFile(const File&);
-std::unique_ptr<Ast> parseFile(const File&, bool);
+std::unique_ptr<Ast> parseFile(const std::string&, const std::string&);
 std::unique_ptr<Ast> parseModule(const std::string&);
 std::unique_ptr<Ast> parseExpression(const std::string&);
 
 }
 
-#endif//rock_parser_hh
+#endif//rock_parse_hh
