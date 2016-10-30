@@ -1,5 +1,7 @@
 #include "rock/all.hh"
 
+#include <iostream>
+
 #include <map>
 #include <set>
 #include <string>

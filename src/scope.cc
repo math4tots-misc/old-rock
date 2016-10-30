@@ -16,7 +16,7 @@ Result Scope::get(const std::string &name) {
   }
   return Result(
       Result::Type::EXCEPTION,
-      new Exception("No such variable to get: " + name));
+      new Exception("No such variable (get): '" + name + "'"));
 }
 
 Result Scope::set(const std::string &name, Reference value) {
@@ -30,7 +30,7 @@ Result Scope::set(const std::string &name, Reference value) {
   }
   return Result(
       Result::Type::EXCEPTION,
-      new Exception("No such variable to set: " + name));
+      new Exception("No such variable (set): '" + name + "'"));
 }
 
 Result Scope::declare(const std::string &name) {
@@ -45,7 +45,7 @@ Result Scope::declare(const std::string &name, Reference value) {
   }
   return Result(
       Result::Type::EXCEPTION,
-      new Exception("Variable already declared: " + name));
+      new Exception("Variable already declared: '" + name + "'"));
 }
 
 }

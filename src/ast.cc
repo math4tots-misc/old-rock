@@ -1,6 +1,7 @@
 #include "rock/all.hh"
 
 #include <sstream>
+#include <iostream>
 
 namespace rock {
 
@@ -71,15 +72,47 @@ Result If::eval(Scope &scope) const {
 }
 
 Or::Or(const Token &t, Ast *l, Ast *r): Ast(t), left(l), right(r) {}
+
 And::And(const Token &t, Ast *l, Ast *r): Ast(t), left(l), right(r) {}
+
 Arguments::Arguments(const Token &t, const std::vector<Ast*> &as):
     Arguments(t, as, nullptr) {}
 Arguments::Arguments(const Token &t, const std::vector<Ast*> &as, Ast *va):
     token(t), args(as), vararg(va) {}
+Result Arguments::evalargs(Scope &scope, std::vector<Reference> &out) const {
+  if (vararg) {
+    return Result(
+        Result::Type::EXCEPTION,
+        new Exception("splat arguments not yet supported"));
+  }
+  for (Ast *e: args) {
+    Result r = e->eval(scope);
+    if (r.type != Result::Type::OK) {
+      return r;
+    }
+    out.push_back(r.value);
+  }
+  return Result(Result::Type::OK, nil);
+}
+
 
 MethodCall::MethodCall(
     const Token &t, Ast *o, const std::string &n, Arguments *a):
         Ast(t), owner(o), name(n), args(a) {}
+
+Result MethodCall::eval(Scope &scope) const {
+  Result result = this->owner->eval(scope);
+  if (result.type != Result::Type::OK) { return result; }
+  Reference owner = result.value;
+
+  std::vector<Reference> args;
+  {
+    Result result = this->args->evalargs(scope, args);
+    if (result.type != Result::Type::OK) { return result; }
+  }
+
+  return owner->call(name, args);
+}
 
 SetAttribute::SetAttribute(
     const Token &t, Ast *o, const std::string &n, Ast *v):
@@ -105,6 +138,11 @@ Assignment::Assignment(const Token &t, const std::string &n, Ast *v):
 
 Name::Name(const Token &t, const std::string &n):
     Ast(t), name(n) {}
+
+Result Name::eval(Scope &scope) const {
+  std::cout << "name = '" << name << "'" << std::endl;
+  return scope.get(name);
+}
 
 Literal::Literal(const Token &t, Reference v):
     Ast(t), value(v) {}

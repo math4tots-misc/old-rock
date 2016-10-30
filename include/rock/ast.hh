@@ -72,7 +72,7 @@ public:
   Ast *const vararg; // TODO: support varargs and iterables.
   Arguments(const Token&, const std::vector<Ast*>&);
   Arguments(const Token&, const std::vector<Ast*>&, Ast*);
-  // Result evalargs(Scope&, std::vector<Reference>&);
+  Result evalargs(Scope&, std::vector<Reference>&) const;
 };
 
 class MethodCall final: public Ast {
@@ -81,7 +81,7 @@ public:
   const std::string name;
   const Arguments *args;
   MethodCall(const Token&, Ast*, const std::string&, Arguments*);
-  // Result eval(Scope&) const override;
+  Result eval(Scope&) const override;
 };
 
 class SetAttribute final: public Ast {
@@ -149,7 +149,7 @@ class Name final: public Ast {
 public:
   const std::string name;
   Name(const Token&, const std::string&);
-  // Result eval(Scope&) const override;
+  Result eval(Scope&) const override;
 };
 
 class Literal final: public Ast {

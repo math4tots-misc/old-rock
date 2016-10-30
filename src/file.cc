@@ -15,6 +15,6 @@ Token::Token(const File &f, long p, const std::string &t):
 Token::Token(
       const File &f, long p,
       const std::string &t, const std::string &v):
-          file(f), position(p), type(t) {}
+          file(f), position(p), type(t), value(v) {}
 
 }
