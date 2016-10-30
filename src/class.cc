@@ -35,5 +35,8 @@ Method Class::getMethod(const std::string& name) const {
   }
   return nullptr;
 }
+std::string Class::debug() const {
+  return "<Class " + name + ">";
+}
 
 }

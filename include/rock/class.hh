@@ -29,6 +29,7 @@ public:
       const std::map<std::string,Method>&);
   Reference getClass() const override;
   Method getMethod(const std::string&) const;
+  std::string debug() const override;
 };
 
 }
