@@ -17,6 +17,8 @@ public:
   const std::string value;
   String(const std::string&);
   Reference getClass() const override;
+  std::string debug() const override;
+  std::string str() const override;
 };
 
 }

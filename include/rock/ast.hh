@@ -156,7 +156,7 @@ class Literal final: public Ast {
 public:
   const Reference value;
   Literal(const Token&, Reference);
-  // Result eval(Scope&) const override;
+  Result eval(Scope&) const override;
 };
 
 class ClassDisplay final: public Ast {

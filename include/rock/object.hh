@@ -38,8 +38,11 @@ public:
   /* Everything should ideally be done through calling methods.
    * However, sometimes References must interact with C++ types during
    * interpretation, e.g. to figure out the truthiness of a value.
+   * If there is a problem in any of these methods, they should throw
+   * a Reference with an Exception in it.
    */
   virtual bool truthy() const;
+  virtual std::string str() const;
 };
 
 class Reference final {

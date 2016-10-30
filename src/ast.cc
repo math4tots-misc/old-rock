@@ -1,7 +1,6 @@
 #include "rock/all.hh"
 
 #include <sstream>
-#include <iostream>
 
 namespace rock {
 
@@ -140,12 +139,15 @@ Name::Name(const Token &t, const std::string &n):
     Ast(t), name(n) {}
 
 Result Name::eval(Scope &scope) const {
-  std::cout << "name = '" << name << "'" << std::endl;
   return scope.get(name);
 }
 
 Literal::Literal(const Token &t, Reference v):
     Ast(t), value(v) {}
+
+Result Literal::eval(Scope &scope) const {
+  return value;
+}
 
 ClassDisplay::ClassDisplay(
     const Token &t, const std::string &n, Arguments *bs, Ast *b):

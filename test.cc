@@ -34,6 +34,12 @@ int main() {
     Scope scope(builtins);
     cout << unit->node->eval(scope).debug() << endl;
   }
+  {
+    std::unique_ptr<Unit> unit = parseFile("<test>", "print('hello world!')");
+    cout << unit->node->debug() << endl;
+    Scope scope(builtins);
+    cout << unit->node->eval(scope).debug() << endl;
+  }
 
   rock::finalize();
 }

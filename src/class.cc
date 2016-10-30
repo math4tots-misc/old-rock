@@ -13,7 +13,9 @@ Init init(10, __FILE__, []() {
 
 Class::Class(const std::string &n): name(n) {}
 Class::Class(const std::string &n, const std::vector<Reference> &bs):
-    name(n), bases(bs) {}
+    Class(n, bs, {}) {}
+Class::Class(const std::string &n, const std::map<std::string,Method> &ms):
+    Class(n, {}, ms) {}
 Class::Class(
     const std::string &n,
     const std::vector<Reference> &bs,

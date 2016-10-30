@@ -11,9 +11,9 @@ Result Object::call(const std::string &name, const Args &args) {
   if (!method) {
     const std::string message =
         "No such method: " + name + " for class " + cls->name;
-    // TODO: Return Result(EXCEPTION...), instead of throw
-    // return Result(EXCEPTION, new Exception(message));
-    throw message;
+    return Result(
+        Result::Type::EXCEPTION,
+        new Exception(message));
   }
   return method(this, args);
 }
@@ -28,6 +28,10 @@ std::string Object::debug() const {
 
 bool Object::truthy() const {
   return true;
+}
+
+std::string Object::str() const {
+  return debug();
 }
 
 void Reference::acquire(Object *pointer) {
@@ -65,7 +69,8 @@ Result::Result(Type t, Reference r): type(t), value(r) {}
 Reference Result::get() const {
   if (type != Result::Type::OK) {
     // TODO: Use a real error class.
-    throw "Result is not OK";
+    throw Reference(new Exception(
+        "Result type is not OK: " + std::to_string(type)));
   }
   return value;
 }

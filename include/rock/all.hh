@@ -4,6 +4,7 @@
 #include "rock/class.hh"
 #include "rock/exception.hh"
 #include "rock/file.hh"
+#include "rock/function.hh"
 #include "rock/init.hh"
 #include "rock/lex.hh"
 #include "rock/nil.hh"
