@@ -1,3 +1,9 @@
-#include "rock.hh"
+#include "rock/all.hh"
+#include <iostream>
+using namespace std;
+using namespace rock;
 
-int main() {}
+int main() {
+  rock::init();
+  cout << classClass->debug() << endl;
+}
