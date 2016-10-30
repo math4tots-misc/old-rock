@@ -9,7 +9,7 @@ void init();
 
 class Init final {
 public:
-  Init(int, std::function<void()>);
+  Init(int, const std::string&, std::function<void()>);
 };
 
 }

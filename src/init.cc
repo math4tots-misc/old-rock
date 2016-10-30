@@ -7,26 +7,38 @@
 namespace rock {
 
 namespace {
-std::map<int, std::vector<std::function<void()>>>* inits;
+std::map<int,std::vector<std::pair<std::string,std::function<void()>>>>*
+inits;
 
-std::map<int, std::vector<std::function<void()>>>& getInits() {
+std::map<int,std::vector<std::pair<std::string,std::function<void()>>>>&
+getInits() {
   if (!inits) {
-    inits = new std::map<int, std::vector<std::function<void()>>>();
+    inits = new std::map<
+        int,std::vector<
+            std::pair<
+                std::string,
+                std::function<void()>>>>();
   }
   return *inits;
 }
-}
+}  // namespace
 
 void init() {
-  for (auto pair: getInits()) {
-    for (auto f: pair.second) {
-      f();
+  for (auto entry: getInits()) {
+    for (auto pair: entry.second) {
+      pair.second();
     }
   }
 }
 
-Init::Init(int priority, std::function<void()> f) {
-  getInits()[priority].push_back(f);
+/**
+ * 'priority' is the number that determines when an initializer will
+ * get run. Lower numbers run first.
+ * 'tag' is a name for the initializer for debugging purposes.
+ * 'f' is the initializer function to run.
+ */
+Init::Init(int priority, const std::string &tag, std::function<void()> f) {
+  getInits()[priority].push_back(std::make_pair(tag, f));
 }
 
-}
+}  // namespace rock

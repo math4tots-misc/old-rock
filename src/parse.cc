@@ -3,7 +3,8 @@
 namespace rock {
 
 namespace {
-class Parser {
+
+class Parser final {
   std::vector<Token> tokens;
   int i;
 public:
@@ -36,10 +37,10 @@ public:
     if (peek().type != type) {
       Token token(peek());
       std::string msg = "Expected " + type + " but got " + peek().type;
-      if (!peek().data.empty()) {
-        msg += " (" + peek().data + ")";
+      if (!peek().value.empty()) {
+        msg += " (" + peek().value + ")";
       }
-      die(msg);
+      throw ParseError(token, msg);
     }
     return gettok();
   }
@@ -127,35 +128,36 @@ public:
     Token t = peek();
     if (consume("==")) {
       return new MethodCall(
-          t, e, "__eq", new Arguments({parse_additive_expression()}));
+          t, e, "__eq", new Arguments(t, {parse_additive_expression()}));
     }
     if (consume("!=")) {
       return new MethodCall(
-          t, e, "__ne", new Arguments({parse_additive_expression()}));
+          t, e, "__ne", new Arguments(t, {parse_additive_expression()}));
     }
     if (consume("<")) {
       return new MethodCall(
-          t, e, "__lt", new Arguments({parse_additive_expression()}));
+          t, e, "__lt", new Arguments(t, {parse_additive_expression()}));
     }
     if (consume("<=")) {
       return new MethodCall(
-          t, e, "__le", new Arguments({parse_additive_expression()}));
+          t, e, "__le", new Arguments(t, {parse_additive_expression()}));
     }
     if (consume(">")) {
       return new MethodCall(
-          t, e, "__gt", new Arguments({parse_additive_expression()}));
+          t, e, "__gt", new Arguments(t, {parse_additive_expression()}));
     }
     if (consume(">=")) {
       return new MethodCall(
-          t, e, "__ge", new Arguments({parse_additive_expression()}));
+          t, e, "__ge", new Arguments(t, {parse_additive_expression()}));
     }
     if (consume("is")) {
       if (consume("not")) {
         return new MethodCall(
-            t, e, "__is_not", new Arguments({parse_additive_expression()}));
+            t, e, "__is_not",
+            new Arguments(t, {parse_additive_expression()}));
       } else {
         return new MethodCall(
-            t, e, "__is", new Arguments({parse_additive_expression()}));
+            t, e, "__is", new Arguments(t, {parse_additive_expression()}));
       }
     }
     return e;
@@ -167,12 +169,14 @@ public:
       Token t = peek();
       if (consume("+")) {
         e = new MethodCall(
-            t, e, "__add", new Arguments({parse_multiplicative_expression()}));
+            t, e, "__add",
+            new Arguments(t, {parse_multiplicative_expression()}));
         continue;
       }
       if (consume("-")) {
         e = new MethodCall(
-            t, e, "__sub", new Arguments({parse_multiplicative_expression()}));
+            t, e, "__sub",
+            new Arguments(t, {parse_multiplicative_expression()}));
         continue;
       }
       break;
@@ -186,17 +190,17 @@ public:
       Token t = peek();
       if (consume("*")) {
         e = new MethodCall(
-            t, e, "__mul", new Arguments({parse_prefix_expression()}));
+            t, e, "__mul", new Arguments(t, {parse_prefix_expression()}));
         continue;
       }
       if (consume("/")) {
         e = new MethodCall(
-            t, e, "__div", new Arguments({parse_prefix_expression()}));
+            t, e, "__div", new Arguments(t, {parse_prefix_expression()}));
         continue;
       }
       if (consume("%")) {
         e = new MethodCall(
-            t, e, "__mod", new Arguments({parse_prefix_expression()}));
+            t, e, "__mod", new Arguments(t, {parse_prefix_expression()}));
         continue;
       }
       break;
@@ -208,11 +212,11 @@ public:
     Token t = peek();
     if (consume("-")) {
       return new MethodCall(
-          t, parse_prefix_expression(), "__neg", new Arguments({}));
+          t, parse_prefix_expression(), "__neg", new Arguments(t, {}));
     }
     if (consume("not")) {
       return new MethodCall(
-          t, parse_prefix_expression(), "_not_", new Arguments({}));
+          t, parse_prefix_expression(), "__not", new Arguments(t, {}));
     }
     return parse_postfix_expression();
   }
@@ -222,10 +226,10 @@ public:
     for (;;) {
       Token t = peek();
       if (at("(")) {  // )
-        e = new FunctionCall(t, e, parse_arguments());
+        e = new MethodCall(t, e, "__call", parse_arguments());
         continue;
       } else if (consume(".")) {
-        std::string name = expect("ID").data;
+        std::string name = expect("ID").value;
         if (consume("=")) {
           e = new SetAttribute(t, e, name, parse_expression());
         } else if (at("(")) {  // )
@@ -241,6 +245,7 @@ public:
   }
 
   Arguments *parse_arguments() {
+    Token t(peek());
     std::vector<Ast*> argexprs;
     Ast *varargexpr = nullptr;
     expect("(");
@@ -253,7 +258,7 @@ public:
       argexprs.push_back(parse_expression());
       consume(",");
     }
-    return new Arguments(argexprs, varargexpr);
+    return new Arguments(t, argexprs, varargexpr);
   }
 
   Ast *parse_primary_expression() {
@@ -269,7 +274,7 @@ public:
       Block *body = parse_block();
       return new While(t, cond, body);
     } else if (consume("for")) {
-      std::string name = expect("ID").data;
+      std::string name = expect("ID").value;
       expect("in");
       Ast *container = parse_expression();
       Ast *body = parse_block();
@@ -284,7 +289,7 @@ public:
       expect(")");
       return e;
     } else if (at("ID")) {
-      std::string name = expect("ID").data;
+      std::string name = expect("ID").value;
       if (consume("=")) {
         Ast *e = parse_expression();
         return new Assignment(t, name, e);
@@ -292,30 +297,30 @@ public:
         return new Name(t, name);
       }
     } else if (at("NUM")) {
-      return new Literal(t, new Number(stod(expect("NUM").data)));
+      return new Literal(t, new Number(stod(expect("NUM").value)));
     } else if (at("STR")) {
-      return new Literal(t, new String(expect("STR").data));
+      return new Literal(t, new String(expect("STR").value));
     } else if (consume("class")) {
       std::string name;
       if (at("ID")) {
-        name = expect("ID").data;
+        name = expect("ID").value;
       } else if (at("STR")) {
-        name = expect("STR").data;
+        name = expect("STR").value;
       }
       Arguments *bases;
       if (at("(")) {  // )
         bases = parse_arguments();
       } else {
-        bases = new Arguments({new Name(t, "Object")});
+        bases = new Arguments(t, {new Name(t, "Object")});
       }
       Block *body = parse_block();
       return new ClassDisplay(t, name, bases, body);
     } else if (consume("def")) {
       std::string name;
       if (at("ID")) {
-        name = expect("ID").data;
+        name = expect("ID").value;
       } else if (at("STR")) {
-        name = expect("STR").data;
+        name = expect("STR").value;
       }
       Signature *sig = parse_signature_with_parenthesis();
       Block *body = parse_block();
@@ -329,17 +334,9 @@ public:
         body = parse_block();
       }
       return new FunctionDisplay(t, "", sig, body);
-    } else if (consume("if")) {
-      Ast *cond = parse_expression();
-      expect("then");
-      Ast *left = parse_expression();
-      expect("else");
-      Ast *right = parse_expression();
-      return new Ternary(t, cond, left, right);
     } else {
-      Token t = peek();
-      TraceManager tm(&t);
-      die("Expected expression but found " + peek().type);
+      throw ParseError(
+          peek(), "Expected expression but found " + peek().type);
     }
   }
 
@@ -351,22 +348,23 @@ public:
   }
 
   Signature *parse_inside_signature() {
+    Token t(peek());
     std::vector<std::string> argnames;
     std::vector<std::string> optargnames;
     std::string varargname;
     while (at("ID") || at("*") || at("/")) {
       if (consume("*")) {
-        varargname = expect("ID").data;
+        varargname = expect("ID").value;
         break;
       }
       if (consume("/")) {
-        optargnames.push_back(expect("ID").data);
+        optargnames.push_back(expect("ID").value);
       } else {
-        argnames.push_back(expect("ID").data);
+        argnames.push_back(expect("ID").value);
       }
       consume(",");
     }
-    return new Signature(argnames, optargnames, varargname);
+    return new Signature(t, argnames, optargnames, varargname);
   }
 };
 

@@ -14,7 +14,7 @@ public:
 
 class Token final {
 public:
-  const File& file;
+  const File &file;
   const long position;
   const std::string type, value;
   Token(const File&, long, const std::string&);

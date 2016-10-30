@@ -3,6 +3,8 @@
 
 #include <string>
 
+#include "rock/object.hh"
+
 namespace rock {
 
 class Class;

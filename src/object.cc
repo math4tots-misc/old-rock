@@ -20,7 +20,7 @@ void release(Object *pointer) {
   }
 }
 
-Result Object::call(const std::string& name, const Args& args) {
+Result Object::call(const std::string &name, const Args &args) {
   Reference clsref = getClass();
   Class *cls = clsref.as<Class>();
   Method method = cls->getMethod(name);

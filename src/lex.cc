@@ -37,7 +37,7 @@ std::vector<Token> lex(const File &f) {
 
   int i = 0;
   std::vector<std::string> stack;
-  const std::string& s(f.contents);
+  const std::string &s(f.contents);
 
   for (;;) {
     while (i < static_cast<int>(s.size()) &&
@@ -143,7 +143,7 @@ std::vector<Token> lex(const File &f) {
 
     // symbol -- depends on SYMBOLS being ordered.
     std::string symbol;
-    for (auto& sym: SYMBOLS) {
+    for (auto &sym: SYMBOLS) {
       if (sym == s.substr(i, sym.size())) {
         symbol = sym;
       }
