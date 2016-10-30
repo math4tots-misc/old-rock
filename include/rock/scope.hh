@@ -13,7 +13,7 @@ class Scope final {
   std::map<std::string, Reference> bindings;
 public:
   Scope();
-  Scope(const Scope&);
+  Scope(Scope*);
   Result get(const std::string&);
   Result set(const std::string&, Reference);
   Result declare(const std::string&);

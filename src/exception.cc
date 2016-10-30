@@ -12,8 +12,13 @@ Init init(10, "exception.cc", []() {
 }
 
 Exception::Exception(const std::string &m): message(m) {}
+
 Reference Exception::getClass() const {
   return classException;
+}
+
+std::string Exception::debug() const {
+  return "<Exception: " + message + ">";
 }
 
 }

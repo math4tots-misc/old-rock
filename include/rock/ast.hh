@@ -37,6 +37,7 @@ public:
   const std::vector<Ast*> expressions;
   Block(const Token&, const std::vector<Ast*>&);
   Result eval(Scope&) const override;
+  std::string debug() const override;
 };
 
 class If final: public Ast {

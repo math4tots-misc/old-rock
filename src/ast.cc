@@ -1,5 +1,7 @@
 #include "rock/all.hh"
 
+#include <sstream>
+
 namespace rock {
 
 Ast::Ast(const Token &t): token(t) {}
@@ -41,6 +43,16 @@ Result Block::eval(Scope &scope) const {
     if (last.type != Result::Type::OK) { return last; }
   }
   return last;
+}
+
+std::string Block::debug() const {
+  std::stringstream ss;
+  ss << "Block(";
+  for (Ast *a: expressions) {
+    ss << a->debug() << ",";
+  }
+  ss  << ")";
+  return ss.str();
 }
 
 If::If(const Token &t, Ast *c, Ast *b, Ast *o):

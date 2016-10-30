@@ -17,6 +17,7 @@ public:
   const std::string message;
   Exception(const std::string&);
   Reference getClass() const override;
+  std::string debug() const override;
 };
 
 }
