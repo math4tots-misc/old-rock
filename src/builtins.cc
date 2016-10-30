@@ -9,6 +9,8 @@ namespace rock {
 namespace {
 Init init(5, __FILE__, []() {
   builtins = new Scope();
+}, []() {
+  delete builtins;
 });
 }
 
