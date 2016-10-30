@@ -7,7 +7,7 @@ Class *classString;
 namespace {
 Init init(10, __FILE__, []() {
   classString = new Class("String");
-  acquire(classString);  // live forever
+  builtins->declare("String", classString);
 });
 }
 

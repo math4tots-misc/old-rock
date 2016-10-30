@@ -6,7 +6,7 @@ using namespace std;
 using namespace rock;
 
 int main() {
-  rock::init();
+  rock::initialize();
 
   {
     // lex test
@@ -27,4 +27,6 @@ int main() {
   cout << unit->node->debug() << endl;
   Scope scope;
   cout << unit->node->eval(scope).debug() << endl;
+
+  rock::finalize();
 }

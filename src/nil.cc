@@ -8,10 +8,10 @@ Nil *nil;
 namespace {
 Init init(10, __FILE__, []() {
   classNil = new Class("Nil");
-  acquire(classNil);  // live forever
+  builtins->declare("Nil", classNil);
 
   nil = new Nil();
-  acquire(nil);  // live forever
+  builtins->declare("nil", nil);
 });
 }
 

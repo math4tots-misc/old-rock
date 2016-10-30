@@ -4,22 +4,6 @@
 
 namespace rock {
 
-void acquire(Object *pointer) {
-  if (pointer) {
-    pointer->refcnt++;
-  }
-}
-
-void release(Object *pointer) {
-  if (pointer) {
-    pointer->refcnt--;
-    if (pointer->refcnt <= 0) {
-      delete pointer;
-      pointer = nullptr;
-    }
-  }
-}
-
 Result Object::call(const std::string &name, const Args &args) {
   Reference clsref = getClass();
   Class *cls = clsref.as<Class>();
@@ -44,6 +28,22 @@ std::string Object::debug() const {
 
 bool Object::truthy() const {
   return true;
+}
+
+void Reference::acquire(Object *pointer) {
+  if (pointer) {
+    pointer->refcnt++;
+  }
+}
+
+void Reference::release(Object *pointer) {
+  if (pointer) {
+    pointer->refcnt--;
+    if (pointer->refcnt <= 0) {
+      delete pointer;
+      pointer = nullptr;
+    }
+  }
 }
 
 Reference::Reference(): pointer(nullptr) {}

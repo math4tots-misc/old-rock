@@ -7,7 +7,7 @@ Class *classNumber;
 namespace {
 Init init(10, __FILE__, []() {
   classNumber = new Class("Number");
-  acquire(classNumber);  // live forever
+  builtins->declare("Number", classNumber);
 });
 }
 

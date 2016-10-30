@@ -13,12 +13,8 @@ class Result;
 using Args = std::vector<Reference>;
 using Method = std::function<Result(Reference, const Args&)>;
 
-void acquire(Object*);
-void release(Object*);
-
 class Object {
-  friend void acquire(Object*);
-  friend void release(Object*);
+  friend class Reference;
   int refcnt = 0;
 public:
   virtual ~Object() {}
@@ -48,6 +44,8 @@ public:
 
 class Reference final {
   Object *pointer;
+  static void acquire(Object*);
+  static void release(Object*);
 public:
   Reference();
   Reference(Object*);

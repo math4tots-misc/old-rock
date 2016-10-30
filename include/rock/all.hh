@@ -1,5 +1,6 @@
 // ls include/rock/ | awk '{ print "#include \"rock/"$0"\"" }' | tail -n +2
 #include "rock/ast.hh"
+#include "rock/builtins.hh"
 #include "rock/class.hh"
 #include "rock/exception.hh"
 #include "rock/file.hh"
