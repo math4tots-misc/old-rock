@@ -6,7 +6,7 @@ Class *classNil;
 Nil *nil;
 
 namespace {
-Init init(10, "nil.cc", []() {
+Init init(10, __FILE__, []() {
   classNil = new Class("Nil");
   acquire(classNil);  // live forever
 

@@ -5,7 +5,7 @@ namespace rock {
 Class *classException;
 
 namespace {
-Init init(10, "exception.cc", []() {
+Init init(10, __FILE__, []() {
   classException = new Class("Exception");
   acquire(classException);  // live forever
 });

@@ -4,6 +4,9 @@
 #include <functional>
 #include <map>
 
+//// For debugging
+// #include <iostream>
+
 namespace rock {
 
 namespace {
@@ -26,6 +29,7 @@ getInits() {
 void init() {
   for (auto entry: getInits()) {
     for (auto pair: entry.second) {
+      // std::cerr << "Initializing: " << pair.first << std::endl;
       pair.second();
     }
   }

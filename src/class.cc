@@ -5,7 +5,7 @@ namespace rock {
 Class *classClass;
 
 namespace {
-Init init(10, "class.cc", []() {
+Init init(10, __FILE__, []() {
   classClass = new Class("Class");
   acquire(classClass);  // live forever
 });
