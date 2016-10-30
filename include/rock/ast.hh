@@ -11,6 +11,11 @@ namespace rock {
 class Result;
 class Scope;
 
+// TODO: Use unique_ptr<Ast> when holding children Ast nodes.
+// For now, just leaking memory should be ok.
+// Throughout the life of a program, there shouldn't be many
+// places where we discard the results of a parsed program.
+
 class Ast {
 public:
   const Token token;

@@ -24,6 +24,11 @@ public:
   virtual ~Object() {}
   Result call(const std::string&, const Args&);
   virtual Reference getClass() const=0;
+
+  /** Return a simple string to debug this object.
+   * Should be as dumb as possible and have no chance of throwing.
+   * It's less helpful if your debug string throws.
+   */
   virtual std::string debug() const;
 };
 

@@ -1,5 +1,6 @@
 #include "rock/all.hh"
 #include <iostream>
+#include <memory>
 using namespace std;
 using namespace rock;
 
@@ -10,4 +11,6 @@ int main() {
 
   File f("a", "b");
   File g(f);
+
+  std::unique_ptr<Unit> unit = parseFile("<test>", "a + b");
 }

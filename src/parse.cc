@@ -3,13 +3,14 @@
 namespace rock {
 
 namespace {
-
+// TODO: Rename snake_case method names to camelCase to be
+// consistent with the rest of the codebase.
 class Parser final {
   std::vector<Token> tokens;
   int i;
 public:
-  Parser(const File &src) {
-    tokens = lex(src);
+  Parser(const File &f) {
+    tokens = lex(f);
     i = 0;
   }
 
@@ -367,7 +368,29 @@ public:
     return new Signature(t, argnames, optargnames, varargname);
   }
 };
+}  // namespace
 
+Unit::Unit(std::unique_ptr<File> f, Ast *n):
+    file(std::move(f)), node(n) {}
+
+std::unique_ptr<Unit> parseFile(std::unique_ptr<File> f) {
+  Parser parser(*f);
+  Ast *node = parser.parse_module();
+  return std::unique_ptr<Unit>(new Unit(std::move(f), node));
 }
 
+std::unique_ptr<Unit> parseFile(const std::string &f, const std::string &c) {
+  return parseFile(std::unique_ptr<File>(new File(f, c)));
 }
+
+std::unique_ptr<Unit> parseModule(const std::string &c) {
+  return parseFile(std::unique_ptr<File>(new File("<parseModule>", c)));
+}
+
+std::unique_ptr<Unit> parseExpression(const std::string &c) {
+  std::unique_ptr<File> f(new File("<parseExpression>", c));
+  Parser parser(*f);
+  Ast *node = parser.parse_expression();
+  return std::unique_ptr<Unit>(new Unit(std::move(f), node));
+}
+}  // namespace rock

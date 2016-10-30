@@ -11,9 +11,9 @@ class File;
 
 class Unit final {
 public:
-  const std::unique_ptr<File> file;
-  const std::unique_ptr<Ast> node;
-  Unit(std::unique_ptr<File>, std::unique_ptr<Ast>);
+  std::unique_ptr<File> file;
+  const Ast *node;  // TODO: Use unique_ptr<Ast>, see ast.hh
+  Unit(std::unique_ptr<File>, Ast*);
 };
 
 std::unique_ptr<Unit> parseFile(std::unique_ptr<File>);
