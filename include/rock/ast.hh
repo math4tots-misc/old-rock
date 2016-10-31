@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "rock/file.hh"
+#include "rock/token.hh"
 #include "rock/reference.hh"
 
 namespace rock {
