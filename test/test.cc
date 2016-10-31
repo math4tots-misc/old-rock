@@ -10,6 +10,7 @@ using namespace rock;
 int main() {
   rock::initialize();
 
+
   {
     // lex test
     File f("<lex-test>", "a 'b' 3 4.4 +");
@@ -19,33 +20,37 @@ int main() {
     assert(tokens[0].value == "a");
   }
 
-  cout << classClass->debug() << endl;
-  cout << classException->debug() << endl;
+  assert(classClass->debug() == "<Class Class>");
+  assert(classException->debug() == "<Class Exception>");
 
   File f("a", "b");
   File g(f);
   {
     std::unique_ptr<Unit> unit = parseFile("<test>", "a + b");
-    cout << unit->node->debug() << endl;
+    assert(unit->node->debug() == "Block(N4rock10MethodCallE,)");
     Scope scope;
-    cout << unit->node->eval(scope).debug() << endl;
+    assert(
+        unit->node->eval(scope).debug() ==
+        "Result(EXCEPTION,<Exception: No such variable (get): 'a'>)");
   }
   {
     std::unique_ptr<Unit> unit = parseFile("<test>", "String");
-    cout << unit->node->debug() << endl;
+    assert(unit->node->debug() == "Block(N4rock4NameE,)");
     Scope scope(builtins);
-    cout << unit->node->eval(scope).debug() << endl;
+    assert(unit->node->eval(scope).debug() == "Result(OK,<Class String>)");
   }
   {
-    std::unique_ptr<Unit> unit = parseFile("<test>", "print('hello world!')");
-    cout << unit->node->debug() << endl;
+    std::unique_ptr<Unit> unit = parseFile("<test>", "'hello world!'");
+    assert(unit->node->debug() == "Block(N4rock7LiteralE,)");
     Scope scope(builtins);
-    cout << unit->node->eval(scope).debug() << endl;
+    assert(
+        unit->node->eval(scope).debug() ==
+        "Result(OK,String(hello world!))");
   }
 
   {
     std::unique_ptr<Unit> unit = parseFile("<test>", "L(1.0,2,3).__str()");
-    cout << unit->node->debug() << endl;
+    assert(unit->node->debug() == "Block(N4rock10MethodCallE,)");
     Scope scope(builtins);
     Result result = unit->node->eval(scope);
     assert(result.type == Result::Type::OK);
