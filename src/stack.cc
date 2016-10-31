@@ -8,6 +8,8 @@ std::vector<Token*> *stack;
 namespace {
 Init init(100, __FILE__, []() {
   stack = new std::vector<Token*>();
+}, []() {
+  delete stack;
 });
 }
 
