@@ -15,6 +15,10 @@ public:
   const std::string value;
   Token(const File&, long, const std::string&);
   Token(const File&, long, const std::string&, const std::string&);
+  std::string locationMessage() const;
+  long getLineNumber() const;
+  long getColumnNumber() const;
+  std::string getLine() const;
 };
 
 }

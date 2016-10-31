@@ -2,6 +2,7 @@
 #define rock_exception_hh
 
 #include <string>
+#include <vector>
 
 #include "rock/object.hh"
 
@@ -15,6 +16,7 @@ extern Class *classException;
 class Exception final: public Object {
 public:
   const std::string message;
+  const std::vector<Token> stacktrace;
   Exception(const std::string&);
   Reference getClass() const override;
   std::string debug() const override;
