@@ -10,16 +10,6 @@ using namespace rock;
 int main() {
   rock::initialize();
 
-
-  {
-    // lex test
-    File f("<lex-test>", "a 'b' 3 4.4 +");
-    vector<Token> tokens = lex(f);
-    assert(tokens.size() == 6);
-    assert(tokens[0].type == "ID");
-    assert(tokens[0].value == "a");
-  }
-
   assert(classClass->debug() == "<Class Class>");
   assert(classException->debug() == "<Class Exception>");
 
