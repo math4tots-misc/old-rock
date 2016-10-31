@@ -9,9 +9,12 @@ namespace rock {
 class Object;
 class Reference;
 class Result;
+class Class;
 
 using Args = std::vector<Reference>;
 using Method = std::function<Result(Reference, const Args&)>;
+
+extern Class *classObject;
 
 class Object {
   friend class Reference;
@@ -27,9 +30,8 @@ public:
    */
   virtual std::string debug() const;
 
-  /*
-   * The C++ interface methods really should not error out.
-   * But some of them, I really do want users to be able to customize
+  /* The C++ interface methods really should not error out.
+   * But sometimes, I really do want users to be able to customize
    * them (e.g. hash). But that leaves open the possibility of users
    * throwing exceptions in their implementations.
    * For now, we'll use real C++ exceptions in those cases.

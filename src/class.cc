@@ -5,7 +5,7 @@ namespace rock {
 Class *classClass;
 
 namespace {
-Init init(10, __FILE__, []() {
+Init init(110, __FILE__, []() {
   classClass = new Class("Class");
   builtins->declare("Class", classClass);
 });
@@ -24,6 +24,8 @@ Class::Class(
 Reference Class::getClass() const {
   return classClass;
 }
+
+// TODO: Right now, getMethod does a simple DFS. Do MRO ordering.
 Method Class::getMethod(const std::string &name) const {
   auto pair = methods.find(name);
   if (pair != methods.end()) {

@@ -5,7 +5,7 @@ namespace rock {
 Class *classString;
 
 namespace {
-Init init(10, __FILE__, []() {
+Init init(110, __FILE__, []() {
   classString = new Class("String");
   builtins->declare("String", classString);
 });

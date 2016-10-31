@@ -41,5 +41,13 @@ int main() {
     cout << unit->node->eval(scope).debug() << endl;
   }
 
+  {
+    std::unique_ptr<Unit> unit = parseFile("<test>", "L(1.0,2,3).__str()");
+    cout << unit->node->debug() << endl;
+    Scope scope(builtins);
+    Result result = unit->node->eval(scope);
+    assert(result.type == Result::Type::OK);
+    assert(result.value->str() == "L(1, 2, 3)");
+  }
   rock::finalize();
 }

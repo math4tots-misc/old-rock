@@ -7,6 +7,7 @@
 #include "rock/function.hh"
 #include "rock/init.hh"
 #include "rock/lex.hh"
+#include "rock/list.hh"
 #include "rock/nil.hh"
 #include "rock/number.hh"
 #include "rock/object.hh"

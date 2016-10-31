@@ -5,7 +5,7 @@ namespace rock {
 Class *classFunction;
 
 namespace {
-Init init(10, __FILE__, []() {
+Init init(110, __FILE__, []() {
   classFunction = new Class("Function", {
     {"__call", [](const Reference &owner, const Args &args) {
       return owner.as<Function>()->function(args);

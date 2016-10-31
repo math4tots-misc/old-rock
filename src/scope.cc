@@ -5,7 +5,7 @@ namespace rock {
 Class *classScope;
 
 namespace {
-Init init(10, __FILE__, []() {
+Init init(110, __FILE__, []() {
   classScope = new Class("Scope");
   builtins->declare("Scope", classScope);
 });

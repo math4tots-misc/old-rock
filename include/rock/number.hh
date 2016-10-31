@@ -16,6 +16,7 @@ public:
   const double value;
   Number(double);
   Reference getClass() const override;
+  std::string str() const override;
 };
 
 }

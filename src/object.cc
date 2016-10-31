@@ -4,6 +4,15 @@
 
 namespace rock {
 
+namespace {
+Init init(100, __FILE__, []() {
+  classObject = new Class("Object");
+  builtins->declare("Object", classObject);
+});
+}
+
+Class *classObject;
+
 Result Object::call(const std::string &name, const Args &args) {
   Reference clsref = getClass();
   Class *cls = clsref.as<Class>();
