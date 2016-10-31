@@ -1,3 +1,5 @@
+// TODO: Factor out tests
+
 #include "rock/all.hh"
 #include <iostream>
 #include <memory>
