@@ -127,7 +127,7 @@ public:
   Ast *const container;
   Ast *const body;
   For(const Token&, const std::string&, Ast*, Ast*);
-  // Result eval(Scope&) const override;
+  Result eval(Scope&) const override;
 };
 
 class Return final: public Ast {

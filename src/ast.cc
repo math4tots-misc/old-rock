@@ -130,6 +130,10 @@ While::While(const Token &t, Ast *c, Ast *b):
 For::For(const Token &t, const std::string &n, Ast *c, Ast *b):
     Ast(t), name(n), container(c), body(b) {}
 
+Result For::eval(Scope &scope) const {
+  throw "TODO";  // Implement stack traces first
+}
+
 Return::Return(const Token &t, Ast *v): Ast(t), value(v) {}
 
 Assignment::Assignment(const Token &t, const std::string &n, Ast *v):

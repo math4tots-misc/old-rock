@@ -15,4 +15,5 @@
 #include "rock/reference.hh"
 #include "rock/result.hh"
 #include "rock/scope.hh"
+#include "rock/stack.hh"
 #include "rock/string.hh"
