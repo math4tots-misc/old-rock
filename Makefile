@@ -1,4 +1,4 @@
-.PHONY: clean run test
+.PHONY: all clean test
 
 CXX = g++
 CXX_FLAGS = -Iinclude -Ibin/include --std=c++11 -Wall -Werror
@@ -14,6 +14,8 @@ TESTS = $(patsubst bin/%,%,$(TESTBINS))
 # Keep object files around for faster compilation.
 # By default, make won't keep these files because they are 'intermediate'.
 .SECONDARY: $(OBJECTS) $(TESTBINS)
+
+all: test bin/rock
 
 test: $(TESTS)
 

@@ -25,11 +25,11 @@ int main(int argc, char **argv) {
     try {
       Result result = unit->node->eval(scope);
       if (result.type != Result::Type::OK) {
-        cerr << "Uncaught exception (by value): ";
+        cerr << "Uncaught exception (Result): ";
         if (result.value.operator->()) {
           cerr << result.value->str() << endl;
         } else {
-          cerr << result.debug() << endl;
+          cerr << "(empty)" << result.debug() << endl;
         }
       }
     } catch (const char *str) {
