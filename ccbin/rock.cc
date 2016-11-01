@@ -33,12 +33,12 @@ int main(int argc, char **argv) {
         }
       }
     } catch (const char *str) {
-      cerr << "Errror (const char*): " << str << endl;
+      cerr << "Uncaught exception (const char*): " << str << endl;
     } catch (const Reference &r) {
       if (r.operator->()) {
-        cerr << "Thrown error (Reference): " << r->str() << endl;
+        cerr << "Uncaught exception (Reference): " << r->str() << endl;
       } else {
-        cerr << "Thrown error (null Reference)" << endl;
+        cerr << "Uncaught exception (null Reference)" << endl;
       }
     }
     finalize();

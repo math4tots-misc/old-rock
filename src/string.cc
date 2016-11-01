@@ -6,7 +6,12 @@ Class *classString;
 
 namespace {
 Init init(110, __FILE__, []() {
-  classString = new Class("String");
+  classString = new Class("String", {classObject}, {
+    {"__str", [](Reference owner, const Args &args) {
+      checkargs(0, args);
+      return owner;
+    }}
+  });
   builtins->declare("String", classString);
 });
 }  // namespace

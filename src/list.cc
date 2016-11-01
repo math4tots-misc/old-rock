@@ -10,10 +10,7 @@ namespace {
 Init init(110, __FILE__, []() {
   classList = new Class("List", {classObject}, {
     {"__str", [](Reference owner, const Args& args) {
-      if (args.size() != 0) {
-        return Result(
-            Result::Type::EXCEPTION, new Exception("Expected 0 arguments"));
-      }
+      checkargs(0, args);
       return Result(Result::Type::OK, new String(owner->str()));
     }}
   });

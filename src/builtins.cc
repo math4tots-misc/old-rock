@@ -31,11 +31,7 @@ Scope *builtins;
 // Builtin native classes are set in the cc file that implements the class.
 Init init(120, __FILE__, []() {
   declareFunc(builtins, "print", [](const Args& args) {
-    if (args.size() != 1) {
-      return Result(
-          Result::Type::EXCEPTION,
-          new Exception("Expected 1 argument"));
-    }
+    checkargs(1, args);
     std::cout << args[0]->str() << std::endl;
     return Result(Result::Type::OK, args[0]);
   });

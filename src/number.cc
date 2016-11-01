@@ -11,24 +11,13 @@ namespace {
 Init init(110, __FILE__, []() {
   classNumber = new Class("Number", {classObject}, {
     {"__add", [](Reference owner, const Args& args) {
-      if (args.size() != 1) {
-        return Result(
-            Result::Type::EXCEPTION,
-            new Exception(
-                "Expected 1 arguments but got " +
-                std::to_string(args.size())));
-      }
-      Number *n = dynamic_cast<Number*>(args[0].operator->());
-      if (!n) {
-        return Result(
-            Result::Type::EXCEPTION,
-            new Exception(
-                "Expected Number but got " +
-                args[0]->getClass().as<Class>()->name));
-      }
+      checkargs(1, args);
+      checktype(classNumber, args[0]);
       return Result(
           Result::Type::OK,
-          new Number(owner.as<Number>()->value + n->value));
+          new Number(
+              owner.as<Number>()->value +
+              args[0].as<Number>()->value));
     }},
   });
   builtins->declare("Number", classNumber);
