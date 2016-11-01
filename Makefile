@@ -17,6 +17,9 @@ TESTS = $(patsubst bin/%,%,$(TESTBINS))
 
 test: $(TESTS)
 
+bin/rock: ccbin/rock.cc $(OBJECTS) $(INCLUDES)
+	$(CXX) $(CXX_FLAGS) $(OBJECTS) ccbin/rock.cc -o bin/rock
+
 %.test: bin/%.test
 	./$<
 

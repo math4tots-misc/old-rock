@@ -131,7 +131,9 @@ For::For(const Token &t, const std::string &n, Ast *c, Ast *b):
     Ast(t), name(n), container(c), body(b) {}
 
 Result For::eval(Scope &scope) const {
-  throw "TODO";  // Implement stack traces first
+  return Result(
+      Result::Type::EXCEPTION,
+      new Exception("eval for For not yet implemented"));
 }
 
 Return::Return(const Token &t, Ast *v): Ast(t), value(v) {}
