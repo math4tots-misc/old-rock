@@ -130,10 +130,33 @@ While::While(const Token &t, Ast *c, Ast *b):
 For::For(const Token &t, const std::string &n, Ast *c, Ast *b):
     Ast(t), name(n), container(c), body(b) {}
 
-Result For::eval(Scope &scope) const {
-  return Result(
-      Result::Type::EXCEPTION,
-      new Exception("eval for For not yet implemented"));
+Result For::eval(Scope &parent) const {
+  Result containerResult = this->container->eval(parent);
+  if (containerResult.type != Result::Type::OK) { return containerResult; }
+  Reference container = containerResult.value;
+
+  Result iterResult = container->call("__iter", {});
+  if (iterResult.type != Result::Type::OK) { return iterResult; }
+  Reference iter = iterResult.value;
+
+  Scope scope(&parent);
+
+  scope.declare(name, nil);
+
+  while (true) {
+    Result moreResult = iter->call("__more", {});
+    if (moreResult.type != Result::Type::OK) { return moreResult; }
+    if (!moreResult.value->truthy()) { break; }
+
+    Result nextResult = iter->call("__next", {});
+    if (nextResult.type != Result::Type::OK) { return nextResult; }
+    scope.set(name, nextResult.value);
+
+    Result result = body->eval(scope);
+    if (result.type != Result::Type::OK) { return result; }
+  }
+
+  return Result(Result::Type::OK, nil);
 }
 
 Return::Return(const Token &t, Ast *v): Ast(t), value(v) {}
