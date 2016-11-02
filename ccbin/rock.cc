@@ -16,6 +16,7 @@ string load(const string &filename) {
 }
 
 int main(int argc, char **argv) {
+  int exitcode = 0;
   if (argc != 2) {
     cout << "usage: " << argv[0] << " script.rock" << endl;
   } else {
@@ -31,16 +32,20 @@ int main(int argc, char **argv) {
         } else {
           cerr << "(empty)" << result.debug() << endl;
         }
+        exitcode = 1;
       }
     } catch (const char *str) {
       cerr << "Uncaught exception (const char*): " << str << endl;
+      exitcode = 1;
     } catch (const Reference &r) {
       if (r.operator->()) {
         cerr << "Uncaught exception (Reference): " << r->str() << endl;
       } else {
         cerr << "Uncaught exception (null Reference)" << endl;
       }
+      exitcode = 1;
     }
     finalize();
   }
+  return exitcode;
 }

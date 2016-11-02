@@ -6,10 +6,12 @@ CXX_FLAGS = -Iinclude -Ibin/include --std=c++11 -Wall -Werror
 ALL_HH = bin/include/rock/all.hh
 INCLUDES = $(wildcard include/rock/*.hh) $(ALL_HH)
 TEST_SOURCES = $(wildcard test/*.cc)
+TEST_SCRIPTS = $(wildcard test/*.rock)
 SOURCES = $(wildcard src/*.cc)
 OBJECTS = $(patsubst %.cc,%.o,$(patsubst src/%,bin/%,$(SOURCES)))
 TESTBINS = $(patsubst %.cc,%.test,$(patsubst test/%,bin/%,$(TEST_SOURCES)))
 TESTS = $(patsubst bin/%,%,$(TESTBINS))
+SCRIPT_TESTS = $(patsubst test/%.rock,%.rock_test,$(TEST_SCRIPTS))
 
 # Keep object files around for faster compilation.
 # By default, make won't keep these files because they are 'intermediate'.
@@ -17,10 +19,13 @@ TESTS = $(patsubst bin/%,%,$(TESTBINS))
 
 all: test bin/rock
 
-test: $(TESTS)
+test: $(TESTS) $(SCRIPT_TESTS)
 
 bin/rock: ccbin/rock.cc $(OBJECTS) $(INCLUDES)
 	$(CXX) $(CXX_FLAGS) $(OBJECTS) ccbin/rock.cc -o bin/rock
+
+%.rock_test: test/%.rock bin/rock
+	bin/rock ./$<
 
 %.test: bin/%.test
 	./$<
