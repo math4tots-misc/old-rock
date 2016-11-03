@@ -5,6 +5,14 @@ print(1 + 2)
 
 print(55 + 71)
 
+var i = 0
+while i < 10 {
+  print(i)
+  i = i + 1
+}
+
+"""
 for x in L(1, 2, 3) {
   print(x)
 }
+"""

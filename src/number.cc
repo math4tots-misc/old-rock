@@ -15,8 +15,17 @@ Init init(110, __FILE__, []() {
       checktype(classNumber, args[0]);
       return Result(
           Result::Type::OK,
-          new Number(
+          Number::from(
               owner.as<Number>()->value +
+              args[0].as<Number>()->value));
+    }},
+    {"__lt", [](Reference owner, const Args& args) {
+      checkargs(1, args);
+      checktype(classNumber, args[0]);
+      return Result(
+          Result::Type::OK,
+          Bool::from(
+              owner.as<Number>()->value <
               args[0].as<Number>()->value));
     }},
   });
@@ -36,6 +45,11 @@ std::string Number::str() const {
       std::modf(value, &integer_part) == 0 ?
       std::to_string((long) value) :
       std::to_string(value);
+}
+
+Reference Number::from(double value) {
+  // TODO: Do something more efficient
+  return new Number(value);
 }
 
 }

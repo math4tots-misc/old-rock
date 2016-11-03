@@ -297,6 +297,14 @@ public:
       } else {
         return new Name(t, name);
       }
+    } else if (consume("var")) {
+      std::string name = expect("ID").value;
+      if (consume("=")) {
+        Ast *e = parse_expression();
+        return new Declaration(t, name, e);
+      } else {
+        return new Declaration(t, name, nullptr);
+      }
     } else if (at("NUM")) {
       return new Literal(t, new Number(stod(expect("NUM").value)));
     } else if (at("STR")) {

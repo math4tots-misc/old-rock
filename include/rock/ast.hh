@@ -118,7 +118,7 @@ public:
   Ast *const condition;
   Ast *const body;
   While(const Token&, Ast*, Ast*);
-  // Result eval(Scope&) const override;
+  Result eval(Scope&) const override;
 };
 
 class For final: public Ast {
@@ -137,12 +137,20 @@ public:
   // Result eval(Scope&) const override;
 };
 
+class Declaration final: public Ast {
+public:
+  const std::string name;
+  Ast *const value;
+  Declaration(const Token&, const std::string&, Ast*);
+  Result eval(Scope&) const override;
+};
+
 class Assignment final: public Ast {
 public:
   const std::string name;
   Ast *const value;
   Assignment(const Token&, const std::string&, Ast*);
-  // Result eval(Scope&) const override;
+  Result eval(Scope&) const override;
 };
 
 class Name final: public Ast {

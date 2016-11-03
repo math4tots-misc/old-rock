@@ -17,6 +17,8 @@ public:
   Number(double);
   Reference getClass() const override;
   std::string str() const override;
+
+  static Reference from(double);
 };
 
 }

@@ -21,7 +21,7 @@ std::vector<Token> lex(const File &f) {
       "==", "!=", "<", "<=", ">", ">=",
   });
   const std::unordered_set<std::string> KEYWORDS({
-      "def", "fn", "return", "class",
+      "def", "fn", "return", "class", "var", "final",
       "if", "then", "else",
       "while", "break", "continue",
       "for", "in",

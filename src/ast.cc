@@ -127,6 +127,24 @@ Continue::Continue(const Token &t): Ast(t) {}
 While::While(const Token &t, Ast *c, Ast *b):
     Ast(t), condition(c), body(b) {}
 
+Result While::eval(Scope &scope) const {
+  while (true) {
+    Result condResult = this->condition->eval(scope);
+    if (condResult.type != Result::Type::OK) { return condResult; }
+    if (!condResult.value->truthy()) { break; }
+    Result bodyResult = this->body->eval(scope);
+    if (bodyResult.type == Result::Type::OK ||
+        bodyResult.type == Result::Type::CONTINUE) {
+      continue;
+    } else if (bodyResult.type == Result::Type::BREAK) {
+      break;
+    } else {
+      return bodyResult;
+    }
+  }
+  return Result(Result::Type::OK, nil);
+}
+
 For::For(const Token &t, const std::string &n, Ast *c, Ast *b):
     Ast(t), name(n), container(c), body(b) {}
 
@@ -161,8 +179,27 @@ Result For::eval(Scope &parent) const {
 
 Return::Return(const Token &t, Ast *v): Ast(t), value(v) {}
 
+Declaration::Declaration(const Token &t, const std::string &n, Ast *v):
+    Ast(t), name(n), value(v) {}
+
+Result Declaration::eval(Scope &scope) const {
+  if (value) {
+    Result result = value->eval(scope);
+    if (result.type != Result::Type::OK) { return result; }
+    return scope.declare(name, result.value);
+  } else {
+    return scope.declare(name);
+  }
+}
+
 Assignment::Assignment(const Token &t, const std::string &n, Ast *v):
     Ast(t), name(n), value(v) {}
+
+Result Assignment::eval(Scope &scope) const {
+  Result result = value->eval(scope);
+  if (result.type != Result::Type::OK) { return result; }
+  return scope.set(name, result.value);
+}
 
 Name::Name(const Token &t, const std::string &n):
     Ast(t), name(n) {}
