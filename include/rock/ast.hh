@@ -121,15 +121,6 @@ public:
   Result eval(Scope&) const override;
 };
 
-class For final: public Ast {
-public:
-  const std::string name;
-  Ast *const container;
-  Ast *const body;
-  For(const Token&, const std::string&, Ast*, Ast*);
-  Result eval(Scope&) const override;
-};
-
 class Return final: public Ast {
 public:
   Ast *const value;

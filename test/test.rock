@@ -28,9 +28,3 @@ L(1, 2, 3).iter().each(\x {
 range(0, 10).each(\x {
   print(x)
 })
-
-"""
-for x in L(1, 2, 3) {
-  print(x)
-}
-"""

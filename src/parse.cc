@@ -274,12 +274,6 @@ public:
       Ast *cond = parse_expression();
       Block *body = parse_block();
       return new While(t, cond, body);
-    } else if (consume("for")) {
-      std::string name = expect("ID").value;
-      expect("in");
-      Ast *container = parse_expression();
-      Ast *body = parse_block();
-      return new For(t, name, container, body);
     } else if (consume("return")) {
       Ast *e = parse_expression();
       return new Return(t, e);
