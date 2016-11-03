@@ -22,9 +22,9 @@ int main(int argc, char **argv) {
   } else {
     initialize();
     unique_ptr<Unit> unit = parseFile(argv[1], load(argv[1]));
-    Scope scope(builtins);
+    Reference scope(new Scope(builtins));
     try {
-      Result result = unit->node->eval(scope);
+      Result result = unit->node->eval(*scope.as<Scope>());
       if (result.type != Result::Type::OK) {
         cerr << "Uncaught exception (Result): ";
         if (result.value.operator->()) {

@@ -194,8 +194,50 @@ Signature::Signature(
     const std::string &va):
         token(t), argnames(as), optargnames(oas), varargname(va) {}
 
+Result Signature::resolve(Scope &scope, const Args &args) {
+  if (!varargname.empty()) {
+    checkargsmin(argnames.size(), args);
+  } else if (optargnames.empty()) {
+    checkargs(argnames.size(), args);
+  } else {
+    checkargs(argnames.size(), argnames.size() + optargnames.size(), args);
+  }
+
+  auto argsiter = args.begin();
+  for (const std::string &name: argnames) {
+    scope.declare(name, *argsiter);
+    ++argsiter;
+  }
+
+  for (const std::string &name: optargnames) {
+    if (argsiter == args.end()) {
+      scope.declare(name, nil);
+    } else {
+      scope.declare(name, *argsiter);
+      ++argsiter;
+    }
+  }
+
+  if (!varargname.empty()) {
+    std::vector<Reference> varargs;
+    while (argsiter != args.end()) {
+      varargs.push_back(*argsiter);
+      ++argsiter;
+    }
+    scope.declare(varargname, new List(varargs));
+  }
+
+  return Result(Result::Type::OK, nil);
+}
+
 FunctionDisplay::FunctionDisplay(
     const Token &t, const std::string &n, Signature *a, Ast *b):
         Ast(t), name(n), args(a), body(b) {}
+
+Result FunctionDisplay::eval(Scope &scope) const {
+  UserFunction *f = new UserFunction(name, this, scope);
+  scope.declare(name, f);
+  return Result(Result::Type::OK, f);
+}
 
 }

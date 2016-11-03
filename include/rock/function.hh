@@ -9,13 +9,17 @@ namespace rock {
 
 extern Class *classFunction;
 
+// The only two classes that inherit from 'Function' should be
+// 'NativeFunction' and 'UserFunction'.
 class Function: public Object {
 public:
   const std::string name;
-  std::function<Result(const Args&)> function;
-  Function(const std::string&, std::function<Result(const Args&)>);
+  Function(const std::string&);
   Reference getClass() const override;
   std::string debug() const override;
+  virtual Result invoke(const Args&)=0;
+  static Reference from(
+      const std::string&, std::function<Result(const Args&)>);
 };
 
 }

@@ -11,6 +11,19 @@ while i < 10000 {
 }
 print(i)
 
+def add(a, b, c) {
+  a + b + c
+}
+
+print(add(1124, 2414, 41))
+
+def add2(a, b) {
+  return a + b
+}
+
+print(add2(41, 40))
+
+
 def range(start, end) {
   var i = start
   Iterator(
@@ -20,6 +33,8 @@ def range(start, end) {
       end
     })
 }
+
+print(range(0, 10))
 
 L(1, 2, 3).iter().each(\x {
   print(x)

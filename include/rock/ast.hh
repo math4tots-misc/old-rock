@@ -5,6 +5,7 @@
 
 #include "rock/token.hh"
 #include "rock/reference.hh"
+#include "rock/object.hh"
 
 namespace rock {
 
@@ -178,6 +179,7 @@ public:
       const std::vector<std::string>&,
       const std::vector<std::string>&,
       const std::string&);
+  Result resolve(Scope&, const Args&);
 };
 
 class FunctionDisplay final: public Ast {
@@ -186,7 +188,7 @@ public:
   Signature *args;
   Ast *const body;
   FunctionDisplay(const Token&, const std::string&, Signature*, Ast*);
-  // Result eval(Scope&) const override;
+  Result eval(Scope&) const override;
 };
 
 }

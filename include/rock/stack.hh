@@ -8,11 +8,11 @@ namespace rock {
 
 class Token;
 
-extern std::vector<Token*> *stack;
+extern std::vector<const Token*> *stack;
 
 class StackFrame {
 public:
-  StackFrame(Token *t);
+  StackFrame(const Token *t);
   ~StackFrame();
 };
 

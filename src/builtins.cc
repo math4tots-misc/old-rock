@@ -21,7 +21,7 @@ Init init(50, __FILE__, []() {
 void declareFunc(
     Scope *scope, const std::string &name,
     std::function<Result(const Args&)> f) {
-  scope->declare(name, new Function(name, f));
+  scope->declare(name, Function::from(name, f));
 }
 }
 

@@ -3,17 +3,17 @@
 namespace rock {
 
 
-std::vector<Token*> *stack;
+std::vector<const Token*> *stack;
 
 namespace {
 Init init(100, __FILE__, []() {
-  stack = new std::vector<Token*>();
+  stack = new std::vector<const Token*>();
 }, []() {
   delete stack;
 });
 }
 
-StackFrame::StackFrame(Token *t) {
+StackFrame::StackFrame(const Token *t) {
   stack->push_back(t);
 }
 

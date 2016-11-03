@@ -10,10 +10,10 @@ Init init(110, __FILE__, []() {
   builtins->declare("Exception", classException);
 });
 
-std::vector<Token> getStackTrace() {
-  std::vector<Token> trace;
-  for (Token *t: *stack) {
-    trace.push_back(*t);
+std::vector<const Token*> getStackTrace() {
+  std::vector<const Token*> trace;
+  for (const Token *t: *stack) {
+    trace.push_back(t);
   }
   return trace;
 }
