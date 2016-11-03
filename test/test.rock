@@ -6,10 +6,28 @@ print(1 + 2)
 print(55 + 71)
 
 var i = 0
-while i < 1000000 {
+while i < 10000 {
   i = i + 1
 }
 print(i)
+
+def range(start, end) {
+  var i = start
+  Iterator(
+    \. i < end,
+    \ {
+      i = i + 1
+      end
+    })
+}
+
+L(1, 2, 3).iter().each(\x {
+  print(x)
+})
+
+range(0, 10).each(\x {
+  print(x)
+})
 
 """
 for x in L(1, 2, 3) {
