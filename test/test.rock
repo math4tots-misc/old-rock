@@ -6,10 +6,10 @@ print(1 + 2)
 print(55 + 71)
 
 var i = 0
-while i < 10 {
-  print(i)
+while i < 1000000 {
   i = i + 1
 }
+print(i)
 
 """
 for x in L(1, 2, 3) {

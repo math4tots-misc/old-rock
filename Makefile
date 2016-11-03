@@ -1,7 +1,7 @@
 .PHONY: all clean test
 
 CXX = g++
-CXX_FLAGS = -Iinclude -Ibin/include --std=c++11 -Wall -Werror
+CXX_FLAGS = -Iinclude -Ibin/include --std=c++11 -Wall -Werror  # -O3 -flto
 
 ALL_HH = bin/include/rock/all.hh
 INCLUDES = $(wildcard include/rock/*.hh) $(ALL_HH)
