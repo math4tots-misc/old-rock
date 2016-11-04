@@ -11,7 +11,7 @@ Init init(110, __FILE__, []() {
 });
 }
 
-Class::Class(const std::string &n): name(n) {}
+Class::Class(const std::string &n): Class(n, {}, {}) {}
 Class::Class(const std::string &n, const std::vector<Reference> &bs):
     Class(n, bs, {}) {}
 Class::Class(const std::string &n, const std::map<std::string,Method> &ms):
@@ -20,7 +20,15 @@ Class::Class(
     const std::string &n,
     const std::vector<Reference> &bs,
     const std::map<std::string,Method> &ms):
-        name(n), bases(bs), methods(ms) {}
+        Class(n, bs, false, {}, ms) {}
+Class::Class(
+    const std::string &n,
+    const std::vector<Reference> &bs,
+    bool uc,
+    const std::set<std::string> &fs,
+    const std::map<std::string,Method> &ms):
+        name(n), bases(bs), userConstructible(uc), fields(fs), methods(ms) {}
+
 Reference Class::getClass() const {
   return classClass;
 }
@@ -39,6 +47,7 @@ Method Class::getMethod(const std::string &name) const {
   }
   return nullptr;
 }
+
 std::string Class::debug() const {
   return "<Class " + name + ">";
 }
