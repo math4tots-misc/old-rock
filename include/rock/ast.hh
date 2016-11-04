@@ -126,7 +126,7 @@ class Return final: public Ast {
 public:
   Ast *const value;
   Return(const Token&, Ast*);
-  // Result eval(Scope&) const override;
+  Result eval(Scope&) const override;
 };
 
 class Declaration final: public Ast {

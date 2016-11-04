@@ -147,6 +147,12 @@ Result While::eval(Scope &scope) const {
 
 Return::Return(const Token &t, Ast *v): Ast(t), value(v) {}
 
+Result Return::eval(Scope &scope) const {
+  Result result = value->eval(scope);
+  if (result.type != Result::Type::OK) { return result; }
+  return Result(Result::Type::RETURN, result.value);
+}
+
 Declaration::Declaration(const Token &t, const std::string &n, Ast *v):
     Ast(t), name(n), value(v) {}
 
