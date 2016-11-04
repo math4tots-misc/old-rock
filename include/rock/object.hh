@@ -22,6 +22,7 @@ class Object {
 public:
   virtual ~Object() {}
   Result call(const std::string&, const Args&);
+  bool hasMethod(const std::string&) const;
   virtual Reference getClass() const=0;
 
   /** Return a simple string to debug this object.

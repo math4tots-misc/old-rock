@@ -30,7 +30,9 @@ Init init(110, __FILE__, []() {
     }},
     {"__eq", [](Reference owner, const Args& args) {
       checkargs(1, args);
-      checktype(classNumber, args[0]);
+      if (!instanceof(args[0], classNumber)) {
+        return Result(Result::Type::OK, xfalse);
+      }
       return Result(
           Result::Type::OK,
           Bool::from(

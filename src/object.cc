@@ -27,6 +27,12 @@ Result Object::call(const std::string &name, const Args &args) {
   return method(this, args);
 }
 
+bool Object::hasMethod(const std::string &name) const {
+  Reference clsref = getClass();
+  Class *cls = clsref.as<Class>();
+  return (bool) cls->getMethod(name);
+}
+
 std::string Object::debug() const {
   std::stringstream ss;
   ss << "<Object("

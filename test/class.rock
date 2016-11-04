@@ -1,0 +1,14 @@
+class Foo {
+  def __str() {
+    return "Foo instance"
+  }
+}
+
+class Bar(Foo) {
+}
+
+var foo = Foo()
+assert(foo.__str() == "Foo instance")
+
+var bar = Bar()
+assert(bar.__str() == "Foo instance")

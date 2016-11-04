@@ -6,9 +6,19 @@ Class *classClass;
 
 namespace {
 Init init(110, __FILE__, []() {
-  classClass = new Class("Class");
+  classClass = new Class("Class", {classObject}, {
+    {"__call", [](Reference owner, const Args &args) {
+      Reference instance(new UserObject(owner.as<Class>()));
+      instance->call("__init", args);
+      return Result(Result::Type::OK, instance);
+    }}
+  });
   builtins->declare("Class", classClass);
 });
+}
+
+bool instanceof(Reference r, const Class *c) {
+  return r->getClass().as<Class>() == c;
 }
 
 Class::Class(const std::string &n): Class(n, {}, {}) {}

@@ -13,6 +13,7 @@ public:
   const Reference cls;
   UserObject(Class*);
   Reference getClass() const override;
+  std::string str() const override;
   Result setField(const std::string&, Reference);
   Result getField(const std::string&) const;
 };

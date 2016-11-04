@@ -14,6 +14,8 @@ class Class;
 
 extern Class *classClass;
 
+bool instanceof(Reference, const Class*);
+
 class Class final: public Object {
 public:
   const std::string name;

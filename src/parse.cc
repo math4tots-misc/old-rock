@@ -326,6 +326,7 @@ public:
       consumeStatementDelimiters();
       while (!consume("}")) {
         if (consume("var")) {
+          // TODO: detect duplicates
           fields.insert(expect("ID").value);
           while (consume(",")) {
             fields.insert(expect("ID").value);

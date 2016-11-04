@@ -217,7 +217,7 @@ Signature::Signature(
     const std::string &va):
         token(t), argnames(as), optargnames(oas), varargname(va) {}
 
-Result Signature::resolve(Scope &scope, const Args &args) {
+void Signature::resolve(Scope &scope, const Args &args) {
   if (!varargname.empty()) {
     checkargsmin(argnames.size(), args);
   } else if (optargnames.empty()) {
@@ -249,8 +249,6 @@ Result Signature::resolve(Scope &scope, const Args &args) {
     }
     scope.declare(varargname, new List(varargs));
   }
-
-  return Result(Result::Type::OK, nil);
 }
 
 FunctionDisplay::FunctionDisplay(
@@ -268,5 +266,67 @@ ClassDisplay::ClassDisplay(
     const std::set<std::string> &fs,
     const std::map<std::string,FunctionDisplay*> &ms):
         Ast(t), name(n), bases(bs), fields(fs), methods(ms) {}
+
+Result ClassDisplay::eval(Scope &scope) const {
+  StackFrame sf(&token);
+
+  std::vector<Reference> bases;
+  {
+    Result result = this->bases->evalargs(scope, bases);
+    if (result.type != Result::Type::OK) { return result; }
+  }
+
+  std::set<std::string> fields(this->fields);
+  std::map<std::string,Method> methods;
+
+  for (const Reference &base: bases) {
+    checktype(classClass, base);
+    // TODO: Check for duplicate field declarations
+    for (const std::string &name: base.as<Class>()->fields) {
+      fields.insert(name);
+    }
+  }
+
+  for (const std::string &name: this->fields) {
+    std::string getName = "__get_" + name;
+    methods[getName] = [=](Reference owner, const Args &args) {
+      checkargs(0, args);
+      return owner.as<UserObject>()->getField(name);
+    };
+    std::string setName = "__set_" + name;
+    methods[setName] = [=](Reference owner, const Args &args) {
+      checkargs(1, args);
+      return owner.as<UserObject>()->setField(name, args[0]);
+    };
+  }
+
+  // TODO: Check for duplicates
+  for (auto it = this->methods.begin(); it != this->methods.end(); ++it) {
+    FunctionDisplay *fd = it->second;
+    Reference parentScope(&scope);
+    // TODO: Factor this with UserFunction::eval.
+    methods[it->first] = [=](Reference owner, const Args &args) {
+      Reference scope(new Scope(parentScope.as<Scope>()));
+      scope.as<Scope>()->declare("this", owner);
+      fd->args->resolve(*scope.as<Scope>(), args);
+      Result result = fd->body->eval(*scope.as<Scope>());
+      switch (result.type) {
+      case Result::Type::OK:
+      case Result::Type::EXCEPTION:
+        return result;
+      case Result::Type::RETURN:
+        return Result(Result::Type::OK, result.value);
+      default:
+        // TODO: Do something nicer
+        return Result(
+            Result::Type::EXCEPTION, new Exception("Invalid result type"));
+      }
+    };
+  }
+
+  Class *cls = new Class(name, bases, true, fields, methods);
+  scope.declare(name, cls);
+  return Result(Result::Type::OK, cls);
+}
 
 }

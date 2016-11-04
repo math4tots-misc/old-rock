@@ -156,7 +156,7 @@ public:
       const std::vector<std::string>&,
       const std::vector<std::string>&,
       const std::string&);
-  Result resolve(Scope&, const Args&);
+  void resolve(Scope&, const Args&);
 };
 
 class FunctionDisplay final: public Ast {
@@ -178,7 +178,7 @@ public:
       const Token&, const std::string&, Arguments*,
       const std::set<std::string>&,
       const std::map<std::string,FunctionDisplay*>&);
-  // Result eval(Scope&) const override;
+  Result eval(Scope&) const override;
 };
 
 }
