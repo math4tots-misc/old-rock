@@ -1,5 +1,7 @@
 #include "rock/all.hh"
 
+#include <sstream>
+
 namespace rock {
 
 Class *classException;
@@ -28,6 +30,17 @@ Reference Exception::getClass() const {
 
 std::string Exception::debug() const {
   return "<Exception: " + message + ">";
+}
+
+std::string Exception::str() const {
+  std::stringstream ss;
+  ss << "\n####################";
+  ss << "\n## " << message;
+  ss << "\n####################";
+  for (const Token *t: stacktrace) {
+    ss << t->locationMessage();
+  }
+  return ss.str();
 }
 
 }

@@ -9,7 +9,6 @@ UserFunction::UserFunction(
 
 Result UserFunction::invoke(const Args &args) {
   Reference scope(new Scope(parentScope.as<Scope>()));
-  StackFrame sf(&node->token);
   node->args->resolve(*scope.as<Scope>(), args);
   Result result = node->body->eval(*scope.as<Scope>());
   switch (result.type) {

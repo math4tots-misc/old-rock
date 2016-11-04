@@ -13,14 +13,14 @@ Token::Token(
 
 std::string Token::locationMessage() const {
   std::stringstream ss;
-  ss << "On line " << getLineNumber()
+  ss << "\nOn line " << getLineNumber()
       << " in file " << file.path << std::endl
       << getLine() << std::endl;
   long columnNumber = getColumnNumber();
   for (long i = 1; i < columnNumber; i++) {
     ss << " ";
   }
-  ss << "*" << std::endl;
+  ss << "*";
   return ss.str();
 }
 

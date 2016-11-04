@@ -1,3 +1,10 @@
+
+def foo() {
+  assert(false)
+}
+
+foo()
+
 print("Hello world!")
 
 print(L(1, 2, 3))

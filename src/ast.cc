@@ -110,6 +110,8 @@ Result MethodCall::eval(Scope &scope) const {
     if (result.type != Result::Type::OK) { return result; }
   }
 
+  StackFrame sf(&token);
+
   return owner->call(name, args);
 }
 

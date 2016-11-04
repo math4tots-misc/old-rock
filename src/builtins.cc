@@ -38,6 +38,15 @@ Init init(120, __FILE__, []() {
   declareFunc(builtins, "L", [](const Args& args) {
     return Result(Result::Type::OK, new List(args));
   });
+  declareFunc(builtins, "assert", [](const Args& args) {
+    checkargs(1, args);
+    if (!args[0]->truthy()) {
+      return Result(
+          Result::Type::EXCEPTION,
+          new Exception("Assertion failed"));
+    }
+    return Result(Result::Type::OK, nil);
+  });
 });
 
 }

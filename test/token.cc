@@ -13,9 +13,9 @@ int main() {
   Token token(file, 0, "TEST");
   assert(
       token.locationMessage() ==
-      "On line 1 in file <test>\n"
-      "a b c\n"
-      "*\n");
+      "\nOn line 1 in file <test>"
+      "\na b c"
+      "\n*");
   rock::finalize();
 }
 

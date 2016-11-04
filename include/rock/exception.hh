@@ -20,6 +20,7 @@ public:
   Exception(const std::string&);
   Reference getClass() const override;
   std::string debug() const override;
+  std::string str() const override;
 };
 
 }
