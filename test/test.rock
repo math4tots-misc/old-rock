@@ -1,4 +1,4 @@
-
+"""
 def foo() {
   assert(false)
 }
@@ -50,3 +50,4 @@ L(1, 2, 3).iter().each(\x {
 range(0, 10).each(\x {
   print(x)
 })
+"""

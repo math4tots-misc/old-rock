@@ -88,13 +88,13 @@ public:
 class Break final: public Ast {
 public:
   Break(const Token&);
-  // Result eval(Scope&) const override;
+  Result eval(Scope&) const override;
 };
 
 class Continue final: public Ast {
 public:
   Continue(const Token&);
-  // Result eval(Scope&) const override;
+  Result eval(Scope&) const override;
 };
 
 class While final: public Ast {

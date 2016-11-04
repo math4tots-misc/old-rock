@@ -128,7 +128,16 @@ Result MethodCall::eval(Scope &scope) const {
 }
 
 Break::Break(const Token &t): Ast(t) {}
+
+Result Break::eval(Scope &scope) const {
+  return Result(Result::Type::BREAK, nil);
+}
+
 Continue::Continue(const Token &t): Ast(t) {}
+
+Result Continue::eval(Scope &scope) const {
+  return Result(Result::Type::CONTINUE, nil);
+}
 
 While::While(const Token &t, Ast *c, Ast *b):
     Ast(t), condition(c), body(b) {}

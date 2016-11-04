@@ -28,6 +28,15 @@ Init init(110, __FILE__, []() {
               owner.as<Number>()->value <
               args[0].as<Number>()->value));
     }},
+    {"__eq", [](Reference owner, const Args& args) {
+      checkargs(1, args);
+      checktype(classNumber, args[0]);
+      return Result(
+          Result::Type::OK,
+          Bool::from(
+              owner.as<Number>()->value ==
+              args[0].as<Number>()->value));
+    }},
   });
   builtins->declare("Number", classNumber);
 });

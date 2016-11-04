@@ -1,0 +1,46 @@
+# break test
+var i = 0
+while true {
+  break
+  i = i + 1
+}
+assert(i == 0)
+
+# continue test
+var t = true
+i = 857
+while t {
+  t = false
+  continue
+  i = 102
+}
+assert(i == 857)
+
+# loop n times
+var n = 50
+i = 0
+var total = 0
+while i < n {
+  i = i + 1
+  total = total + i
+}
+assert(total = 1275)
+
+"""
+## Future ideas
+# In a potential future version of lambda functions,
+# they would be semantically different from 'def' functions in that
+# the normal way to return would be implicitly by the result of the
+# expression. If you return from a lambda function, your 'return' will
+# escape to the caller.
+# I could also add 'super return'/'super break'/'super continue' to
+# emulate this sort of behavior in 'def' functions.
+def foo() {
+  1..10.each \i {
+    print(i)
+    return 1
+  }
+}
+# Or maybe this is too dangerous. This is essentially letting
+# control flow be dynamically scoped.
+"""
