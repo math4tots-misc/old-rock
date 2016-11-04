@@ -8,7 +8,12 @@ Bool *xfalse;
 
 namespace {
 Init init(110, __FILE__, []() {
-  classBool = new Class("Bool");
+  classBool = new Class("Bool", {classObject}, {
+    {"__not", [](Reference owner, const Args &args) {
+      checkargs(0, args);
+      return Bool::from(!owner->truthy());
+    }},
+  });
   builtins->declare("Bool", classBool);
 
   xtrue = new Bool(true);

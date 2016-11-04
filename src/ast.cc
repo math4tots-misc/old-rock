@@ -72,7 +72,19 @@ Result If::eval(Scope &scope) const {
 
 Or::Or(const Token &t, Ast *l, Ast *r): Ast(t), left(l), right(r) {}
 
+Result Or::eval(Scope &scope) const {
+  Result leftResult = left->eval(scope);
+  if (leftResult.type != Result::Type::OK) { return leftResult; }
+  return leftResult.value->truthy() ? leftResult : right->eval(scope);
+}
+
 And::And(const Token &t, Ast *l, Ast *r): Ast(t), left(l), right(r) {}
+
+Result And::eval(Scope &scope) const {
+  Result leftResult = left->eval(scope);
+  if (leftResult.type != Result::Type::OK) { return leftResult; }
+  return !leftResult.value->truthy() ? leftResult : right->eval(scope);
+}
 
 Arguments::Arguments(const Token &t, const std::vector<Ast*> &as):
     Arguments(t, as, nullptr) {}

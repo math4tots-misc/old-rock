@@ -55,7 +55,7 @@ public:
   Ast *const left;
   Ast *const right;
   Or(const Token&, Ast*, Ast*);
-  // Result eval(Scope&) const override;
+  Result eval(Scope&) const override;
 };
 
 class And final: public Ast {
@@ -63,7 +63,7 @@ public:
   Ast *const left;
   Ast *const right;
   And(const Token&, Ast*, Ast*);
-  // Result eval(Scope&) const override;
+  Result eval(Scope&) const override;
 };
 
 class Arguments final {
