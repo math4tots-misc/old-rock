@@ -232,11 +232,12 @@ public:
       } else if (consume(".")) {
         std::string name = expect("ID").value;
         if (consume("=")) {
-          e = new SetAttribute(t, e, name, parse_expression());
+          e = new MethodCall(
+              t, e, "__set_" + name, new Arguments(t, {parse_expression()}));
         } else if (at("(")) {  // )
           e = new MethodCall(t, e, name, parse_arguments());
         } else {
-          e = new GetAttribute(t, e, name);
+          e = new MethodCall(t, e, "__get_" + name, new Arguments(t, {}));
         }
         continue;
       }

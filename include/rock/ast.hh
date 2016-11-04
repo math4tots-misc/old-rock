@@ -85,23 +85,6 @@ public:
   Result eval(Scope&) const override;
 };
 
-class SetAttribute final: public Ast {
-public:
-  Ast *const owner;
-  const std::string name;
-  Ast *const value;
-  SetAttribute(const Token&, Ast*, const std::string&, Ast*);
-  // Result eval(Scope&) const override;
-};
-
-class GetAttribute final: public Ast {
-public:
-  Ast *const owner;
-  const std::string name;
-  GetAttribute(const Token&, Ast*, const std::string&);
-  // Result eval(Scope&) const override;
-};
-
 class Break final: public Ast {
 public:
   Break(const Token&);

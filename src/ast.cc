@@ -127,14 +127,6 @@ Result MethodCall::eval(Scope &scope) const {
   return owner->call(name, args);
 }
 
-SetAttribute::SetAttribute(
-    const Token &t, Ast *o, const std::string &n, Ast *v):
-        Ast(t), owner(o), name(n), value(v) {}
-
-GetAttribute::GetAttribute(
-    const Token &t, Ast *o, const std::string &n):
-        Ast(t), owner(o), name(n) {}
-
 Break::Break(const Token &t): Ast(t) {}
 Continue::Continue(const Token &t): Ast(t) {}
 
