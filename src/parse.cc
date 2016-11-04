@@ -11,6 +11,9 @@ class Parser final {
 public:
   Parser(const File &f) {
     tokens = lex(f);
+    if (tokens.back().type == "ERROR") {
+      throw ParseError(tokens.back(), "Lex error: " + tokens.back().value);
+    }
     i = 0;
   }
 
@@ -317,8 +320,35 @@ public:
       } else {
         bases = new Arguments(t, {new Name(t, "Object")});
       }
-      Block *body = parse_block();
-      return new ClassDisplay(t, name, bases, body);
+      std::set<std::string> fields;
+      std::map<std::string,FunctionDisplay*> methods;
+      expect("{");
+      consumeStatementDelimiters();
+      while (!consume("}")) {
+        if (consume("var")) {
+          fields.insert(expect("ID").value);
+          while (consume(",")) {
+            fields.insert(expect("ID").value);
+          }
+        } else if (at("def")) {
+          Ast *expr = parse_primary_expression();
+          FunctionDisplay *method =
+              dynamic_cast<FunctionDisplay*>(expr);
+          if (!method) {
+            throw ParseError(
+                t,
+                "FUBAR: Internal consistency error... "
+                "Thought there was a method here, but found "
+                "something else: " + expr->debug());
+          }
+          methods[method->name] = method;
+        } else {
+          throw ParseError(
+              peek(), "Expected field or method declaration " + peek().type);
+        }
+        consumeStatementDelimiters();
+      }
+      return new ClassDisplay(t, name, bases, fields, methods);
     } else if (consume("def")) {
       std::string name;
       if (at("ID")) {
@@ -373,27 +403,27 @@ public:
 };
 }  // namespace
 
-Unit::Unit(std::unique_ptr<File> f, Ast *n):
+Unit::Unit(File *f, Ast *n):
     file(std::move(f)), node(n) {}
 
-std::unique_ptr<Unit> parseFile(std::unique_ptr<File> f) {
+Unit *parseFile(File *f) {
   Parser parser(*f);
   Ast *node = parser.parse_module();
-  return std::unique_ptr<Unit>(new Unit(std::move(f), node));
+  return new Unit(std::move(f), node);
 }
 
-std::unique_ptr<Unit> parseFile(const std::string &f, const std::string &c) {
-  return parseFile(std::unique_ptr<File>(new File(f, c)));
+Unit *parseFile(const std::string &f, const std::string &c) {
+  return parseFile(new File(f, c));
 }
 
-std::unique_ptr<Unit> parseModule(const std::string &c) {
-  return parseFile(std::unique_ptr<File>(new File("<parseModule>", c)));
+Unit *parseModule(const std::string &c) {
+  return parseFile(new File("<parseModule>", c));
 }
 
-std::unique_ptr<Unit> parseExpression(const std::string &c) {
-  std::unique_ptr<File> f(new File("<parseExpression>", c));
+Unit *parseExpression(const std::string &c) {
+  File *f = new File("<parseExpression>", c);
   Parser parser(*f);
   Ast *node = parser.parse_expression();
-  return std::unique_ptr<Unit>(new Unit(std::move(f), node));
+  return new Unit(std::move(f), node);
 }
 }  // namespace rock

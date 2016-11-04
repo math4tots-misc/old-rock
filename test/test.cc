@@ -16,7 +16,7 @@ int main() {
   File f("a", "b");
   File g(f);
   {
-    std::unique_ptr<Unit> unit = parseFile("<test>", "a + b");
+    Unit *unit = parseFile("<test>", "a + b");
     assert(unit->node->debug() == "Block(N4rock10MethodCallE,)");
     Scope scope;
     assert(
@@ -24,13 +24,13 @@ int main() {
         "Result(EXCEPTION,<Exception: No such variable (get): 'a'>)");
   }
   {
-    std::unique_ptr<Unit> unit = parseFile("<test>", "String");
+    Unit *unit = parseFile("<test>", "String");
     assert(unit->node->debug() == "Block(N4rock4NameE,)");
     Scope scope(builtins);
     assert(unit->node->eval(scope).debug() == "Result(OK,<Class String>)");
   }
   {
-    std::unique_ptr<Unit> unit = parseFile("<test>", "'hello world!'");
+    Unit *unit = parseFile("<test>", "'hello world!'");
     assert(unit->node->debug() == "Block(N4rock7LiteralE,)");
     Scope scope(builtins);
     assert(
@@ -39,7 +39,7 @@ int main() {
   }
 
   {
-    std::unique_ptr<Unit> unit = parseFile("<test>", "L(1.0,2,3).__str()");
+    Unit *unit = parseFile("<test>", "L(1.0,2,3).__str()");
     assert(unit->node->debug() == "Block(N4rock10MethodCallE,)");
     Scope scope(builtins);
     Result result = unit->node->eval(scope);

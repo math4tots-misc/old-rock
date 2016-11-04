@@ -11,15 +11,15 @@ class File;
 
 class Unit final {
 public:
-  std::unique_ptr<File> file;
+  File *file;
   const Ast *node;  // TODO: Use unique_ptr<Ast>, see ast.hh
-  Unit(std::unique_ptr<File>, Ast*);
+  Unit(File*, Ast*);
 };
 
-std::unique_ptr<Unit> parseFile(std::unique_ptr<File>);
-std::unique_ptr<Unit> parseFile(const std::string&, const std::string&);
-std::unique_ptr<Unit> parseModule(const std::string&);
-std::unique_ptr<Unit> parseExpression(const std::string&);
+Unit *parseFile(File*);
+Unit *parseFile(const std::string&, const std::string&);
+Unit *parseModule(const std::string&);
+Unit *parseExpression(const std::string&);
 
 }
 

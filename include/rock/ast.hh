@@ -1,6 +1,8 @@
 #ifndef rock_ast_hh
 #define rock_ast_hh
 
+#include <map>
+#include <set>
 #include <vector>
 
 #include "rock/token.hh"
@@ -31,6 +33,7 @@ public:
   ParseError(const Token&, const std::string&);
   Result eval(Scope&) const override;
   std::string debug() const override;
+  std::string str() const;
 };
 
 class Block final: public Ast {
@@ -142,15 +145,6 @@ public:
   Result eval(Scope&) const override;
 };
 
-class ClassDisplay final: public Ast {
-public:
-  const std::string name;
-  Arguments *bases;
-  Ast *const body;
-  ClassDisplay(const Token&, const std::string&, Arguments*, Ast*);
-  // Result eval(Scope&) const override;
-};
-
 class Signature final {
 public:
   const Token token;
@@ -172,6 +166,19 @@ public:
   Ast *const body;
   FunctionDisplay(const Token&, const std::string&, Signature*, Ast*);
   Result eval(Scope&) const override;
+};
+
+class ClassDisplay final: public Ast {
+public:
+  const std::string name;
+  Arguments *const bases;
+  const std::set<std::string> fields;
+  const std::map<std::string,FunctionDisplay*> methods;
+  ClassDisplay(
+      const Token&, const std::string&, Arguments*,
+      const std::set<std::string>&,
+      const std::map<std::string,FunctionDisplay*>&);
+  // Result eval(Scope&) const override;
 };
 
 }

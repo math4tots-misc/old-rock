@@ -33,6 +33,12 @@ std::string ParseError::debug() const {
   return "ParseError(" + message + ")";
 }
 
+std::string ParseError::str() const {
+  std::stringstream ss;
+  ss << std::endl << message << token.locationMessage();
+  return ss.str();
+}
+
 Block::Block(const Token &t, const std::vector<Ast*> &es):
     Ast(t), expressions(es) {}
 
@@ -204,10 +210,6 @@ Result Literal::eval(Scope &scope) const {
   return value;
 }
 
-ClassDisplay::ClassDisplay(
-    const Token &t, const std::string &n, Arguments *bs, Ast *b):
-        Ast(t), name(n), bases(bs), body(b) {}
-
 Signature::Signature(
     const Token &t,
     const std::vector<std::string> &as,
@@ -260,5 +262,11 @@ Result FunctionDisplay::eval(Scope &scope) const {
   scope.declare(name, f);
   return Result(Result::Type::OK, f);
 }
+
+ClassDisplay::ClassDisplay(
+    const Token &t, const std::string &n, Arguments *bs,
+    const std::set<std::string> &fs,
+    const std::map<std::string,FunctionDisplay*> &ms):
+        Ast(t), name(n), bases(bs), fields(fs), methods(ms) {}
 
 }

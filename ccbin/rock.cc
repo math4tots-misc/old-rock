@@ -21,9 +21,10 @@ int main(int argc, char **argv) {
     cout << "usage: " << argv[0] << " script.rock" << endl;
   } else {
     initialize();
-    unique_ptr<Unit> unit = parseFile(argv[1], load(argv[1]));
-    Reference scope(new Scope(builtins));
+    Unit *unit;
     try {
+      unit = parseFile(argv[1], load(argv[1]));
+      Reference scope(new Scope(builtins));
       Result result = unit->node->eval(*scope.as<Scope>());
       if (result.type != Result::Type::OK) {
         cerr << "Uncaught exception (Result): ";
@@ -36,6 +37,9 @@ int main(int argc, char **argv) {
       }
     } catch (const char *str) {
       cerr << "Uncaught exception (const char*): " << str << endl;
+      exitcode = 1;
+    } catch(const ParseError &pe) {
+      cerr << "Uncaught ParseError: " << pe.str() << endl;
       exitcode = 1;
     } catch (const Reference &r) {
       if (r.operator->()) {

@@ -26,7 +26,7 @@ while i < n {
 }
 assert(total = 1275)
 
-"""
+r"""
 ## Future ideas
 # In a potential future version of lambda functions,
 # they would be semantically different from 'def' functions in that
