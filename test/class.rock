@@ -1,4 +1,6 @@
 class Foo {
+  var attr
+
   def __str() {
     return "Foo instance"
   }
@@ -9,6 +11,10 @@ class Bar(Foo) {
 
 var foo = Foo()
 assert(foo.__str() == "Foo instance")
+foo.attr = 5
+assert(foo.attr == 5)
 
 var bar = Bar()
 assert(bar.__str() == "Foo instance")
+bar.attr = 15
+assert(bar.attr == 15)
