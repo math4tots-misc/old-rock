@@ -6,7 +6,13 @@ namespace rock {
 
 namespace {
 Init init(100, __FILE__, []() {
-  classObject = new Class("Object");
+  classObject = new Class("Object", {}, {
+    {"__ne", [](Reference owner, const Args &args) {
+      Result result = owner->call("__eq", args);
+      if (result.type != Result::Type::OK) { return result; }
+      return Result(Result::Type::OK, result.value->truthy() ? xfalse : xtrue);
+    }}
+  });
   builtins->declare("Object", classObject);
 });
 }
