@@ -41,4 +41,8 @@ std::string String::str() const {
   return value;
 }
 
+Reference String::from(const std::string &value) {
+  return new String(value);
+}
+
 }

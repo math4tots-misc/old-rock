@@ -306,7 +306,7 @@ public:
     } else if (at("NUM")) {
       return new Literal(t, new Number(stod(expect("NUM").value)));
     } else if (at("STR")) {
-      return new Literal(t, new String(expect("STR").value));
+      return new Literal(t, String::from(expect("STR").value));
     } else if (consume("class")) {
       std::string name;
       if (at("ID")) {

@@ -18,6 +18,7 @@ public:
   Reference getClass() const override;
   std::string debug() const override;
   std::string str() const override;
+  static Reference from(const std::string&);
 };
 
 }

@@ -11,7 +11,7 @@ Init init(110, __FILE__, []() {
   classList = new Class("List", {classObject}, {
     {"__str", [](Reference owner, const Args& args) {
       checkargs(0, args);
-      return Result(Result::Type::OK, new String(owner->str()));
+      return Result(Result::Type::OK, String::from(owner->str()));
     }}
   });
   builtins->declare("List", classList);

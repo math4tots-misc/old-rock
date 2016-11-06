@@ -5,8 +5,9 @@
 
 namespace rock {
 
-Reference moduleFrom(Block *block) {
+Reference moduleFrom(const std::string &name, Block *block) {
   Reference scope(new Scope(builtins));
+  scope.as<Scope>()->declare("__name", String::from(name));
   Result result = block->evalWithoutNewScope(*scope.as<Scope>());
   if (result.type != Result::Type::OK) { throw result; }
   std::map<std::string,Reference> bindings = scope.as<Scope>()->getBindings();
