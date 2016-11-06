@@ -1,5 +1,5 @@
-#ifndef rock_osx_require_hh
-#define rock_osx_require_hh
+#ifndef rock_core_require_hh
+#define rock_core_require_hh
 
 #include <string>
 
@@ -11,4 +11,4 @@ Reference require(const std::string&);
 
 }
 
-#endif//rock_osx_require_hh
+#endif//rock_core_require_hh

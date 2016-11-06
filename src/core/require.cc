@@ -1,4 +1,4 @@
-#include "rock/osx/all.hh"
+#include "rock/core/all.hh"
 
 #include <cstdlib>
 #include <fstream>

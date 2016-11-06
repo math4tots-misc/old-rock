@@ -1,6 +1,8 @@
 #ifndef rock_core_reference_hh
 #define rock_core_reference_hh
 
+#include "rock/core/object.hh"
+
 namespace rock {
 
 class Object;

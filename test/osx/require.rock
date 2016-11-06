@@ -1,4 +1,0 @@
-print("Requiring...")
-var value = require('foo.rock')
-print(value)
-require('bar.rock')

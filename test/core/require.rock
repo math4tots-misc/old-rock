@@ -1,0 +1,2 @@
+var foo = require('foo.rock')
+assert(foo.someVar == 194)

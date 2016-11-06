@@ -9,8 +9,10 @@ Class *classPlatform;
 
 namespace {
 Init init(110, __FILE__, []() {
+  platform = new Platform();
+
   classPlatform = new Class("__Platform", {classObject}, true, {}, {
-    {"getName", [](Reference owner, const Args &args) {
+    {"getName", [](Reference, const Args &args) -> Result {
       checkargs(0, args);
       return String::from(platform->getName());
     }},
