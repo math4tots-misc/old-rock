@@ -16,16 +16,34 @@ class Iterator {
   def next() {
     return (this.next)()
   }
-}
 
-
-def range(start, end) {
-  var i = start
-  var more = \. i < end
-  var next = \ {
-    i = i + 1
-    i - 1
+  def each(f) {
+    while this.more() {
+      f(this.next())
+    }
   }
-  Iterator(more, next)
 }
-__declare('range', range)
+
+class Range {
+  var start, end
+
+  def __init(start, end) {
+    this.start = start
+    this.end = end
+  }
+
+  def iter() {
+    var i = this.start
+    Iterator(
+      \. i < this.end,
+      \ {
+        i = i + 1
+        i - 1
+      })
+  }
+
+  def str() {
+    "Range(" + start.__str() + ", " + end.__str() + ")"
+  }
+}
+__declare('Range', Range)

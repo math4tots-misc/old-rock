@@ -42,7 +42,7 @@ OSX_TESTS = $(OSX_CC_TESTS) $(OSX_SCRIPT_TESTS)
 
 osx_all: osx_test bin/osx/rock
 
-osx_test: $(OSX_CC_TESTS) $(OSX_SCRIPT_TESTS) core_test
+osx_test: core_test $(OSX_CC_TESTS) $(OSX_SCRIPT_TESTS)
 
 bin/osx/rock: ccbin/osx/rock.cc $(OSX_OBJECTS) $(OSX_INCLUDES)
 	$(OSX_CXX) $(OSX_CXX_FLAGS) $(OSX_OBJECTS) ccbin/osx/rock.cc -o bin/osx/rock

@@ -1,1 +1,6 @@
-var r = range(0, 10)
+var r = Range(0, 10)
+
+r.iter().each(\i {
+  print(i)
+})
+

@@ -9,7 +9,8 @@ Init init(110, __FILE__, []() {
   classClass = new Class("Class", {classObject}, {
     {"__call", [](Reference owner, const Args &args) {
       Reference instance(new UserObject(owner.as<Class>()));
-      instance->call("__init", args);
+      Result result = instance->call("__init", args);
+      if (result.type != Result::Type::OK) { return result; }
       return Result(Result::Type::OK, instance);
     }}
   });

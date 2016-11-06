@@ -8,8 +8,6 @@ using namespace std;
 using namespace rock;
 
 int main() {
-  rock::initialize();
-
   {
     File f("<lex-test>", "a 'b' 3 4.4 +");
     vector<Token> tokens = lex(f);
@@ -27,6 +25,4 @@ int main() {
     assert(tokens[5].type == "EOF");
     assert(tokens[5].value == "");
   }
-
-  rock::finalize();
 }

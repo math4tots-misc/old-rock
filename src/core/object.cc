@@ -4,12 +4,13 @@
 
 namespace rock {
 
-// NOTE: DEBUG
-// std::set<Object*> allObjects;
-
 namespace {
 Init init(100, __FILE__, []() {
   classObject = new Class("Object", {}, {
+    {"__init", [](Reference, const Args &args) {
+      checkargs(0, args);
+      return Result(Result::Type::OK, nil);
+    }},
     {"__ne", [](Reference owner, const Args &args) {
       Result result = owner->call("__eq", args);
       if (result.type != Result::Type::OK) { return result; }
@@ -22,15 +23,9 @@ Init init(100, __FILE__, []() {
 
 Class *classObject;
 
-Object::Object() {
-  // NOTE: DEBUG
-  // allObjects.insert(this);
-}
+Object::Object() {}
 
-Object::~Object() {
-  // NOTE: DEBUG
-  // allObjects.erase(this);
-}
+Object::~Object() {}
 
 Result Object::call(const std::string &name, const Args &args) {
   Reference clsref = getClass();

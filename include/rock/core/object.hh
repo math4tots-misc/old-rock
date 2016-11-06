@@ -17,9 +17,6 @@ using Method = std::function<Result(Reference, const Args&)>;
 
 extern Class *classObject;
 
-// NOTE: DEBUG
-// extern std::set<Object*> allObjects;
-
 class Object {
   friend class Reference;
   int refcnt = 0;
