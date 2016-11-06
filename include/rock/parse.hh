@@ -9,17 +9,10 @@ namespace rock {
 class Ast;
 class File;
 
-class Unit final {
-public:
-  File *file;
-  const Ast *node;  // TODO: Use unique_ptr<Ast>, see ast.hh
-  Unit(File*, Ast*);
-};
-
-Unit *parseFile(File*);
-Unit *parseFile(const std::string&, const std::string&);
-Unit *parseModule(const std::string&);
-Unit *parseExpression(const std::string&);
+Block *parseFile(File*);
+Block *parseFile(const std::string&, const std::string&);
+Block *parseModule(const std::string&);
+Ast *parseExpression(const std::string&);
 
 }
 

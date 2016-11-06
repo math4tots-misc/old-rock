@@ -404,27 +404,23 @@ public:
 };
 }  // namespace
 
-Unit::Unit(File *f, Ast *n):
-    file(std::move(f)), node(n) {}
-
-Unit *parseFile(File *f) {
+Block *parseFile(File *f) {
   Parser parser(*f);
-  Ast *node = parser.parse_module();
-  return new Unit(std::move(f), node);
+  return parser.parse_module();
 }
 
-Unit *parseFile(const std::string &f, const std::string &c) {
+Block *parseFile(const std::string &f, const std::string &c) {
   return parseFile(new File(f, c));
 }
 
-Unit *parseModule(const std::string &c) {
+Block *parseModule(const std::string &c) {
   return parseFile(new File("<parseModule>", c));
 }
 
-Unit *parseExpression(const std::string &c) {
+Ast *parseExpression(const std::string &c) {
   File *f = new File("<parseExpression>", c);
   Parser parser(*f);
-  Ast *node = parser.parse_expression();
-  return new Unit(std::move(f), node);
+  return parser.parse_expression();
 }
+
 }  // namespace rock

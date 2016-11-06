@@ -16,33 +16,33 @@ int main() {
   File f("a", "b");
   File g(f);
   {
-    Unit *unit = parseFile("<test>", "a + b");
-    assert(unit->node->debug() == "Block(N4rock10MethodCallE,)");
+    Ast *node = parseFile("<test>", "a + b");
+    assert(node->debug() == "Block(N4rock10MethodCallE,)");
     Scope scope;
     assert(
-        unit->node->eval(scope).debug() ==
+        node->eval(scope).debug() ==
         "Result(EXCEPTION,<Exception: No such variable (get): 'a'>)");
   }
   {
-    Unit *unit = parseFile("<test>", "String");
-    assert(unit->node->debug() == "Block(N4rock4NameE,)");
+    Ast *node = parseFile("<test>", "String");
+    assert(node->debug() == "Block(N4rock4NameE,)");
     Scope scope(builtins);
-    assert(unit->node->eval(scope).debug() == "Result(OK,<Class String>)");
+    assert(node->eval(scope).debug() == "Result(OK,<Class String>)");
   }
   {
-    Unit *unit = parseFile("<test>", "'hello world!'");
-    assert(unit->node->debug() == "Block(N4rock7LiteralE,)");
+    Ast *node = parseFile("<test>", "'hello world!'");
+    assert(node->debug() == "Block(N4rock7LiteralE,)");
     Scope scope(builtins);
     assert(
-        unit->node->eval(scope).debug() ==
+        node->eval(scope).debug() ==
         "Result(OK,String(hello world!))");
   }
 
   {
-    Unit *unit = parseFile("<test>", "L(1.0,2,3).__str()");
-    assert(unit->node->debug() == "Block(N4rock10MethodCallE,)");
+    Ast *node = parseFile("<test>", "L(1.0,2,3).__str()");
+    assert(node->debug() == "Block(N4rock10MethodCallE,)");
     Scope scope(builtins);
-    Result result = unit->node->eval(scope);
+    Result result = node->eval(scope);
     assert(result.type == Result::Type::OK);
     assert(result.value->str() == "L(1, 2, 3)");
   }

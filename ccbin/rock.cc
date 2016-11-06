@@ -21,11 +21,10 @@ int main(int argc, char **argv) {
     cout << "usage: " << argv[0] << " script.rock" << endl;
   } else {
     initialize();
-    Unit *unit;
     try {
-      unit = parseFile(argv[1], load(argv[1]));
+      Ast *node = parseFile(argv[1], load(argv[1]));
       Reference scope(new Scope(builtins));
-      Result result = unit->node->eval(*scope.as<Scope>());
+      Result result = node->eval(*scope.as<Scope>());
       if (result.type != Result::Type::OK) {
         cerr << "Uncaught exception (Result): ";
         if (result.value.operator->()) {
