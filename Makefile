@@ -1,9 +1,13 @@
 .PHONY: clean core_all core_test osx_all osx_test
 
-# TODO: Add '-O3 -flto' to CXX_FLAGS
+CXX = g++
+CXX_FLAGS_COMMON = -Iinclude -Ibin/include --std=c++11 -Wall -Werror
+CXX_FLAGS_DEV = $(CXX_FLAGS_COMMON) -O0 -g
+CXX_FLAGS_PROD = $(CXX_FLAGS_COMMON) -O3 -flto
+CXX_FLAGS = $(CXX_FLAGS_DEV)
 
-CORE_CXX = g++
-CORE_CXX_FLAGS = -Iinclude -Ibin/include --std=c++11 -Wall -Werror
+CORE_CXX = $(CXX)
+CORE_CXX_FLAGS = $(CXX_FLAGS)
 CORE_ALL_HH = bin/include/rock/core/all.hh
 CORE_XINCLUDES = $(wildcard include/rock/core/*.hh)
 CORE_INCLUDES = $(CORE_XINCLUDES) $(CORE_ALL_HH)
@@ -16,8 +20,8 @@ CORE_CC_TESTS = $(patsubst bin/%,%,$(CORE_TESTBINS))
 CORE_SCRIPT_TESTS = $(patsubst test/%.rock,%.rock_test,$(CORE_TEST_SCRIPTS))
 CORE_TESTS = $(CORE_CC_TESTS) $(CORE_SCRIPT_TESTS)
 
-OSX_CXX = g++
-OSX_CXX_FLAGS = -Iinclude -Ibin/include --std=c++11 -Wall -Werror
+OSX_CXX = $(CXX)
+OSX_CXX_FLAGS = $(CXX_FLAGS)
 OSX_ALL_HH = bin/include/rock/osx/all.hh
 OSX_XINCLUDES = $(wildcard include/rock/osx/*.hh)
 OSX_INCLUDES = $(OSX_XINCLUDES) $(OSX_ALL_HH) $(CORE_INCLUDES)

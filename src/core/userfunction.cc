@@ -24,4 +24,10 @@ Result UserFunction::invoke(const Args &args) {
   }
 }
 
+std::string UserFunction::debug() const {
+  return
+    "<UserFunction " + name + "@" +
+    node->token.compactLocationMessage() + ">";
+}
+
 }

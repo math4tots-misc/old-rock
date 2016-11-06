@@ -4,6 +4,9 @@
 
 namespace rock {
 
+// NOTE: DEBUG
+// std::set<Object*> allObjects;
+
 namespace {
 Init init(100, __FILE__, []() {
   classObject = new Class("Object", {}, {
@@ -18,6 +21,16 @@ Init init(100, __FILE__, []() {
 }
 
 Class *classObject;
+
+Object::Object() {
+  // NOTE: DEBUG
+  // allObjects.insert(this);
+}
+
+Object::~Object() {
+  // NOTE: DEBUG
+  // allObjects.erase(this);
+}
 
 Result Object::call(const std::string &name, const Args &args) {
   Reference clsref = getClass();

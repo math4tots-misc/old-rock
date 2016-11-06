@@ -1,1 +1,1 @@
-print(range(0, 10))
+var r = range(0, 10)

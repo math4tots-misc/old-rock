@@ -1,13 +1,31 @@
 """core/___prelude.rock
 """
 
+class Iterator {
+  var more, next
+
+  def __init(more, next) {
+    this.more = more
+    this.next = next
+  }
+
+  def more() {
+    return (this.more)()
+  }
+
+  def next() {
+    return (this.next)()
+  }
+}
+
+
 def range(start, end) {
   var i = start
-  Iterator(
-    \. i < end,
-    \{
-      i = i + 1
-      return i - 1
-    })
+  var more = \. i < end
+  var next = \ {
+    i = i + 1
+    i - 1
+  }
+  Iterator(more, next)
 }
 __declare('range', range)

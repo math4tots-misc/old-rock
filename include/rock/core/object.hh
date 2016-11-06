@@ -2,6 +2,7 @@
 #define rock_core_object_hh
 
 #include <functional>
+#include <set>
 #include <vector>
 
 namespace rock {
@@ -16,11 +17,15 @@ using Method = std::function<Result(Reference, const Args&)>;
 
 extern Class *classObject;
 
+// NOTE: DEBUG
+// extern std::set<Object*> allObjects;
+
 class Object {
   friend class Reference;
   int refcnt = 0;
 public:
-  virtual ~Object() {}
+  Object();
+  virtual ~Object();
   Result call(const std::string&, const Args&);
   bool hasMethod(const std::string&) const;
   virtual Reference getClass() const=0;

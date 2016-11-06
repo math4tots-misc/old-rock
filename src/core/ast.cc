@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+#include <iostream>
+
 namespace rock {
 
 Ast::Ast(const Token &t): token(t) {}
@@ -262,8 +264,11 @@ FunctionDisplay::FunctionDisplay(
         Ast(t), name(n), args(a), body(b) {}
 
 Result FunctionDisplay::eval(Scope &scope) const {
-  UserFunction *f = new UserFunction(name, this, scope);
-  scope.declare(name, f);
+  Reference f(new UserFunction(name, this, scope));
+  if (!name.empty()) {
+    Result result = scope.declare(name, f);
+    if (result.type != Result::Type::OK) { return result; }
+  }
   return Result(Result::Type::OK, f);
 }
 
@@ -334,8 +339,9 @@ Result ClassDisplay::eval(Scope &scope) const {
     bases.push_back(classObject);
   }
 
-  Class *cls = new Class(name, bases, true, fields, methods);
-  scope.declare(name, cls);
+  Reference cls = new Class(name, bases, true, fields, methods);
+  Result result = scope.declare(name, cls);
+  if (result.type != Result::Type::OK) { return result; }
   return Result(Result::Type::OK, cls);
 }
 

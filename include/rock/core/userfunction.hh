@@ -15,6 +15,7 @@ public:
   const Reference parentScope;
   UserFunction(const std::string&, const FunctionDisplay*, Scope&);
   Result invoke(const Args&) override;
+  std::string debug() const override;
 };
 
 }

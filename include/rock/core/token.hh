@@ -19,6 +19,7 @@ public:
   long getLineNumber() const;
   long getColumnNumber() const;
   std::string getLine() const;
+  std::string compactLocationMessage() const;
 };
 
 }

@@ -58,4 +58,10 @@ std::string Token::getLine() const {
   return file.contents.substr(start, end - start);
 }
 
+std::string Token::compactLocationMessage() const {
+  std::stringstream ss;
+  ss << file.path << ":" << getLineNumber();
+  return ss.str();
+}
+
 }
