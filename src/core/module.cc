@@ -5,6 +5,15 @@
 
 namespace rock {
 
+std::map<std::string,Reference> *moduleRegistry;
+
+
+namespace {
+Init init(110, __FILE__, []() {
+  moduleRegistry = new std::map<std::string,Reference>();
+});
+}
+
 Reference moduleFrom(const std::string &name, Block *block) {
   Reference scope(new Scope(builtins));
   scope.as<Scope>()->declare("__name", String::from(name));
@@ -23,7 +32,8 @@ Reference moduleFrom(const std::string &name, Block *block) {
       return value->call("__call", args);
     };
   }
-  return new UserObject(new Class("__ModuleClass", {classObject}, methods));
+  return new UserObject(new Class(
+      "__ModuleClass", {classObject}, true, {}, methods));
 }
 
 }

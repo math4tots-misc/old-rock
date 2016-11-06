@@ -36,7 +36,7 @@ OSX_TESTS = $(OSX_CC_TESTS) $(OSX_SCRIPT_TESTS)
 
 ## OS X
 
-osx_all: osx_test
+osx_all: osx_test bin/osx/rock
 
 osx_test: $(OSX_CC_TESTS) $(OSX_SCRIPT_TESTS) core_test
 
@@ -51,7 +51,8 @@ osx/%.test: bin/osx/%.test
 
 $(OSX_ALL_HH): $(OSX_XINCLUDES)
 	mkdir -p bin/include/rock/osx
-	ls include/rock/osx | awk '{ print "#include \"rock/osx/"$$0"\"" }' > $(OSX_ALL_HH)
+	ls include/rock/osx | \
+		awk 'BEGIN { print "#include \"rock/core/all.hh\"" } { print "#include \"rock/osx/"$$0"\"" }' > $(OSX_ALL_HH)
 
 bin/osx/%.test: test/osx/%.cc $(OSX_OBJECTS) $(OSX_INCLUDES)
 	$(OSX_CXX) $(OSX_CXX_FLAGS) $(OSX_OBJECTS) $< -o $@

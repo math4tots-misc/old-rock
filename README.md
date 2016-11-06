@@ -1,5 +1,9 @@
 # Rock programming language
 
+## Setup
+
+You should set a `ROCKPATH` variable.
+
 ## style
 
 Implementations should not live in headers unless they are templates.
@@ -37,6 +41,7 @@ Current levels:
     - The `classObject` variable is initialized here.
   * 110
     - Most `core` class objects are initialized here.
+    - `moduleRegistry` is initialized here.
   * 120
     - `builtins` is populated here (e.g. `print` function)
 

@@ -8,6 +8,8 @@ namespace rock {
 class Reference;
 class Block;
 
+extern std::map<std::string,Reference> *moduleRegistry;
+
 // Given a parsed Block, return a module object.
 // Module objects are actually UserObjects with a custom Class
 // that has a field and method for every declared variable in the file.
