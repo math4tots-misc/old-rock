@@ -57,6 +57,10 @@ Result Scope::declare(const std::string &name, Reference value) {
       new Exception("Variable already declared: '" + name + "'"));
 }
 
+void Scope::erase(const std::string &name) {
+  bindings.erase(name);
+}
+
 Reference Scope::getClass() const {
   return classScope;
 }

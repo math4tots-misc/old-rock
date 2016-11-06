@@ -34,9 +34,11 @@ std::string Exception::debug() const {
 
 std::string Exception::str() const {
   std::stringstream ss;
-  ss << "\n####################";
+  ss << "\n########################################";
+  ss << "########################################";
   ss << "\n## " << message;
-  ss << "\n####################";
+  ss << "\n########################################";
+  ss << "########################################";
   for (const Token *t: stacktrace) {
     ss << t->locationMessage();
   }

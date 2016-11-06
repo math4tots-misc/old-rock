@@ -20,6 +20,7 @@ public:
   Result set(const std::string&, Reference);
   Result declare(const std::string&);
   Result declare(const std::string&, Reference);
+  void erase(const std::string&);
   Reference getClass() const override;
   std::map<std::string, Reference> getBindings() const;
 };

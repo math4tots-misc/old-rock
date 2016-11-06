@@ -205,6 +205,7 @@ Name::Name(const Token &t, const std::string &n):
     Ast(t), name(n) {}
 
 Result Name::eval(Scope &scope) const {
+  StackFrame sf(&token);
   return scope.get(name);
 }
 

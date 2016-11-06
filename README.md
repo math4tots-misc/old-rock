@@ -51,6 +51,8 @@ Current levels:
   * 1050
     - The `platform` variable is reset to something more specific here
       e.g. `OSX`.
+  * 2000
+    - `core/__prelude.rock` is called with the `builtin` Scope.
 
 ## core/ and osx/
 

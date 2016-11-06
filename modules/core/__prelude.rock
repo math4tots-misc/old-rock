@@ -1,0 +1,13 @@
+"""core/___prelude.rock
+"""
+
+def range(start, end) {
+  var i = start
+  Iterator(
+    \. i < end,
+    \{
+      i = i + 1
+      return i - 1
+    })
+}
+__declare('range', range)

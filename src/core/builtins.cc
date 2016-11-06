@@ -48,6 +48,18 @@ Init init2(120, __FILE__, []() {
   });
 });
 
+Init init3(2000, __FILE__, []() {
+  declareFunc(builtins, "__declare", [](const Args &args) -> Result {
+    checkargs(2, args);
+    checktype(classString, args[0]);
+    std::string name = args[0].as<String>()->value;
+    builtins->declare(name, args[1]);
+    return Result(Result::Type::OK, nil);
+  });
+  Reference module = require("core/__prelude.rock");
+  builtins->erase("__declare");
+});
+
 }  // namespace
 
 }
