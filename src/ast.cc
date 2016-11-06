@@ -324,6 +324,10 @@ Result ClassDisplay::eval(Scope &scope) const {
     };
   }
 
+  if (bases.empty()) {
+    bases.push_back(classObject);
+  }
+
   Class *cls = new Class(name, bases, true, fields, methods);
   scope.declare(name, cls);
   return Result(Result::Type::OK, cls);

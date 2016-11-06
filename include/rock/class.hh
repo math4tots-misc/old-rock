@@ -33,9 +33,6 @@ public:
   const std::set<std::string> fields;
   const std::map<std::string,Method> methods;
 public:
-  Class(const std::string&);
-  Class(const std::string&, const std::vector<Reference>&);
-  Class(const std::string&, const std::map<std::string,Method>&);
   Class(
       const std::string&,
       const std::vector<Reference>&,

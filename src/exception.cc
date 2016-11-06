@@ -8,7 +8,7 @@ Class *classException;
 
 namespace {
 Init init(110, __FILE__, []() {
-  classException = new Class("Exception");
+  classException = new Class("Exception", {classObject}, {});
   builtins->declare("Exception", classException);
 });
 

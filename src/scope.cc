@@ -6,7 +6,7 @@ Class *classScope;
 
 namespace {
 Init init(110, __FILE__, []() {
-  classScope = new Class("Scope");
+  classScope = new Class("Scope", {classObject}, {});
   builtins->declare("Scope", classScope);
 });
 }  // namespace

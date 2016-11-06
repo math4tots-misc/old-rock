@@ -21,11 +21,6 @@ bool instanceof(Reference r, const Class *c) {
   return r->getClass().as<Class>() == c;
 }
 
-Class::Class(const std::string &n): Class(n, {}, {}) {}
-Class::Class(const std::string &n, const std::vector<Reference> &bs):
-    Class(n, bs, {}) {}
-Class::Class(const std::string &n, const std::map<std::string,Method> &ms):
-    Class(n, {}, ms) {}
 Class::Class(
     const std::string &n,
     const std::vector<Reference> &bs,

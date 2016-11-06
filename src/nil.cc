@@ -7,7 +7,7 @@ Nil *nil;
 
 namespace {
 Init init(110, __FILE__, []() {
-  classNil = new Class("Nil");
+  classNil = new Class("Nil", {classObject}, {});
   builtins->declare("Nil", classNil);
 
   nil = new Nil();
