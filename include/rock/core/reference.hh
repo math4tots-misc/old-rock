@@ -1,5 +1,5 @@
-#ifndef rock_reference_hh
-#define rock_reference_hh
+#ifndef rock_core_reference_hh
+#define rock_core_reference_hh
 
 namespace rock {
 
@@ -21,4 +21,4 @@ public:
 
 }  // namespace rock
 
-#endif//rock_reference_hh
+#endif//rock_core_reference_hh

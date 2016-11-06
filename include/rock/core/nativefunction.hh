@@ -1,5 +1,5 @@
-#ifndef rock_nativefunction_hh
-#define rock_nativefunction_hh
+#ifndef rock_core_nativefunction_hh
+#define rock_core_nativefunction_hh
 
 #include <string>
 
@@ -17,4 +17,4 @@ public:
 
 }
 
-#endif//rock_nativefunction_hh
+#endif//rock_core_nativefunction_hh

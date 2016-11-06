@@ -1,5 +1,5 @@
-#ifndef rock_scope_hh
-#define rock_scope_hh
+#ifndef rock_core_scope_hh
+#define rock_core_scope_hh
 
 #include <map>
 #include <string>
@@ -26,4 +26,4 @@ public:
 
 }
 
-#endif//rock_scope_hh
+#endif//rock_core_scope_hh

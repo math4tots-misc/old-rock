@@ -1,5 +1,5 @@
-#ifndef rock_exception_hh
-#define rock_exception_hh
+#ifndef rock_core_exception_hh
+#define rock_core_exception_hh
 
 #include <string>
 #include <vector>
@@ -25,4 +25,4 @@ public:
 
 }
 
-#endif//rock_exception_hh
+#endif//rock_core_exception_hh

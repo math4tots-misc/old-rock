@@ -1,5 +1,5 @@
-#ifndef rock_result_hh
-#define rock_result_hh
+#ifndef rock_core_result_hh
+#define rock_core_result_hh
 
 #include <functional>
 #include <vector>
@@ -29,4 +29,4 @@ std::string to_string(rock::Result::Type);
 
 }  // namespace std
 
-#endif//rock_result_hh
+#endif//rock_core_result_hh

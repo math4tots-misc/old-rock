@@ -1,5 +1,5 @@
-#ifndef rock_class_hh
-#define rock_class_hh
+#ifndef rock_core_class_hh
+#define rock_core_class_hh
 
 #include <map>
 #include <set>
@@ -50,4 +50,4 @@ public:
 
 }
 
-#endif//rock_class_hh
+#endif//rock_core_class_hh

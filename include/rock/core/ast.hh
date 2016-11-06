@@ -1,5 +1,5 @@
-#ifndef rock_ast_hh
-#define rock_ast_hh
+#ifndef rock_core_ast_hh
+#define rock_core_ast_hh
 
 #include <map>
 #include <set>
@@ -184,4 +184,4 @@ public:
 
 }
 
-#endif//rock_ast_hh
+#endif//rock_core_ast_hh

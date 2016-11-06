@@ -1,5 +1,5 @@
-#ifndef rock_userobject_hh
-#define rock_userobject_hh
+#ifndef rock_core_userobject_hh
+#define rock_core_userobject_hh
 
 #include <string>
 
@@ -20,4 +20,4 @@ public:
 
 }
 
-#endif//rock_userobject_hh
+#endif//rock_core_userobject_hh

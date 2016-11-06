@@ -1,5 +1,5 @@
-#ifndef rock_parse_hh
-#define rock_parse_hh
+#ifndef rock_core_parse_hh
+#define rock_core_parse_hh
 
 #include <memory>
 #include <vector>
@@ -20,4 +20,4 @@ Ast *parseExpression(const std::string&);
 
 }
 
-#endif//rock_parse_hh
+#endif//rock_core_parse_hh

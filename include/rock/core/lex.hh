@@ -1,5 +1,5 @@
-#ifndef rock_lex_hh
-#define rock_lex_hh
+#ifndef rock_core_lex_hh
+#define rock_core_lex_hh
 
 #include <vector>
 
@@ -18,4 +18,4 @@ std::vector<Token> lex(const File&);
 
 }
 
-#endif//rock_lex_hh
+#endif//rock_core_lex_hh

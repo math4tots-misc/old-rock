@@ -1,5 +1,5 @@
-#ifndef rock_userfunction_hh
-#define rock_userfunction_hh
+#ifndef rock_core_userfunction_hh
+#define rock_core_userfunction_hh
 
 #include <string>
 
@@ -19,4 +19,4 @@ public:
 
 }
 
-#endif//rock_userfunction_hh
+#endif//rock_core_userfunction_hh

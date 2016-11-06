@@ -1,5 +1,5 @@
-#ifndef rock_stack_hh
-#define rock_stack_hh
+#ifndef rock_core_stack_hh
+#define rock_core_stack_hh
 
 #include <map>
 #include <string>
@@ -18,4 +18,4 @@ public:
 
 }
 
-#endif//rock_stack_hh
+#endif//rock_core_stack_hh

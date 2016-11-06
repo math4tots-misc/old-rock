@@ -1,5 +1,5 @@
-#ifndef rock_module_hh
-#define rock_module_hh
+#ifndef rock_core_module_hh
+#define rock_core_module_hh
 
 #include <string>
 
@@ -16,4 +16,4 @@ Reference moduleFrom(const std::string&, Block*);
 
 }
 
-#endif//rock_module_hh
+#endif//rock_core_module_hh

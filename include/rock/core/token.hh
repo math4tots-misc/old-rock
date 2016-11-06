@@ -1,5 +1,5 @@
-#ifndef rock_token_hh
-#define rock_token_hh
+#ifndef rock_core_token_hh
+#define rock_core_token_hh
 
 #include <string>
 
@@ -23,4 +23,4 @@ public:
 
 }
 
-#endif//rock_token_hh
+#endif//rock_core_token_hh

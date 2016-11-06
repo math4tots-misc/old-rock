@@ -1,5 +1,5 @@
-#ifndef rock_check_hh
-#define rock_check_hh
+#ifndef rock_core_check_hh
+#define rock_core_check_hh
 
 #include <vector>
 
@@ -17,4 +17,4 @@ void checktype(Class*, Reference);
 
 }
 
-#endif//rock_check_hh
+#endif//rock_core_check_hh

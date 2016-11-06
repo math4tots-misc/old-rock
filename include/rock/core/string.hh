@@ -1,5 +1,5 @@
-#ifndef rock_string_hh
-#define rock_string_hh
+#ifndef rock_core_string_hh
+#define rock_core_string_hh
 
 #include <string>
 
@@ -23,4 +23,4 @@ public:
 
 }
 
-#endif//rock_string_hh
+#endif//rock_core_string_hh

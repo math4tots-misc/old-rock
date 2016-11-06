@@ -1,5 +1,5 @@
-#ifndef rock_builtins_hh
-#define rock_builtins_hh
+#ifndef rock_core_builtins_hh
+#define rock_core_builtins_hh
 
 #include <string>
 
@@ -11,4 +11,4 @@ extern Scope *builtins;
 
 }
 
-#endif//rock_builtins_hh
+#endif//rock_core_builtins_hh

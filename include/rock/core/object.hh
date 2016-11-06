@@ -1,5 +1,5 @@
-#ifndef rock_object_hh
-#define rock_object_hh
+#ifndef rock_core_object_hh
+#define rock_core_object_hh
 
 #include <functional>
 #include <vector>
@@ -50,4 +50,4 @@ public:
 
 }  // namespace rock
 
-#endif//rock_object_hh
+#endif//rock_core_object_hh
