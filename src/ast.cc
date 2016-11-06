@@ -42,7 +42,12 @@ std::string ParseError::str() const {
 Block::Block(const Token &t, const std::vector<Ast*> &es):
     Ast(t), expressions(es) {}
 
-Result Block::eval(Scope &scope) const {
+Result Block::eval(Scope &parentScope) const {
+  Reference scope(new Scope(&parentScope));
+  return evalWithoutNewScope(*scope.as<Scope>());
+}
+
+Result Block::evalWithoutNewScope(Scope &scope) const {
   Result last = Result(Result::Type::OK, nil);
   for (Ast *e: expressions) {
     last = e->eval(scope);

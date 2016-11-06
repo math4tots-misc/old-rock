@@ -21,6 +21,7 @@ public:
   Result declare(const std::string&);
   Result declare(const std::string&, Reference);
   Reference getClass() const override;
+  std::map<std::string, Reference> getBindings() const;
 };
 
 }

@@ -41,6 +41,7 @@ public:
   const std::vector<Ast*> expressions;
   Block(const Token&, const std::vector<Ast*>&);
   Result eval(Scope&) const override;
+  Result evalWithoutNewScope(Scope&) const;
   std::string debug() const override;
 };
 

@@ -61,4 +61,8 @@ Reference Scope::getClass() const {
   return classScope;
 }
 
+std::map<std::string,Reference> Scope::getBindings() const {
+  return bindings;
+}
+
 }
