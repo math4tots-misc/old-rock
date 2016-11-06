@@ -2,7 +2,11 @@
 
 ## Setup
 
-You should set a `ROCKPATH` variable.
+You should set the `ROCKPATH` variable.
+
+```sh
+export ROCKPATH="$ROCKPATH:$HOME/git/rock/modules"
+```
 
 ## style
 
@@ -44,6 +48,9 @@ Current levels:
     - `moduleRegistry` is initialized here.
   * 120
     - `builtins` is populated here (e.g. `print` function)
+  * 1050
+    - The `platform` variable is reset to something more specific here
+      e.g. `OSX`.
 
 ## core/ and osx/
 
