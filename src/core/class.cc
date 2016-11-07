@@ -11,7 +11,7 @@ Init init(110, __FILE__, []() {
       Reference instance(new UserObject(owner.as<Class>()));
       instance->call("__init", args);
       return instance;
-    }}
+    }},
   });
   builtins->declare("Class", classClass);
 });
