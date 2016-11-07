@@ -44,4 +44,12 @@ Object *Reference::operator->() const {
   return pointer;
 }
 
+bool Reference::is_not_null() const {
+  return !is_null();
+}
+
+bool Reference::is_null() const {
+  return pointer == nullptr;
+}
+
 }  // namespace rock

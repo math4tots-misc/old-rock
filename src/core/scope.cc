@@ -1,5 +1,7 @@
 #include "rock/core/all.hh"
 
+#include <iostream>
+
 namespace rock {
 
 Class *classScope;
@@ -20,8 +22,8 @@ Reference Scope::get(const std::string &name) {
   if (entry != bindings.end()) {
     return entry->second;
   }
-  if (parent != nullptr) {
-    return parent->get(name);
+  if (parent.is_not_null()) {
+    return parent.as<Scope>()->get(name);
   }
   throw exception("No such variable (get): '" + name + "'");
 }
@@ -32,8 +34,8 @@ Reference Scope::set(const std::string &name, Reference value) {
     bindings[name] = value;
     return value;
   }
-  if (parent != nullptr) {
-    return parent->set(name, value);
+  if (parent.is_not_null()) {
+    return parent.as<Scope>()->set(name, value);
   }
   throw exception("No such variable (set): '" + name + "'");
 }

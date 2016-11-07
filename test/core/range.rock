@@ -1,5 +1,16 @@
 var r = Range(0, 10)
 
+var x = 5
+var f
+{
+  {
+    f = \. x
+    print(f())
+  }
+}
+
+print(f())
+
 # Figure out why the following doesn't work.
 r"""
 r.iter().each(\i {

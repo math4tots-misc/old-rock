@@ -11,7 +11,7 @@ namespace rock {
 extern Class *classScope;
 
 class Scope final: public Object {
-  Scope *const parent;
+  Reference parent;
   std::map<std::string, Reference> bindings;
 public:
   Scope();

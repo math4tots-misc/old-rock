@@ -18,6 +18,8 @@ public:
   ~Reference();
   Reference &operator=(const Reference&);
   Object *operator->() const;
+  bool is_not_null() const;
+  bool is_null() const;
   template <class T> T *as() const { return static_cast<T*>(pointer); }
 };
 
