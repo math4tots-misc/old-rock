@@ -1,8 +1,9 @@
-var r = Range(0, 10)
+var r = Range(7, 10)
 
-# Figure out why the following doesn't work.
-r"""
+var items = L()
+
 r.iter().each(\i {
-  print(i)
+  items.push(i)
 })
-"""
+
+assert(items == L(7, 8, 9))

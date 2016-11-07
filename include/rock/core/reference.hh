@@ -20,6 +20,7 @@ public:
   Object *operator->() const;
   bool is_not_null() const;
   bool is_null() const;
+  bool operator==(const Reference&) const;
   template <class T> T *as() const { return static_cast<T*>(pointer); }
 };
 

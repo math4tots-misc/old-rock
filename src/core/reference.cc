@@ -52,4 +52,8 @@ bool Reference::is_null() const {
   return pointer == nullptr;
 }
 
+bool Reference::operator==(const Reference &r) const {
+  return pointer->call("__eq", {r})->truthy();
+}
+
 }  // namespace rock

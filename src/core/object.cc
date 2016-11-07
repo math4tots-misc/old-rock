@@ -31,7 +31,7 @@ Reference Object::call(const std::string &name, const Args &args) {
   Method method = cls->getMethod(name);
   if (!method) {
     const std::string message =
-        "No such method: " + name + " for class " + cls->name;
+        "No such method '" + name + "' for class '" + cls->name + "'";
     throw exception(message);
   }
   return method(this, args);
