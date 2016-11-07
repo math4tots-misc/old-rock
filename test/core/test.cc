@@ -19,10 +19,10 @@ int main() {
     {
       Ast *node = parseFile("<test>", "a + b");
       assert(node->debug() == "Block(N4rock10MethodCallE,)");
-      Scope scope;
+      Reference scope(new Scope());
       bool caught = false;
       try {
-        node->eval(scope)->debug();
+        node->eval(*scope.as<Scope>())->debug();
       } catch (const Reference &r) {
         caught = true;
         assert(r->debug() == "<Exception: No such variable (get): 'a'>");
@@ -34,22 +34,22 @@ int main() {
     {
       Ast *node = parseFile("<test>", "String");
       assert(node->debug() == "Block(N4rock4NameE,)");
-      Scope scope(builtins);
-      assert(node->eval(scope)->debug() == "<Class String>");
+      Reference scope(new Scope(builtins));
+      assert(node->eval(*scope.as<Scope>())->debug() == "<Class String>");
     }
     {
       Ast *node = parseFile("<test>", "'hello world!'");
       assert(node->debug() == "Block(N4rock7LiteralE,)");
-      Scope scope(builtins);
+      Reference scope(new Scope(builtins));
       assert(
-          node->eval(scope)->debug() == "String(hello world!)");
+          node->eval(*scope.as<Scope>())->debug() == "String(hello world!)");
     }
 
     {
       Ast *node = parseFile("<test>", "L(1.0,2,3).__str()");
       assert(node->debug() == "Block(N4rock10MethodCallE,)");
-      Scope scope(builtins);
-      Reference result = node->eval(scope);
+      Reference scope(new Scope(builtins));
+      Reference result = node->eval(*scope.as<Scope>());
       assert(result->str() == "L(1, 2, 3)");
     }
     rock::finalize();

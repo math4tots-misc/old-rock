@@ -16,6 +16,10 @@ using Method = std::function<Reference(Reference, const Args&)>;
 
 extern Class *classObject;
 
+/** Base class for all rock objects.
+ * Due to the way that they are reference counted, subclasses of
+ * Object should never be directly allocated on the stack.
+ */
 class Object {
   friend class Reference;
   int refcnt = 0;
