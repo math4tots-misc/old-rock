@@ -23,6 +23,8 @@ public:
   std::string str() const override;
 };
 
+Reference exception(const std::string&);
+
 }
 
 #endif//rock_core_exception_hh

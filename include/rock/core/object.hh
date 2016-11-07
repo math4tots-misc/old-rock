@@ -9,11 +9,10 @@ namespace rock {
 
 class Object;
 class Reference;
-class Result;
 class Class;
 
 using Args = std::vector<Reference>;
-using Method = std::function<Result(Reference, const Args&)>;
+using Method = std::function<Reference(Reference, const Args&)>;
 
 extern Class *classObject;
 
@@ -23,7 +22,7 @@ class Object {
 public:
   Object();
   virtual ~Object();
-  Result call(const std::string&, const Args&);
+  Reference call(const std::string&, const Args&);
   bool hasMethod(const std::string&) const;
   virtual Reference getClass() const=0;
 

@@ -8,12 +8,10 @@ namespace rock {
 
 Ast::Ast(const Token &t): token(t) {}
 
-Result Ast::eval(Scope&) const {
-  return Result(
-      Result::Type::EXCEPTION,
-      new Exception(
-          std::string(typeid(*this).name()) +
-              " doesn't implement 'eval' yet"));
+Reference Ast::eval(Scope&) const {
+  throw exception(
+      std::string(typeid(*this).name()) +
+      " doesn't implement 'eval' yet");
 }
 
 std::string Ast::debug() const {
@@ -23,12 +21,10 @@ std::string Ast::debug() const {
 ParseError::ParseError(const Token &t, const std::string &m):
     Ast(t), message(m) {}
 
-Result ParseError::eval(Scope &scope) const {
+Reference ParseError::eval(Scope &scope) const {
   // TODO: Save token on stack, so that the location of the parse
   // error shows up on stack trace.
-  return Result(
-      Result::Type::EXCEPTION,
-      new Exception("Parse error: " + message));
+  throw exception("Parse error: " + message);
 }
 
 std::string ParseError::debug() const {
@@ -44,16 +40,15 @@ std::string ParseError::str() const {
 Block::Block(const Token &t, const std::vector<Ast*> &es):
     Ast(t), expressions(es) {}
 
-Result Block::eval(Scope &parentScope) const {
+Reference Block::eval(Scope &parentScope) const {
   Reference scope(new Scope(&parentScope));
   return evalWithoutNewScope(*scope.as<Scope>());
 }
 
-Result Block::evalWithoutNewScope(Scope &scope) const {
-  Result last = Result(Result::Type::OK, nil);
+Reference Block::evalWithoutNewScope(Scope &scope) const {
+  Reference last = nil;
   for (Ast *e: expressions) {
     last = e->eval(scope);
-    if (last.type != Result::Type::OK) { return last; }
   }
   return last;
 }
@@ -71,52 +66,39 @@ std::string Block::debug() const {
 If::If(const Token &t, Ast *c, Ast *b, Ast *o):
     Ast(t), condition(c), body(b), other(o) {}
 
-Result If::eval(Scope &scope) const {
-  Result c = condition->eval(scope);
-  if (c.type != Result::Type::OK) { return c; }
-
-  if (c.value->truthy()) {
-    return body->eval(scope);
-  } else if (other) {
-    return other->eval(scope);
-  }
-  return Result(Result::Type::OK, nil);
+Reference If::eval(Scope &scope) const {
+  return
+      condition->eval(scope)->truthy() ?
+      body->eval(scope) : other->eval(scope);
 }
 
 Or::Or(const Token &t, Ast *l, Ast *r): Ast(t), left(l), right(r) {}
 
-Result Or::eval(Scope &scope) const {
-  Result leftResult = left->eval(scope);
-  if (leftResult.type != Result::Type::OK) { return leftResult; }
-  return leftResult.value->truthy() ? leftResult : right->eval(scope);
+Reference Or::eval(Scope &scope) const {
+  Reference left = this->left->eval(scope);
+  return left->truthy() ? left : right->eval(scope);
 }
 
 And::And(const Token &t, Ast *l, Ast *r): Ast(t), left(l), right(r) {}
 
-Result And::eval(Scope &scope) const {
-  Result leftResult = left->eval(scope);
-  if (leftResult.type != Result::Type::OK) { return leftResult; }
-  return !leftResult.value->truthy() ? leftResult : right->eval(scope);
+Reference And::eval(Scope &scope) const {
+  Reference left = this->left->eval(scope);
+  return !left->truthy() ? left : right->eval(scope);
 }
 
 Arguments::Arguments(const Token &t, const std::vector<Ast*> &as):
     Arguments(t, as, nullptr) {}
 Arguments::Arguments(const Token &t, const std::vector<Ast*> &as, Ast *va):
     token(t), args(as), vararg(va) {}
-Result Arguments::evalargs(Scope &scope, std::vector<Reference> &out) const {
+std::vector<Reference> Arguments::evalargs(Scope &scope) const {
+  std::vector<Reference> out;
   if (vararg) {
-    return Result(
-        Result::Type::EXCEPTION,
-        new Exception("splat arguments not yet supported"));
+    throw exception("splat arguments not yet supported");
   }
   for (Ast *e: args) {
-    Result r = e->eval(scope);
-    if (r.type != Result::Type::OK) {
-      return r;
-    }
-    out.push_back(r.value);
+    out.push_back(e->eval(scope));
   }
-  return Result(Result::Type::OK, nil);
+  return out;
 }
 
 
@@ -124,89 +106,43 @@ MethodCall::MethodCall(
     const Token &t, Ast *o, const std::string &n, Arguments *a):
         Ast(t), owner(o), name(n), args(a) {}
 
-Result MethodCall::eval(Scope &scope) const {
-  Result result = this->owner->eval(scope);
-  if (result.type != Result::Type::OK) { return result; }
-  Reference owner = result.value;
-
-  std::vector<Reference> args;
-  {
-    Result result = this->args->evalargs(scope, args);
-    if (result.type != Result::Type::OK) { return result; }
-  }
-
+Reference MethodCall::eval(Scope &scope) const {
+  Reference owner = this->owner->eval(scope);
+  std::vector<Reference> args = this->args->evalargs(scope);
   StackFrame sf(&token);
-
   return owner->call(name, args);
-}
-
-Break::Break(const Token &t): Ast(t) {}
-
-Result Break::eval(Scope &scope) const {
-  return Result(Result::Type::BREAK, nil);
-}
-
-Continue::Continue(const Token &t): Ast(t) {}
-
-Result Continue::eval(Scope &scope) const {
-  return Result(Result::Type::CONTINUE, nil);
 }
 
 While::While(const Token &t, Ast *c, Ast *b):
     Ast(t), condition(c), body(b) {}
 
-Result While::eval(Scope &scope) const {
-  while (true) {
-    Result condResult = this->condition->eval(scope);
-    if (condResult.type != Result::Type::OK) { return condResult; }
-    if (!condResult.value->truthy()) { break; }
-    Result bodyResult = this->body->eval(scope);
-    if (bodyResult.type == Result::Type::OK ||
-        bodyResult.type == Result::Type::CONTINUE) {
-      continue;
-    } else if (bodyResult.type == Result::Type::BREAK) {
-      break;
-    } else {
-      return bodyResult;
-    }
+Reference While::eval(Scope &scope) const {
+  while (this->condition->eval(scope)->truthy()) {
+    this->body->eval(scope);
   }
-  return Result(Result::Type::OK, nil);
-}
-
-Return::Return(const Token &t, Ast *v): Ast(t), value(v) {}
-
-Result Return::eval(Scope &scope) const {
-  Result result = value->eval(scope);
-  if (result.type != Result::Type::OK) { return result; }
-  return Result(Result::Type::RETURN, result.value);
+  return nil;
 }
 
 Declaration::Declaration(const Token &t, const std::string &n, Ast *v):
     Ast(t), name(n), value(v) {}
 
-Result Declaration::eval(Scope &scope) const {
-  if (value) {
-    Result result = value->eval(scope);
-    if (result.type != Result::Type::OK) { return result; }
-    return scope.declare(name, result.value);
-  } else {
-    return scope.declare(name);
-  }
+Reference Declaration::eval(Scope &scope) const {
+  return
+      value ?
+      scope.declare(name, this->value->eval(scope)) : scope.declare(name);
 }
 
 Assignment::Assignment(const Token &t, const std::string &n, Ast *v):
     Ast(t), name(n), value(v) {}
 
-Result Assignment::eval(Scope &scope) const {
-  Result result = value->eval(scope);
-  if (result.type != Result::Type::OK) { return result; }
-  return scope.set(name, result.value);
+Reference Assignment::eval(Scope &scope) const {
+  return scope.set(name, value->eval(scope));
 }
 
 Name::Name(const Token &t, const std::string &n):
     Ast(t), name(n) {}
 
-Result Name::eval(Scope &scope) const {
+Reference Name::eval(Scope &scope) const {
   StackFrame sf(&token);
   return scope.get(name);
 }
@@ -214,7 +150,7 @@ Result Name::eval(Scope &scope) const {
 Literal::Literal(const Token &t, Reference v):
     Ast(t), value(v) {}
 
-Result Literal::eval(Scope &scope) const {
+Reference Literal::eval(Scope &scope) const {
   return value;
 }
 
@@ -263,13 +199,12 @@ FunctionDisplay::FunctionDisplay(
     const Token &t, const std::string &n, Signature *a, Ast *b):
         Ast(t), name(n), args(a), body(b) {}
 
-Result FunctionDisplay::eval(Scope &scope) const {
+Reference FunctionDisplay::eval(Scope &scope) const {
   Reference f(new UserFunction(name, this, scope));
   if (!name.empty()) {
-    Result result = scope.declare(name, f);
-    if (result.type != Result::Type::OK) { return result; }
+    scope.declare(name, f);
   }
-  return Result(Result::Type::OK, f);
+  return f;
 }
 
 ClassDisplay::ClassDisplay(
@@ -278,14 +213,10 @@ ClassDisplay::ClassDisplay(
     const std::map<std::string,FunctionDisplay*> &ms):
         Ast(t), name(n), bases(bs), fields(fs), methods(ms) {}
 
-Result ClassDisplay::eval(Scope &scope) const {
+Reference ClassDisplay::eval(Scope &scope) const {
   StackFrame sf(&token);
 
-  std::vector<Reference> bases;
-  {
-    Result result = this->bases->evalargs(scope, bases);
-    if (result.type != Result::Type::OK) { return result; }
-  }
+  std::vector<Reference> bases = this->bases->evalargs(scope);
 
   std::set<std::string> fields(this->fields);
   std::map<std::string,Method> methods;
@@ -320,18 +251,7 @@ Result ClassDisplay::eval(Scope &scope) const {
       Reference scope(new Scope(parentScope.as<Scope>()));
       scope.as<Scope>()->declare("this", owner);
       fd->args->resolve(*scope.as<Scope>(), args);
-      Result result = fd->body->eval(*scope.as<Scope>());
-      switch (result.type) {
-      case Result::Type::OK:
-      case Result::Type::EXCEPTION:
-        return result;
-      case Result::Type::RETURN:
-        return Result(Result::Type::OK, result.value);
-      default:
-        // TODO: Do something nicer
-        return Result(
-            Result::Type::EXCEPTION, new Exception("Invalid result type"));
-      }
+      return fd->body->eval(*scope.as<Scope>());
     };
   }
 
@@ -340,9 +260,8 @@ Result ClassDisplay::eval(Scope &scope) const {
   }
 
   Reference cls = new Class(name, bases, true, fields, methods);
-  Result result = scope.declare(name, cls);
-  if (result.type != Result::Type::OK) { return result; }
-  return Result(Result::Type::OK, cls);
+  scope.declare(name, cls);
+  return cls;
 }
 
 }

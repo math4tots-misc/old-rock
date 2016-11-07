@@ -45,7 +45,7 @@ Reference load(const std::string &uri) {
 
 void declareFunc(
     Scope *scope, const std::string &name,
-    std::function<Result(const Args&)> f) {
+    std::function<Reference(const Args&)> f) {
   scope->declare(name, Function::from(name, f));
 }
 
@@ -53,7 +53,7 @@ Init init(110, __FILE__, []() {
   declareFunc(builtins, "require", [](const Args &args) {
     checkargs(1, args);
     checktype(classString, args[0]);
-    return Result(Result::Type::OK, require(args[0]->str()));
+    return require(args[0]->str());
   });
 });
 

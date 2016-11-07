@@ -12,7 +12,7 @@ Init init(110, __FILE__, []() {
   platform = new Platform();
 
   classPlatform = new Class("__Platform", {classObject}, true, {}, {
-    {"getName", [](Reference, const Args &args) -> Result {
+    {"getName", [](Reference, const Args &args) -> Reference {
       checkargs(0, args);
       return String::from(platform->getName());
     }},

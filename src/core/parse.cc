@@ -270,17 +270,10 @@ public:
     Token t = peek();
     if (at("{")) {  // }
       return parse_block();
-    } else if (consume("break")) {
-      return new Break(t);
-    } else if (consume("continue")) {
-      return new Continue(t);
     } else if (consume("while")) {
       Ast *cond = parse_expression();
       Block *body = parse_block();
       return new While(t, cond, body);
-    } else if (consume("return")) {
-      Ast *e = parse_expression();
-      return new Return(t, e);
     } else if (at("if")) {
       return parse_if();
     } else if (consume("(")) {
@@ -364,7 +357,7 @@ public:
       Signature *sig = parse_inside_signature();
       Ast *body;
       if (consume(".")) {
-        body = new Return(t, parse_expression());
+        body = parse_expression();
       } else {
         body = parse_block();
       }

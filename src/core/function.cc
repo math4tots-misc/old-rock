@@ -26,7 +26,7 @@ std::string Function::debug() const {
 }
 
 Reference Function::from(
-    const std::string &name, std::function<Result(const Args&)> f) {
+    const std::string &name, std::function<Reference(const Args&)> f) {
   return new NativeFunction(name, f);
 }
 

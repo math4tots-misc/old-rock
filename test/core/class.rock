@@ -2,7 +2,7 @@ class Foo {
   var attr
 
   def __str() {
-    return "Foo instance"
+    "Foo instance"
   }
 }
 

@@ -17,8 +17,7 @@ Init init(110, __FILE__, []() {
 Reference moduleFrom(const std::string &name, Block *block) {
   Reference scope(new Scope(builtins));
   scope.as<Scope>()->declare("__name", String::from(name));
-  Result result = block->evalWithoutNewScope(*scope.as<Scope>());
-  if (result.type != Result::Type::OK) { throw result; }
+  block->evalWithoutNewScope(*scope.as<Scope>());
   std::map<std::string,Reference> bindings = scope.as<Scope>()->getBindings();
   std::map<std::string,Method> methods;
   for (auto it = bindings.begin(); it != bindings.end(); ++it) {

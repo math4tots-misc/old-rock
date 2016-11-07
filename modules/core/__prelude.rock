@@ -10,11 +10,11 @@ class Iterator {
   }
 
   def more() {
-    return (this.more)()
+    (this.more)()
   }
 
   def next() {
-    return (this.next)()
+    (this.next)()
   }
 
   def each(f) {

@@ -22,7 +22,7 @@ Init init(50, __FILE__, []() {
 
 void declareFunc(
     Scope *scope, const std::string &name,
-    std::function<Result(const Args&)> f) {
+    std::function<Reference(const Args&)> f) {
   scope->declare(name, Function::from(name, f));
 }
 
@@ -32,29 +32,27 @@ Init init2(120, __FILE__, []() {
   declareFunc(builtins, "print", [](const Args& args) {
     checkargs(1, args);
     std::cout << args[0]->str() << std::endl;
-    return Result(Result::Type::OK, args[0]);
+    return args[0];
   });
-  declareFunc(builtins, "L", [](const Args& args) {
-    return Result(Result::Type::OK, new List(args));
+  declareFunc(builtins, "L", [](const Args& args) -> Reference {
+    return new List(args);
   });
-  declareFunc(builtins, "assert", [](const Args& args) {
+  declareFunc(builtins, "assert", [](const Args& args) -> Reference {
     checkargs(1, args);
     if (!args[0]->truthy()) {
-      return Result(
-          Result::Type::EXCEPTION,
-          new Exception("Assertion failed"));
+      throw exception("Assertion failed");
     }
-    return Result(Result::Type::OK, nil);
+    return nil;
   });
 });
 
 Init init3(2000, __FILE__, []() {
-  declareFunc(builtins, "__declare", [](const Args &args) -> Result {
+  declareFunc(builtins, "__declare", [](const Args &args) -> Reference {
     checkargs(2, args);
     checktype(classString, args[0]);
     std::string name = args[0].as<String>()->value;
     builtins->declare(name, args[1]);
-    return Result(Result::Type::OK, nil);
+    return nil;
   });
   Reference module = require("core/__prelude.rock");
   builtins->erase("__declare");

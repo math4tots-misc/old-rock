@@ -17,9 +17,9 @@ public:
   Function(const std::string&);
   Reference getClass() const override;
   std::string debug() const override;
-  virtual Result invoke(const Args&)=0;
+  virtual Reference invoke(const Args&)=0;
   static Reference from(
-      const std::string&, std::function<Result(const Args&)>);
+      const std::string&, std::function<Reference(const Args&)>);
 };
 
 }

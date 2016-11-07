@@ -1,6 +1,8 @@
 var r = Range(0, 10)
 
+# Figure out why the following doesn't work.
+r"""
 r.iter().each(\i {
   print(i)
 })
-
+"""

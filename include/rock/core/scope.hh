@@ -16,10 +16,10 @@ class Scope final: public Object {
 public:
   Scope();
   Scope(Scope*);
-  Result get(const std::string&);
-  Result set(const std::string&, Reference);
-  Result declare(const std::string&);
-  Result declare(const std::string&, Reference);
+  Reference get(const std::string&);
+  Reference set(const std::string&, Reference);
+  Reference declare(const std::string&);
+  Reference declare(const std::string&, Reference);
   void erase(const std::string&);
   Reference getClass() const override;
   std::map<std::string, Reference> getBindings() const;

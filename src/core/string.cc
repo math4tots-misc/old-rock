@@ -11,16 +11,13 @@ Init init(110, __FILE__, []() {
       checkargs(0, args);
       return owner;
     }},
-    {"__eq", [](Reference owner, const Args& args) {
+    {"__eq", [](Reference owner, const Args& args) -> Reference {
       checkargs(1, args);
       if (!instanceof(args[0], classString)) {
-        return Result(Result::Type::OK, xfalse);
+        return xfalse;
       }
-      return Result(
-          Result::Type::OK,
-          Bool::from(
-              owner.as<String>()->value ==
-              args[0].as<String>()->value));
+      return Bool::from(
+          owner.as<String>()->value == args[0].as<String>()->value);
     }},
   });
   builtins->declare("String", classString);

@@ -24,16 +24,7 @@ int main(int argc, char **argv) {
     try {
       Ast *node = parseFile(argv[1], load(argv[1]));
       Reference scope(new Scope(builtins));
-      Result result = node->eval(*scope.as<Scope>());
-      if (result.type != Result::Type::OK) {
-        cerr << "Uncaught exception (Result): ";
-        if (result.value.operator->()) {
-          cerr << result.value->str() << endl;
-        } else {
-          cerr << "(empty)" << result.debug() << endl;
-        }
-        exitcode = 1;
-      }
+      node->eval(*scope.as<Scope>());
     } catch (const char *str) {
       cerr << "Uncaught exception (const char*): " << str << endl;
       exitcode = 1;

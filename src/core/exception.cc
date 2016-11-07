@@ -45,4 +45,8 @@ std::string Exception::str() const {
   return ss.str();
 }
 
+Reference exception(const std::string &message) {
+  return new Exception(message);
+}
+
 }

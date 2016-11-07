@@ -9,12 +9,10 @@ Init init(100, __FILE__, []() {
   classObject = new Class("Object", {}, {
     {"__init", [](Reference, const Args &args) {
       checkargs(0, args);
-      return Result(Result::Type::OK, nil);
+      return nil;
     }},
     {"__ne", [](Reference owner, const Args &args) {
-      Result result = owner->call("__eq", args);
-      if (result.type != Result::Type::OK) { return result; }
-      return Result(Result::Type::OK, result.value->truthy() ? xfalse : xtrue);
+      return owner->call("__eq", args)->truthy() ? xfalse : xtrue;
     }}
   });
   builtins->declare("Object", classObject);
@@ -27,16 +25,14 @@ Object::Object() {}
 
 Object::~Object() {}
 
-Result Object::call(const std::string &name, const Args &args) {
+Reference Object::call(const std::string &name, const Args &args) {
   Reference clsref = getClass();
   Class *cls = clsref.as<Class>();
   Method method = cls->getMethod(name);
   if (!method) {
     const std::string message =
         "No such method: " + name + " for class " + cls->name;
-    return Result(
-        Result::Type::EXCEPTION,
-        new Exception(message));
+    throw exception(message);
   }
   return method(this, args);
 }

@@ -4,14 +4,14 @@ namespace rock {
 
 NativeFunction::NativeFunction(
     const std::string &n,
-    std::function<Result(const Args&)> f):
+    std::function<Reference(const Args&)> f):
         Function(n), function(f) {}
 
 std::string NativeFunction::debug() const {
   return "<NativeFunction " + name + ">";
 }
 
-Result NativeFunction::invoke(const Args &args) {
+Reference NativeFunction::invoke(const Args &args) {
   return function(args);
 }
 

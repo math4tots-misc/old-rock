@@ -26,9 +26,7 @@ That's basically it. Then you just run your compiler with all the C++ files in `
 
 ## Error handling
 
-Exceptions are both thrown (`Reference`s are thrown by value), or returned explicitly by returning `Result`s with the type set to `Result::Type::EXCEPTION`.
-
-We return the `Result` type so that throwing exceptions in rock can be not too expensive. However, sometimes it can be a hassle (e.g. args checking). Sometimes, the exception to be thrown actually is exceptional and are unlikely to be intentional (like args checking or type checking). In those cases, we throw actual C++ exceptions.
+Use underlying C++ exceptions.
 
 ## Init
 
