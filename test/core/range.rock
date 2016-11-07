@@ -7,3 +7,20 @@ r.iter().each(\i {
 })
 
 assert(items == L(7, 8, 9))
+
+r"""
+0.until(10).map(_.toString()).filter(_.has(5)).to(List)
+0.until(10).enumerate().to(Map)
+
+0.to(10).map(\i {
+  i.toString()
+}).filter(\i {
+  i.has('5')
+}).to(List)
+
+0 to 10 map \i {
+  i.toString()
+} filter \i {
+
+}
+"""
