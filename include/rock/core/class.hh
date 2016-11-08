@@ -18,6 +18,10 @@ bool instanceof(Reference, const Class*);
 
 class Class final: public Object {
 public:
+  /** The cls variable holds the class of this class.
+   * If null, we default to classClass.
+   */
+  Reference cls;
   const std::string name;
   const std::vector<Reference> bases;
 
@@ -38,6 +42,18 @@ public:
       const std::vector<Reference>&,
       const std::map<std::string,Method>&);
   Class(
+      Reference,
+      const std::string&,
+      const std::vector<Reference>&,
+      const std::map<std::string,Method>&);
+  Class(
+      const std::string&,
+      const std::vector<Reference>&,
+      bool,
+      const std::set<std::string>&,
+      const std::map<std::string,Method>&);
+  Class(
+      Reference,
       const std::string&,
       const std::vector<Reference>&,
       bool,

@@ -33,7 +33,7 @@ print(add2(41, 40))
 
 def range(start, end) {
   var i = start
-  Iterator(
+  Iter(
     \. i < end,
     \ {
       i = i + 1

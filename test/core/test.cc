@@ -57,7 +57,7 @@ int main() {
     std::cerr << pe.str() << std::endl;
     return 1;
   } catch (const Reference &r) {
-    std::cerr << r->debug() << std::endl;
+    std::cerr << r->str() << std::endl;
     return 1;
   }
 }

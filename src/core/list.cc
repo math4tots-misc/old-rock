@@ -5,10 +5,24 @@
 namespace rock {
 
 Class *classList;
+Class *classListClass;
 
 namespace {
 Init init(110, __FILE__, []() {
-  classList = new Class("List", {classObject}, {
+  classListClass = new Class("ListClass", {classClass}, {
+    {"fromIter", [](Reference, const Args &args) {
+      checkargs(1, args);
+      Reference iter = args[0]->call("iter", {});
+      std::vector<Reference> items;
+      while (iter->call("more", {})->truthy()) {
+        items.push_back(iter->call("next", {}));
+      }
+      return new List(items);
+    }},
+  });
+  builtins->declare("ListClass", classListClass);
+
+  classList = new Class(classListClass, "List", {classObject}, {
     {"__str", [](Reference owner, const Args &args) {
       checkargs(0, args);
       return String::from(owner->str());

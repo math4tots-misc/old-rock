@@ -351,7 +351,10 @@ public:
         name = expect("STR").value;
       }
       Signature *sig = parse_signature_with_parenthesis();
-      Block *body = parse_block();
+      Ast *body =
+          consume("=") ?
+          (consumeStatementDelimiters(), parse_expression()) :
+          parse_block();
       return new FunctionDisplay(t, name, sig, body);
     } else if (consume("\\")) {
       Signature *sig = parse_inside_signature();

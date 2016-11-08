@@ -1,7 +1,7 @@
 """core/___prelude.rock
 """
 
-class Iterator {
+class Iter {
   var more, next
 
   def __init(more, next) {
@@ -9,19 +9,20 @@ class Iterator {
     this.next = next
   }
 
-  def more() {
-    (this.more)()
-  }
+  def iter() = this
 
-  def next() {
-    (this.next)()
-  }
+  def more() = (this.more)()
+  def next() = (this.next)()
 
-  def each(f) {
+  def each(f) =
     while this.more() {
       f(this.next())
     }
-  }
+
+  def map(f) =
+    Iter(\. this.more(), \. f(this.next()))
+
+  def to(klass) = klass.fromIter(this)
 }
 
 class Range {
@@ -34,7 +35,7 @@ class Range {
 
   def iter() {
     var i = this.start
-    Iterator(
+    Iter(
       \. i < this.end,
       \ {
         i = i + 1
@@ -42,8 +43,9 @@ class Range {
       })
   }
 
-  def str() {
+  def str() =
     "Range(" + start.__str() + ", " + end.__str() + ")"
-  }
+
+  def to(klass) = this.iter().to(klass)
 }
 __declare('Range', Range)

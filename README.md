@@ -57,3 +57,17 @@ Current levels:
 The plan is that all platforms will benefit from code in `core/`. This includes everything in `include/rock/core`, `ccbin/core`, `src/core`, `test/core`.
 
 Stuff like `osx/` are extensions specific to OS X.
+
+## Special methods
+
+Some special methods are explicitly denoted as special to the language by starting with two underscores (e.g. `__init`).
+
+However, there are methods I give significance to, even though they might not look that way. These really should be interfaces.
+
+  - Functors and monads
+    - `map(f)`
+    - `flatMap(f)`
+    - `each(f)`
+  - Collections
+    - `iter()`
+    - `size`

@@ -27,15 +27,30 @@ Class::Class(
     const std::map<std::string,Method> &ms):
         Class(n, bs, false, {}, ms) {}
 Class::Class(
+    Reference c,
+    const std::string &n,
+    const std::vector<Reference> &bs,
+    const std::map<std::string,Method> &ms):
+        Class(c, n, bs, false, {}, ms) {}
+Class::Class(
     const std::string &n,
     const std::vector<Reference> &bs,
     bool uc,
     const std::set<std::string> &fs,
     const std::map<std::string,Method> &ms):
-        name(n), bases(bs), userConstructible(uc), fields(fs), methods(ms) {}
+        Class(nullptr, n, bs, uc, fs, ms) {}
+Class::Class(
+    Reference c,
+    const std::string &n,
+    const std::vector<Reference> &bs,
+    bool uc,
+    const std::set<std::string> &fs,
+    const std::map<std::string,Method> &ms):
+        cls(c), name(n), bases(bs), userConstructible(uc),
+        fields(fs), methods(ms) {}
 
 Reference Class::getClass() const {
-  return classClass;
+  return cls.is_null() ? classClass : cls;
 }
 
 // TODO: Right now, getMethod does a simple DFS. Do MRO ordering.
