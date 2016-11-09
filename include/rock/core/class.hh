@@ -24,6 +24,7 @@ public:
   Reference cls;
   const std::string name;
   const std::vector<Reference> bases;
+  const std::vector<Class*> mro;
 
   /** User constructible means that you can create an instance of this
    * type by calling a constructor in Rock.
@@ -36,6 +37,8 @@ public:
   const bool userConstructible;
   const std::set<std::string> fields;
   const std::map<std::string,Method> methods;
+
+  std::vector<Class*> makeMro(Class*, const std::vector<Reference>&);
 public:
   Class(
       const std::string&,
@@ -60,6 +63,7 @@ public:
       const std::set<std::string>&,
       const std::map<std::string,Method>&);
   Reference getClass() const override;
+  Method getDirectMethod(const std::string&) const;
   Method getMethod(const std::string&) const;
   std::string debug() const override;
   bool extends(Class*) const;

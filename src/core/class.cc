@@ -1,5 +1,7 @@
 #include "rock/core/all.hh"
 
+#include <algorithm>
+
 namespace rock {
 
 Class *classClass;
@@ -19,6 +21,21 @@ Init init(110, __FILE__, []() {
       Class *base = args[0].as<Class>();
       return cls->extends(base) ? xtrue : xfalse;
     }},
+    {"__eq", [](Reference owner, const Args &args) -> Reference {
+      checkargs(1, args);
+      if (!dynamic_cast<Class*>(args[0].as<Object>())) {
+        return xfalse;
+      }
+      return Bool::from(owner.as<Class>() == args[0].as<Class>());
+    }},
+    {"__get_mro", [](Reference owner, const Args &args) {
+      checkargs(0, args);
+      List *list = new List({});
+      for (Class *c: owner.as<Class>()->mro) {
+        list->value.push_back(c);
+      }
+      return list;
+    }},
 
     // This really should be a method on classClassClass
     {"of", [](Reference owner, const Args &args) {
@@ -28,10 +45,67 @@ Init init(110, __FILE__, []() {
   });
   builtins->declare("Class", classClass);
 });
+
 }
 
 bool instanceof(Reference r, const Class *c) {
   return r->getClass().as<Class>() == c;
+}
+
+std::vector<Class*>
+Class::makeMro(Class *owner, const std::vector<Reference> &bases) {
+  // Naive C3 linearization
+  std::vector<Class*> mro;
+  std::vector<Class*> bs;
+  for (const Reference &base: bases) {
+    bs.push_back(base.as<Class>());
+  }
+  std::vector<std::vector<Class*>> queue;
+  for (Class *b: bs) {
+    queue.push_back(b->mro);
+  }
+  queue.push_back(bs);
+  while (any_of(
+      queue.begin(), queue.end(),
+      [](const std::vector<Class*> &cs) {
+        return !cs.empty();
+      })) {
+    int i;
+    for (i = 0; i < queue.size(); i++) {
+      if (queue[i].empty()) {
+        continue;
+      }
+      bool good = true;
+      Class *c = queue[i].back();
+      for (auto &v: queue) {
+        for (int j = 0; j + 1 < v.size(); j++) {
+          if (v[j] == c) {
+            good = false;
+            break;
+          }
+        }
+        if (!good) {
+          break;
+        }
+      }
+      if (good) {
+        break;
+      }
+    }
+    if (i == queue.size()) {
+      throw exception("No valid Method Resolution Order found");
+    }
+    Class *next = queue[i].back();
+    for (std::vector<Class*> &v: queue) {
+      if (!v.empty() && v.back() == next) {
+        v.pop_back();
+      }
+    }
+    mro.push_back(next);
+  }
+  mro.push_back(owner);
+  std::reverse(mro.begin(), mro.end());
+  return mro;
 }
 
 Class::Class(
@@ -59,11 +133,16 @@ Class::Class(
     bool uc,
     const std::set<std::string> &fs,
     const std::map<std::string,Method> &ms):
-        cls(c), name(n), bases(bs), userConstructible(uc),
-        fields(fs), methods(ms) {}
+        cls(c), name(n), bases(bs), mro(makeMro(this, bs)),
+        userConstructible(uc), fields(fs), methods(ms) {}
 
 Reference Class::getClass() const {
   return cls.is_null() ? classClass : cls;
+}
+
+Method Class::getDirectMethod(const std::string &name) const {
+  auto pair = methods.find(name);
+  return pair != methods.end() ? pair->second : nullptr;
 }
 
 // TODO: Right now, getMethod does a simple DFS. Do MRO ordering.

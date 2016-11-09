@@ -19,6 +19,8 @@ assert(bar.__str() == "Foo instance")
 bar.attr = 15
 assert(bar.attr == 15)
 
+# Test methods on Class (e.g. Class.extends, Class.of)
+
 assert(Class.extends(Class))
 assert(Class.extends(Object))
 assert(not Object.extends(Class))
@@ -31,3 +33,14 @@ assert(Class.of(Number) is Class)
 assert(Class.of("hello") is String)
 assert(Class.of(List) is ListClass)
 
+# Test mro
+
+print(List.mro)
+assert(List.mro == L(List, Object))
+assert(String.mro == L(String, Object))
+
+class A {}
+class B {}
+class C(A, B) {}
+
+assert(C.mro == L(C, A, B, Object))
