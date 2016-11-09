@@ -19,6 +19,8 @@ Init init(110, __FILE__, []() {
       Class *base = args[0].as<Class>();
       return cls->extends(base) ? xtrue : xfalse;
     }},
+
+    // This really should be a method on classClassClass
     {"of", [](Reference owner, const Args &args) {
       checkargs(1, args);
       return args[0]->getClass();
