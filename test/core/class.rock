@@ -18,3 +18,10 @@ var bar = Bar()
 assert(bar.__str() == "Foo instance")
 bar.attr = 15
 assert(bar.attr == 15)
+
+assert(Class.extends(Class))
+assert(Class.extends(Object))
+assert(not Object.extends(Class))
+assert(Number.extends(Object))
+assert(not Number.extends(Class))
+assert(not Class.extends(Number))

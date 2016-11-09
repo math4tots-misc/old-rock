@@ -62,6 +62,7 @@ public:
   Reference getClass() const override;
   Method getMethod(const std::string&) const;
   std::string debug() const override;
+  bool extends(Class*) const;
 };
 
 }

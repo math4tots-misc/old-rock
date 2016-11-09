@@ -12,6 +12,13 @@ Init init(110, __FILE__, []() {
       instance->call("__init", args);
       return instance;
     }},
+    {"extends", [](Reference owner, const Args &args) {
+      checkargs(1, args);
+      checktype(classClass, args[0]);
+      Class *cls = owner.as<Class>();
+      Class *base = args[0].as<Class>();
+      return cls->extends(base) ? xtrue : xfalse;
+    }},
   });
   builtins->declare("Class", classClass);
 });
@@ -70,6 +77,18 @@ Method Class::getMethod(const std::string &name) const {
 
 std::string Class::debug() const {
   return "<Class " + name + ">";
+}
+
+bool Class::extends(Class *base) const {
+  if (this == base) {
+    return true;
+  }
+  for (const Reference &b: bases) {
+    if (b.as<Object>() == base) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }
