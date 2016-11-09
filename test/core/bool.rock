@@ -1,3 +1,4 @@
+assert(true is not false)
 assert(true)
 assert(not false)
 assert(true or false)

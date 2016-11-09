@@ -13,7 +13,15 @@ Init init(100, __FILE__, []() {
     }},
     {"__ne", [](Reference owner, const Args &args) {
       return owner->call("__eq", args)->truthy() ? xfalse : xtrue;
-    }}
+    }},
+    {"__is", [](Reference owner, const Args &args) {
+      checkargs(1, args);
+      return Bool::from(owner.as<Object>() == args[0].as<Object>());
+    }},
+    {"__is_not", [](Reference owner, const Args &args) {
+      checkargs(1, args);
+      return Bool::from(owner.as<Object>() != args[0].as<Object>());
+    }},
   });
   builtins->declare("Object", classObject);
 });
