@@ -25,3 +25,9 @@ assert(not Object.extends(Class))
 assert(Number.extends(Object))
 assert(not Number.extends(Class))
 assert(not Class.extends(Number))
+
+assert(Class.of(Class) is Class)
+assert(Class.of(Number) is Class)
+assert(Class.of("hello") is String)
+assert(Class.of(List) is ListClass)
+
