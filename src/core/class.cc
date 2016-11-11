@@ -31,7 +31,7 @@ Init init(110, __FILE__, []() {
     {"__get_mro", [](Reference owner, const Args &args) {
       checkargs(0, args);
       List *list = new List({});
-      for (Class *c: owner.as<Class>()->mro) {
+      for (Class *c: owner.as<Class>()->getMro()) {
         list->value.push_back(c);
       }
       return list;
@@ -158,6 +158,14 @@ Method Class::getMethod(const std::string &name) const {
     }
   }
   return nullptr;
+}
+
+const std::set<std::string> &Class::getFields() const {
+  return fields;
+}
+
+const std::vector<Class*> &Class::getMro() const {
+  return mro;
 }
 
 std::string Class::debug() const {

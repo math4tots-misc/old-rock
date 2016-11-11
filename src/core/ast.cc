@@ -224,7 +224,7 @@ Reference ClassDisplay::eval(Scope &scope) const {
   for (const Reference &base: bases) {
     checktype(classClass, base);
     // TODO: Check for duplicate field declarations
-    for (const std::string &name: base.as<Class>()->fields) {
+    for (const std::string &name: base.as<Class>()->getFields()) {
       fields.insert(name);
     }
   }

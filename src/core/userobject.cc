@@ -9,7 +9,7 @@ UserObject::UserObject(Class *c): cls(c) {
     throw Reference(new Exception(
         "Class " + c->name + " is not constructible"));
   }
-  for (const std::string &fieldName: c->fields) {
+  for (const std::string &fieldName: c->getFields()) {
     fields[fieldName] = nil;
   }
 }

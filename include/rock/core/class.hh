@@ -17,15 +17,18 @@ extern Class *classClass;
 bool instanceof(Reference, const Class*);
 
 class Class final: public Object {
-public:
   /** The cls variable holds the class of this class.
    * If null, we default to classClass.
    */
-  Reference cls;
+  const Reference cls;
+public:
   const std::string name;
+
+private:
   const std::vector<Reference> bases;
   const std::vector<Class*> mro;
 
+public:
   /** User constructible means that you can create an instance of this
    * type by calling a constructor in Rock.
    * Most builtin types are *not* user constructible. To create them,
@@ -35,6 +38,8 @@ public:
    * '__call', method on the class object.
    */
   const bool userConstructible;
+
+private:
   const std::set<std::string> fields;
   const std::map<std::string,Method> methods;
 
@@ -65,6 +70,8 @@ public:
   Reference getClass() const override;
   Method getDirectMethod(const std::string&) const;
   Method getMethod(const std::string&) const;
+  const std::set<std::string> &getFields() const;
+  const std::vector<Class*> &getMro() const;
   std::string debug() const override;
   bool extends(Class*) const;
 };
