@@ -9,26 +9,26 @@ Class *classClass;
 namespace {
 Init init(110, __FILE__, []() {
   classClass = new Class("Class", {classObject}, {
-    {"__call", [](Reference owner, const Args &args) {
+    {"__call", [](Reference owner, Class*, const Args &args) {
       Reference instance(new UserObject(owner.as<Class>()));
       instance->call("__init", args);
       return instance;
     }},
-    {"extends", [](Reference owner, const Args &args) {
+    {"extends", [](Reference owner, Class*, const Args &args) {
       checkargs(1, args);
       checktype(classClass, args[0]);
       Class *cls = owner.as<Class>();
       Class *base = args[0].as<Class>();
       return cls->extends(base) ? xtrue : xfalse;
     }},
-    {"__eq", [](Reference owner, const Args &args) -> Reference {
+    {"__eq", [](Reference owner, Class*, const Args &args) -> Reference {
       checkargs(1, args);
       if (!dynamic_cast<Class*>(args[0].as<Object>())) {
         return xfalse;
       }
       return Bool::from(owner.as<Class>() == args[0].as<Class>());
     }},
-    {"__get_mro", [](Reference owner, const Args &args) {
+    {"__get_mro", [](Reference owner, Class*, const Args &args) {
       checkargs(0, args);
       List *list = new List({});
       for (Class *c: owner.as<Class>()->getMro()) {
@@ -38,7 +38,7 @@ Init init(110, __FILE__, []() {
     }},
 
     // This really should be a method on classClassClass
-    {"of", [](Reference owner, const Args &args) {
+    {"of", [](Reference owner, Class*, const Args &args) {
       checkargs(1, args);
       return args[0]->getClass();
     }},
@@ -145,16 +145,15 @@ Method Class::getDirectMethod(const std::string &name) const {
   return pair != methods.end() ? pair->second : nullptr;
 }
 
-// TODO: Right now, getMethod does a simple DFS. Do MRO ordering.
-Method Class::getMethod(const std::string &name) const {
+Class *Class::findClassWithMethod(const std::string &name) {
   auto pair = methods.find(name);
   if (pair != methods.end()) {
-    return pair->second;
+    return this;
   }
   for (Class *base: mro) {
     Method method = base->getDirectMethod(name);
     if (method) {
-      return method;
+      return base;
     }
   }
   return nullptr;

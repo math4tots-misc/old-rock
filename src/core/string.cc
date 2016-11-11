@@ -7,11 +7,11 @@ Class *classString;
 namespace {
 Init init(110, __FILE__, []() {
   classString = new Class("String", {classObject}, {
-    {"__str", [](Reference owner, const Args &args) {
+    {"__str", [](Reference owner, Class*, const Args &args) {
       checkargs(0, args);
       return owner;
     }},
-    {"__eq", [](Reference owner, const Args& args) -> Reference {
+    {"__eq", [](Reference owner, Class*, const Args& args) -> Reference {
       checkargs(1, args);
       if (!instanceof(args[0], classString)) {
         return xfalse;

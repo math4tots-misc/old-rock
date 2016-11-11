@@ -69,7 +69,7 @@ public:
       const std::map<std::string,Method>&);
   Reference getClass() const override;
   Method getDirectMethod(const std::string&) const;
-  Method getMethod(const std::string&) const;
+  Class *findClassWithMethod(const std::string&);
   const std::set<std::string> &getFields() const;
   const std::vector<Class*> &getMro() const;
   std::string debug() const override;

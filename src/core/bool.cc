@@ -9,7 +9,7 @@ Bool *xfalse;
 namespace {
 Init init(110, __FILE__, []() {
   classBool = new Class("Bool", {classObject}, {
-    {"__not", [](Reference owner, const Args &args) {
+    {"__not", [](Reference owner, Class*, const Args &args) {
       checkargs(0, args);
       return Bool::from(!owner->truthy());
     }},

@@ -10,47 +10,47 @@ Class *classNumber;
 namespace {
 Init init(110, __FILE__, []() {
   classNumber = new Class("Number", {classObject}, {
-    {"__neg", [](Reference owner, const Args& args) {
+    {"__neg", [](Reference owner, Class*, const Args& args) {
       checkargs(0, args);
       return Number::from(-owner.as<Number>()->value);
     }},
-    {"__add", [](Reference owner, const Args& args) {
+    {"__add", [](Reference owner, Class*, const Args& args) {
       checkargs(1, args);
       checktype(classNumber, args[0]);
       return Number::from(
           owner.as<Number>()->value + args[0].as<Number>()->value);
     }},
-    {"__sub", [](Reference owner, const Args& args) {
+    {"__sub", [](Reference owner, Class*, const Args& args) {
       checkargs(1, args);
       checktype(classNumber, args[0]);
       return Number::from(
           owner.as<Number>()->value - args[0].as<Number>()->value);
     }},
-    {"__mul", [](Reference owner, const Args& args) {
+    {"__mul", [](Reference owner, Class*, const Args& args) {
       checkargs(1, args);
       checktype(classNumber, args[0]);
       return Number::from(
           owner.as<Number>()->value * args[0].as<Number>()->value);
     }},
-    {"__div", [](Reference owner, const Args& args) {
+    {"__div", [](Reference owner, Class*, const Args& args) {
       checkargs(1, args);
       checktype(classNumber, args[0]);
       return Number::from(
           owner.as<Number>()->value / args[0].as<Number>()->value);
     }},
-    {"__mod", [](Reference owner, const Args& args) {
+    {"__mod", [](Reference owner, Class*, const Args& args) {
       checkargs(1, args);
       checktype(classNumber, args[0]);
       return Number::from(std::fmod(
           owner.as<Number>()->value, args[0].as<Number>()->value));
     }},
-    {"__lt", [](Reference owner, const Args& args) {
+    {"__lt", [](Reference owner, Class*, const Args& args) {
       checkargs(1, args);
       checktype(classNumber, args[0]);
       return Bool::from(
           owner.as<Number>()->value < args[0].as<Number>()->value);
     }},
-    {"__eq", [](Reference owner, const Args& args) -> Reference {
+    {"__eq", [](Reference owner, Class*, const Args& args) -> Reference {
       checkargs(1, args);
       if (!instanceof(args[0], classNumber)) {
         return xfalse;
@@ -58,7 +58,7 @@ Init init(110, __FILE__, []() {
       return Bool::from(
           owner.as<Number>()->value == args[0].as<Number>()->value);
     }},
-    {"isCloseTo", [](Reference owner, const Args& args) {
+    {"isCloseTo", [](Reference owner, Class*, const Args& args) {
       checkargs(1, args);
       checktype(classNumber, args[0]);
       // Modeled after Python's math.isclose function.

@@ -231,12 +231,12 @@ Reference ClassDisplay::eval(Scope &scope) const {
 
   for (const std::string &name: this->fields) {
     std::string getName = "__get_" + name;
-    methods[getName] = [=](Reference owner, const Args &args) {
+    methods[getName] = [=](Reference owner, Class*, const Args &args) {
       checkargs(0, args);
       return owner.as<UserObject>()->getField(name);
     };
     std::string setName = "__set_" + name;
-    methods[setName] = [=](Reference owner, const Args &args) {
+    methods[setName] = [=](Reference owner, Class*, const Args &args) {
       checkargs(1, args);
       return owner.as<UserObject>()->setField(name, args[0]);
     };
@@ -247,7 +247,7 @@ Reference ClassDisplay::eval(Scope &scope) const {
     FunctionDisplay *fd = it->second;
     Reference parentScope(&scope);
     // TODO: Factor this with UserFunction::eval.
-    methods[it->first] = [=](Reference owner, const Args &args) {
+    methods[it->first] = [=](Reference owner, Class*, const Args &args) {
       Reference scope(new Scope(parentScope.as<Scope>()));
       scope.as<Scope>()->declare("this", owner);
       fd->args->resolve(*scope.as<Scope>(), args);

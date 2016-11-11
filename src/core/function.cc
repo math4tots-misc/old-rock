@@ -7,7 +7,7 @@ Class *classFunction;
 namespace {
 Init init(110, __FILE__, []() {
   classFunction = new Class("Function", {classObject}, {
-    {"__call", [](const Reference &owner, const Args &args) {
+    {"__call", [](Reference owner, Class*, const Args &args) {
       return owner.as<Function>()->invoke(args);
     }},
   });

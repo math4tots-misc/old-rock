@@ -12,7 +12,7 @@ class Reference;
 class Class;
 
 using Args = std::vector<Reference>;
-using Method = std::function<Reference(Reference, const Args&)>;
+using Method = std::function<Reference(Reference, Class*, const Args&)>;
 
 extern Class *classObject;
 

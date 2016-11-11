@@ -23,11 +23,11 @@ Reference moduleFrom(const std::string &name, Block *block) {
   for (auto it = bindings.begin(); it != bindings.end(); ++it) {
     std::string key = it->first;
     Reference value = it->second;
-    methods["__get_" + key] = [=](Reference, const Args &args) {
+    methods["__get_" + key] = [=](Reference, Class*, const Args &args) {
       checkargs(0, args);
       return value;
     };
-    methods[key] = [=](Reference, const Args &args) {
+    methods[key] = [=](Reference, Class*, const Args &args) {
       return value->call("__call", args);
     };
   }

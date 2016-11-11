@@ -2,23 +2,25 @@
 
 #include <sstream>
 
+#include <iostream>
+
 namespace rock {
 
 namespace {
 Init init(100, __FILE__, []() {
   classObject = new Class("Object", {}, {
-    {"__init", [](Reference, const Args &args) {
+    {"__init", [](Reference, Class*, const Args &args) {
       checkargs(0, args);
       return nil;
     }},
-    {"__ne", [](Reference owner, const Args &args) {
+    {"__ne", [](Reference owner, Class*, const Args &args) {
       return owner->call("__eq", args)->truthy() ? xfalse : xtrue;
     }},
-    {"__is", [](Reference owner, const Args &args) {
+    {"__is", [](Reference owner, Class*, const Args &args) {
       checkargs(1, args);
       return Bool::from(owner.as<Object>() == args[0].as<Object>());
     }},
-    {"__is_not", [](Reference owner, const Args &args) {
+    {"__is_not", [](Reference owner, Class*, const Args &args) {
       checkargs(1, args);
       return Bool::from(owner.as<Object>() != args[0].as<Object>());
     }},
@@ -36,19 +38,20 @@ Object::~Object() {}
 Reference Object::call(const std::string &name, const Args &args) {
   Reference clsref = getClass();
   Class *cls = clsref.as<Class>();
-  Method method = cls->getMethod(name);
-  if (!method) {
+  Class *c = cls->findClassWithMethod(name);
+  if (!c) {
     const std::string message =
         "No such method '" + name + "' for class '" + cls->name + "'";
     throw exception(message);
   }
-  return method(this, args);
+  Method method = c->getDirectMethod(name);
+  return method(this, c, args);
 }
 
 bool Object::hasMethod(const std::string &name) const {
   Reference clsref = getClass();
   Class *cls = clsref.as<Class>();
-  return (bool) cls->getMethod(name);
+  return (bool) cls->findClassWithMethod(name);
 }
 
 std::string Object::debug() const {
