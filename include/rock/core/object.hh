@@ -27,6 +27,7 @@ public:
   Object();
   virtual ~Object();
   Reference call(const std::string&, const Args&);
+  Reference callSuper(Class*, const std::string&, const Args&);
   bool hasMethod(const std::string&) const;
   virtual Reference getClass() const=0;
 

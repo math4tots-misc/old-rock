@@ -113,6 +113,18 @@ Reference MethodCall::eval(Scope &scope) const {
   return owner->call(name, args);
 }
 
+SuperCall::SuperCall(const Token &t, const std::string &n, Arguments *a):
+    Ast(t), name(n), args(a) {}
+
+Reference SuperCall::eval(Scope &scope) const {
+  Reference owner = scope.get("this");
+  Reference clsref = scope.get("super");
+  checktype(classClass, clsref);
+  std::vector<Reference> args = this->args->evalargs(scope);
+  StackFrame sf(&token);
+  return owner->callSuper(clsref.as<Class>(), name, args);
+}
+
 While::While(const Token &t, Ast *c, Ast *b):
     Ast(t), condition(c), body(b) {}
 
@@ -247,9 +259,10 @@ Reference ClassDisplay::eval(Scope &scope) const {
     FunctionDisplay *fd = it->second;
     Reference parentScope(&scope);
     // TODO: Factor this with UserFunction::eval.
-    methods[it->first] = [=](Reference owner, Class*, const Args &args) {
+    methods[it->first] = [=](Reference owner, Class *sup, const Args &args) {
       Reference scope(new Scope(parentScope.as<Scope>()));
       scope.as<Scope>()->declare("this", owner);
+      scope.as<Scope>()->declare("super", sup);
       fd->args->resolve(*scope.as<Scope>(), args);
       return fd->body->eval(*scope.as<Scope>());
     };

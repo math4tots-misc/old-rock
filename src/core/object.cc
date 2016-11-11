@@ -48,6 +48,21 @@ Reference Object::call(const std::string &name, const Args &args) {
   return method(this, c, args);
 }
 
+Reference
+Object::callSuper(Class *cp, const std::string &name, const Args &args) {
+  Reference clsref = getClass();
+  Class *cls = clsref.as<Class>();
+  Class *c = cls->findClassWithMethod(cp, name);
+  if (!c) {
+    const std::string message =
+        "No such super method '" + name +
+        "' for class '" + cls->name + "' (beyond " + cp->name + ")";
+    throw exception(message);
+  }
+  Method method = c->getDirectMethod(name);
+  return method(this, c, args);
+}
+
 bool Object::hasMethod(const std::string &name) const {
   Reference clsref = getClass();
   Class *cls = clsref.as<Class>();

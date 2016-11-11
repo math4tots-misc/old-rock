@@ -159,6 +159,24 @@ Class *Class::findClassWithMethod(const std::string &name) {
   return nullptr;
 }
 
+Class *Class::findClassWithMethod(Class *c, const std::string &name) {
+  int i = 0;
+  while (i < mro.size() && mro[i] != c) {
+    i++;
+  }
+  i++;
+  if (i >= mro.size()) {
+    return nullptr;
+  }
+  for (; i < mro.size(); i++) {
+    Method method = mro[i]->getDirectMethod(name);
+    if (method) {
+      return mro[i];
+    }
+  }
+  return nullptr;
+}
+
 const std::set<std::string> &Class::getFields() const {
   return fields;
 }

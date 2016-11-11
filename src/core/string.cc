@@ -19,6 +19,12 @@ Init init(110, __FILE__, []() {
       return Bool::from(
           owner.as<String>()->value == args[0].as<String>()->value);
     }},
+    {"__add", [](Reference owner, Class*, const Args& args) -> Reference {
+      checkargs(1, args);
+      checktype(classString, args[0]);
+      return String::from(
+          owner.as<String>()->value + args[0].as<String>()->value);
+    }},
   });
   builtins->declare("String", classString);
 });

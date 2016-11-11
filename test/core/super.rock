@@ -1,0 +1,47 @@
+"""Test calling super methods
+"""
+
+class A {
+  def m() = "A.m()"
+  def to(type) =
+    if (type == String) {
+      "A.to(String)"
+    } else if (type == List) {
+      L('A')
+    } else {
+      super.to(type)
+    }
+}
+
+class B(A) {
+  def b() = "B.b"
+  def m() = "B.m()/" + super.m()
+}
+
+class C(A) {
+  def m() = "C.m()/" + super.m()
+}
+
+class D(B, C) {
+  def m() = "D.m()/" + super.m()
+}
+
+class E(C, B) {
+  def m() = "E.m()/" + super.m()
+  def to(type) =
+    if (type == String) {
+      "E.to(String)"
+    } else {
+      super.to(type)
+    }
+}
+
+
+assert(B().m() == "B.m()/A.m()")
+assert(D().m() == "D.m()/B.m()/C.m()/A.m()")
+assert(E().m() == "E.m()/C.m()/B.m()/A.m()")
+assert(A().to(String) == "A.to(String)")
+assert(A().to(List).__str() == "L(A)")
+assert(B().to(String) == "A.to(String)")
+assert(E().to(String) == "E.to(String)")
+assert(E().to(List).__str() == "L(A)")

@@ -70,6 +70,7 @@ public:
   Reference getClass() const override;
   Method getDirectMethod(const std::string&) const;
   Class *findClassWithMethod(const std::string&);
+  Class *findClassWithMethod(Class*, const std::string&);
   const std::set<std::string> &getFields() const;
   const std::vector<Class*> &getMro() const;
   std::string debug() const override;

@@ -88,6 +88,14 @@ public:
   Reference eval(Scope&) const override;
 };
 
+class SuperCall final: public Ast {
+public:
+  const std::string name;
+  const Arguments *args;
+  SuperCall(const Token&, const std::string&, Arguments*);
+  Reference eval(Scope&) const override;
+};
+
 class While final: public Ast {
 public:
   Ast *const condition;

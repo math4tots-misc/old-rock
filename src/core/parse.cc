@@ -365,6 +365,10 @@ public:
         body = parse_block();
       }
       return new FunctionDisplay(t, "", sig, body);
+    } else if (consume("super")) {
+      expect(".");
+      std::string name = expect("ID").value;
+      return new SuperCall(t, name, parse_arguments());
     } else {
       throw ParseError(
           peek(), "Expected expression but found " + peek().type);

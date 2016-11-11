@@ -71,3 +71,7 @@ However, there are methods I give significance to, even though they might not lo
   - Collections
     - `iter()`
     - `size`
+
+## WARNINGS
+
+Right now, I'm using simple reference counting to manage garbage. Eventually though, I want a garbage collector. To do so, I need to make sure that all objects are at least traversable. In particular, references I capture by value in lambda functions are NOT traversable from the parent. So be careful to not do this.
