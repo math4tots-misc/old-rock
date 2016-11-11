@@ -151,8 +151,8 @@ Method Class::getMethod(const std::string &name) const {
   if (pair != methods.end()) {
     return pair->second;
   }
-  for (const auto &base: bases) {
-    Method method = base.as<Class>()->getMethod(name);
+  for (Class *base: mro) {
+    Method method = base->getDirectMethod(name);
     if (method) {
       return method;
     }

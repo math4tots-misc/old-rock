@@ -35,7 +35,6 @@ assert(Class.of(List) is ListClass)
 
 # Test mro
 
-print(List.mro)
 assert(List.mro == L(List, Object))
 assert(String.mro == L(String, Object))
 
