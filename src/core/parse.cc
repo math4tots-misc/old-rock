@@ -328,7 +328,7 @@ public:
         return new Declaration(t, name, nullptr);
       }
     } else if (at("NUM")) {
-      return new Literal(t, new Number(stod(expect("NUM").value)));
+      return new Literal(t, Number::from(stod(expect("NUM").value)));
     } else if (at("STR")) {
       return new Literal(t, String::from(expect("STR").value));
     } else if (consume("class")) {

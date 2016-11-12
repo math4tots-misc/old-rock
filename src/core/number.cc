@@ -8,6 +8,12 @@ namespace rock {
 Class *classNumber;
 
 namespace {
+
+constexpr int cachedMin = -100;
+constexpr int cachedMax = 1000;
+
+Reference cachedNumbers[cachedMax - cachedMin];
+
 Init init(110, __FILE__, []() {
   classNumber = new Class("Number", {classObject}, {
     {"__neg", [](Reference owner, Class*, const Args& args) {
@@ -69,6 +75,9 @@ Init init(110, __FILE__, []() {
     }},
   });
   builtins->declare("Number", classNumber);
+  for (int i = cachedMin; i < cachedMax; i++) {
+    cachedNumbers[i - cachedMin] = new Number(i);
+  }
 });
 }
 
@@ -88,6 +97,9 @@ std::string Number::str() const {
 
 Reference Number::from(double value) {
   // TODO: Do something more efficient
+  if (value >= cachedMin && value < cachedMax && std::floor(value) == value) {
+    return cachedNumbers[static_cast<int>(value) - cachedMin];
+  }
   return new Number(value);
 }
 

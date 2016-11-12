@@ -80,7 +80,8 @@ Switch::Switch(
 Reference Switch::eval(Scope &scope) const {
   Reference target = this->target->eval(scope);
   for (const auto& pair: conditions) {
-    if (target->call("__eq", {std::get<0>(pair)->eval(scope)})->truthy()) {
+    Reference case_ = std::get<0>(pair)->eval(scope);
+    if (target.as<Object>() == case_.as<Object>()) {
       return std::get<1>(pair)->eval(scope);
     }
   }
