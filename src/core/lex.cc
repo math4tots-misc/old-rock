@@ -16,13 +16,13 @@ std::vector<Token> lex(const File &f) {
   const std::set<std::string> SYMBOLS({
       "{", "}", "[", "]", "(", ")", "\n",
       "+", "-", "*", "/", "%",
-      ".", ",", "\\",
+      ".", ",", "\\", ":",
       "=",
       "==", "!=", "<", "<=", ">", ">=",
   });
   const std::unordered_set<std::string> KEYWORDS({
       "def", "fn", "return", "class", "var", "final", "super",
-      "if", "then", "else",
+      "if", "then", "else", "switch", "case", "default",
       "while", "break", "continue",
       "for", "in",
       "is", "not", "and", "or",

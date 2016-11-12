@@ -276,6 +276,37 @@ public:
       return new While(t, cond, body);
     } else if (at("if")) {
       return parse_if();
+    } else if (consume("switch")) {
+      Ast *target = parse_expression();
+      std::vector<std::tuple<Ast*,Ast*>> conditions;
+      Ast *default_ = nullptr;
+      expect("{");
+      consumeStatementDelimiters();
+      while (consume("case")) {
+        Ast *match = parse_expression();
+        expect(":");
+        Token t = peek();
+        std::vector<Ast*> stmts;
+        consumeStatementDelimiters();
+        while (!at("case") && !at("default") && !at("}")) {  // {
+          stmts.push_back(parse_expression());
+          consumeStatementDelimiters();
+        }
+        conditions.push_back(std::make_tuple(match, new Block(t, stmts)));
+      }
+      if (consume("default")) {
+        expect(":");
+        Token t = peek();
+        std::vector<Ast*> stmts;
+        consumeStatementDelimiters();
+        while (!at("}")) {  // {
+          stmts.push_back(parse_expression());
+          consumeStatementDelimiters();
+        }
+        default_ = new Block(t, stmts);
+      }
+      expect("}");
+      return new Switch(t, target, conditions, default_);
     } else if (consume("(")) {
       Ast *e = parse_expression();
       expect(")");

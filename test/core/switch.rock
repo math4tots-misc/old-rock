@@ -1,0 +1,20 @@
+
+def foo(x) =
+  switch x {
+    case 0: 'a'
+    case 1: 'b'
+    default: 'c'
+  }
+
+def bar(x) =
+  switch x {
+    case 0: 'a'
+    case 1: 'b'
+  }
+
+assert(foo(0) == 'a')
+assert(foo(1) == 'b')
+assert(foo(2) == 'c')
+assert(foo('misc') == 'c')
+
+# print(bar('baz'))  # throws

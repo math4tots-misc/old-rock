@@ -53,6 +53,15 @@ public:
   Reference eval(Scope&) const override;
 };
 
+class Switch final: public Ast {
+public:
+  Ast *const target;
+  const std::vector<std::tuple<Ast*,Ast*>> conditions;
+  Ast *const default_;
+  Switch(const Token&, Ast*, const std::vector<std::tuple<Ast*,Ast*>>&, Ast*);
+  Reference eval(Scope&) const override;
+};
+
 class Or final: public Ast {
 public:
   Ast *const left;

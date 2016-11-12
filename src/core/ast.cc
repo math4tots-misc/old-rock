@@ -72,6 +72,25 @@ Reference If::eval(Scope &scope) const {
       body->eval(scope) : other->eval(scope);
 }
 
+Switch::Switch(
+    const Token &t, Ast *tg, const std::vector<std::tuple<Ast*,Ast*>> &cs,
+    Ast *d):
+    Ast(t), target(tg), conditions(cs), default_(d) {}
+
+Reference Switch::eval(Scope &scope) const {
+  Reference target = this->target->eval(scope);
+  for (const auto& pair: conditions) {
+    if (target->call("__eq", {std::get<0>(pair)->eval(scope)})->truthy()) {
+      return std::get<1>(pair)->eval(scope);
+    }
+  }
+  if (default_) {
+    return default_->eval(scope);
+  }
+  StackFrame sf(&token);
+  throw exception("Switch no matching case: " + target->str());
+}
+
 Or::Or(const Token &t, Ast *l, Ast *r): Ast(t), left(l), right(r) {}
 
 Reference Or::eval(Scope &scope) const {
