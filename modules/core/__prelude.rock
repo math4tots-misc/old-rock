@@ -43,9 +43,13 @@ class Range {
       })
   }
 
-  def str() =
-    "Range(" + start.__str() + ", " + end.__str() + ")"
+  def __str() =
+    "Range(" + this.start.to(String) + ", " + this.end.to(String) + ")"
 
-  def to(klass) = this.iter().to(klass)
+  def to(klass) =
+    switch klass {
+      case List: this.iter().to(klass)
+      default: super.to(klass)
+    }
 }
 __declare('Range', Range)

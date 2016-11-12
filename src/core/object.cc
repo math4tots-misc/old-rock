@@ -24,6 +24,17 @@ Init init(100, __FILE__, []() {
       checkargs(1, args);
       return Bool::from(owner.as<Object>() != args[0].as<Object>());
     }},
+    {"to", [](Reference owner, Class*, const Args &args) {
+      checkargs(1, args);
+      checktype(classClass, args[0]);
+      Class *cls = owner->getClass().as<Class>();
+      Class *c = args[0].as<Class>();
+      if (c == classString) {
+        return owner->call("__str", {});
+      }
+      throw exception(
+          "No known conversion from " + cls->name + " to " + c->name);
+    }},
   });
   builtins->declare("Object", classObject);
 });

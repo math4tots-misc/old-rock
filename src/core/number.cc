@@ -73,6 +73,14 @@ Init init(110, __FILE__, []() {
       return Bool::from(
           std::abs(a - b) <= 1e-09 * std::max(std::abs(a), std::abs(b)));
     }},
+    {"__str", [](Reference owner, Class*, const Args& args) {
+      checkargs(0, args);
+      double a = owner.as<Number>()->value;
+      if (a == std::floor(a)) {
+        return String::from(std::to_string(static_cast<long>(a)));
+      }
+      return String::from(std::to_string(a));
+    }},
   });
   builtins->declare("Number", classNumber);
   for (int i = cachedMin; i < cachedMax; i++) {
