@@ -23,7 +23,7 @@ __declare('Iterator', class Iterator {
     Iterator(\. this.more(), \. f(this.next()))
 
   def to(klass) =
-    if klass.hasMethod('fromIterable') {
+    if Class.of(klass).hasMethod('fromIterable') {
       klass.fromIterable(this)
     } else {
       super.to(klass)
@@ -52,8 +52,9 @@ __declare('Range', class Range {
     "Range(" + this.start.to(String) + ", " + this.end.to(String) + ")"
 
   def to(klass) =
-    switch klass {
-      case List: this.__iter().to(klass)
-      default: super.to(klass)
+    if Class.of(klass).hasMethod('fromIterable') {
+      klass.fromIterable(this)
+    } else {
+      super.to(klass)
     }
 })

@@ -26,7 +26,7 @@ Init init(110, __FILE__, []() {
       checktype(classString, args[0]);
       Class *cls = owner.as<Class>();
       std::string methodName = args[0].as<String>()->value;
-      return cls->hasMethod(methodName) ? xtrue : xfalse;
+      return cls->findClassWithMethod(methodName) ? xtrue : xfalse;
     }},
     {"__eq", [](Reference owner, Class*, const Args &args) -> Reference {
       checkargs(1, args);
