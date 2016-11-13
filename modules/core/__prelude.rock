@@ -25,7 +25,7 @@ class Iter {
   def to(klass) = klass.fromIter(this)
 }
 
-class Range {
+__declare('Range', class Range {
   var start, end
 
   def __init(start, end) {
@@ -51,5 +51,4 @@ class Range {
       case List: this.iter().to(klass)
       default: super.to(klass)
     }
-}
-__declare('Range', Range)
+})
