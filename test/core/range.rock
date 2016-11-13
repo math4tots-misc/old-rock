@@ -2,7 +2,7 @@ var r = Range(7, 10)
 
 var items = L()
 
-r.iter().each(\i {
+r.__iter().each(\i {
   items.push(i)
 })
 

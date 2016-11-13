@@ -1,7 +1,7 @@
 """core/___prelude.rock
 """
 
-class Iter {
+class Iterator {
   var more, next
 
   def __init(more, next) {
@@ -9,7 +9,7 @@ class Iter {
     this.next = next
   }
 
-  def iter() = this
+  def __iter() = this
 
   def more() = (this.more)()
   def next() = (this.next)()
@@ -20,9 +20,9 @@ class Iter {
     }
 
   def map(f) =
-    Iter(\. this.more(), \. f(this.next()))
+    Iterator(\. this.more(), \. f(this.next()))
 
-  def to(klass) = klass.fromIter(this)
+  def to(klass) = klass.fromIterable(this)
 }
 
 __declare('Range', class Range {
@@ -33,9 +33,9 @@ __declare('Range', class Range {
     this.end = end
   }
 
-  def iter() {
+  def __iter() {
     var i = this.start
-    Iter(
+    Iterator(
       \. i < this.end,
       \ {
         i = i + 1
@@ -48,7 +48,7 @@ __declare('Range', class Range {
 
   def to(klass) =
     switch klass {
-      case List: this.iter().to(klass)
+      case List: this.__iter().to(klass)
       default: super.to(klass)
     }
 })

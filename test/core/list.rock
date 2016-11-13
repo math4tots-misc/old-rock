@@ -1,1 +1,1 @@
-assert(List.fromIter(Range(4, 7)) == L(4, 5, 6))
+assert(List.fromIterable(Range(4, 7)) == L(4, 5, 6))

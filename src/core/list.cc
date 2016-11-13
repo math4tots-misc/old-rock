@@ -10,9 +10,9 @@ Class *classListClass;
 namespace {
 Init init(110, __FILE__, []() {
   classListClass = new Class("ListClass", {classClass}, {
-    {"fromIter", [](Reference, Class*, const Args &args) {
+    {"fromIterable", [](Reference, Class*, const Args &args) {
       checkargs(1, args);
-      Reference iter = args[0]->call("iter", {});
+      Reference iter = args[0]->call("__iter", {});
       std::vector<Reference> items;
       while (iter->call("more", {})->truthy()) {
         items.push_back(iter->call("next", {}));
