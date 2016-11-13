@@ -8,6 +8,8 @@ r.__iter().each(\i {
 
 assert(items == L(7, 8, 9))
 
+assert(r.to(Iterator).map(\i. i - 5).to(List) == L(2, 3, 4))
+
 assert(Range(5, 10).to(List) == L(5, 6, 7, 8, 9))
 
 assert(Range(5, 10).to(String) == "Range(5, 10)")

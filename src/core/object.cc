@@ -31,6 +31,8 @@ Init init(100, __FILE__, []() {
       Class *c = args[0].as<Class>();
       if (c == classString) {
         return owner->call("__str", {});
+      } else if (c == builtins->get("Iterator").as<Object>()) {
+        return owner->call("__iter", {});
       }
       throw exception(
           "No known conversion from " + cls->name + " to " + c->name);

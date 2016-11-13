@@ -1,7 +1,7 @@
 """core/___prelude.rock
 """
 
-class Iterator {
+__declare('Iterator', class Iterator {
   var more, next
 
   def __init(more, next) {
@@ -23,7 +23,7 @@ class Iterator {
     Iterator(\. this.more(), \. f(this.next()))
 
   def to(klass) = klass.fromIterable(this)
-}
+})
 
 __declare('Range', class Range {
   var start, end
