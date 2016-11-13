@@ -22,7 +22,12 @@ __declare('Iterator', class Iterator {
   def map(f) =
     Iterator(\. this.more(), \. f(this.next()))
 
-  def to(klass) = klass.fromIterable(this)
+  def to(klass) =
+    if klass.hasMethod('fromIterable') {
+      klass.fromIterable(this)
+    } else {
+      super.to(klass)
+    }
 })
 
 __declare('Range', class Range {

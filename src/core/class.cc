@@ -16,10 +16,17 @@ Init init(110, __FILE__, []() {
     }},
     {"extends", [](Reference owner, Class*, const Args &args) {
       checkargs(1, args);
-      checktype(classClass, args[0]);
+      checkinstance(classClass, args[0]);
       Class *cls = owner.as<Class>();
       Class *base = args[0].as<Class>();
       return cls->extends(base) ? xtrue : xfalse;
+    }},
+    {"hasMethod", [](Reference owner, Class*, const Args &args) {
+      checkargs(1, args);
+      checktype(classString, args[0]);
+      Class *cls = owner.as<Class>();
+      std::string methodName = args[0].as<String>()->value;
+      return cls->hasMethod(methodName) ? xtrue : xfalse;
     }},
     {"__eq", [](Reference owner, Class*, const Args &args) -> Reference {
       checkargs(1, args);

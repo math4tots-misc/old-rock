@@ -34,6 +34,15 @@ void checktype(Class *expected, Reference value) {
   }
 }
 
+void checkinstance(Class *expected, Reference value) {
+  Class *actual = value->getClass().as<Class>();
+  if (!actual->extends(expected)) {
+    throw Reference(new Exception(
+        "Expected subclass of " + expected->name +
+        " but got " + actual->name));
+  }
+}
+
 }
 
 

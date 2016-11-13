@@ -26,7 +26,7 @@ Init init(100, __FILE__, []() {
     }},
     {"to", [](Reference owner, Class*, const Args &args) {
       checkargs(1, args);
-      checktype(classClass, args[0]);
+      checkinstance(classClass, args[0]);
       Class *cls = owner->getClass().as<Class>();
       Class *c = args[0].as<Class>();
       if (c == classString) {

@@ -14,6 +14,7 @@ void checkargs(int, const Args&);
 void checkargs(int, int, const Args&);
 void checkargsmin(int, const Args&);
 void checktype(Class*, Reference);
+void checkinstance(Class *expected, Reference value);
 
 }
 
