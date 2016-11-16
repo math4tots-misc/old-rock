@@ -43,6 +43,6 @@ void checkinstance(Class *expected, Reference value) {
   }
 }
 
-}
+}  // namespace rock
 
 
