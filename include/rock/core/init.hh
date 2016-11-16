@@ -5,13 +5,15 @@
 
 namespace rock {
 
+using Runnable = void(*)();
+
 void initialize();
 void finalize();
 
 class Init final {
 public:
-  Init(int, const std::string&, std::function<void()>);
-  Init(int, const std::string&, std::function<void()>, std::function<void()>);
+  Init(int, const std::string&, Runnable);
+  Init(int, const std::string&, Runnable, Runnable);
 };
 
 }

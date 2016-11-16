@@ -1,7 +1,6 @@
 #include "rock/core/all.hh"
 
 #include <vector>
-#include <functional>
 #include <map>
 
 //// For debugging
@@ -10,33 +9,21 @@
 namespace rock {
 
 namespace {
-std::map<int,std::vector<std::pair<std::string,std::function<void()>>>>*
-inits;
+std::map<int,std::vector<std::pair<std::string,Runnable>>> *inits;
 
-std::map<int,std::vector<std::pair<std::string,std::function<void()>>>>*
-fins;
+std::map<int,std::vector<std::pair<std::string,Runnable>>> *fins;
 
-std::map<int,std::vector<std::pair<std::string,std::function<void()>>>>&
-getInits() {
+std::map<int,std::vector<std::pair<std::string,Runnable>>> &getInits() {
   if (!inits) {
-    inits = new std::map<
-        int,std::vector<
-            std::pair<
-                std::string,
-                std::function<void()>>>>();
+    inits = new std::map<int,std::vector<std::pair<std::string, Runnable>>>();
   }
   return *inits;
 }
 
 
-std::map<int,std::vector<std::pair<std::string,std::function<void()>>>>&
-getFins() {
+std::map<int,std::vector<std::pair<std::string,Runnable>>> &getFins() {
   if (!fins) {
-    fins = new std::map<
-        int,std::vector<
-            std::pair<
-                std::string,
-                std::function<void()>>>>();
+    fins = new std::map<int,std::vector<std::pair<std::string, Runnable>>>();
   }
   return *fins;
 }
@@ -73,12 +60,12 @@ void finalize() {
  * 'tag' is a name for the initializer for debugging purposes.
  * 'f' is the initializer function to run.
  */
-Init::Init(int priority, const std::string &tag, std::function<void()> f):
+Init::Init(int priority, const std::string &tag, Runnable f):
     Init(priority, tag, f, [](){}) {}
 
 Init::Init(
     int priority, const std::string &tag,
-    std::function<void()> init, std::function<void()> fin) {
+    Runnable init, Runnable fin) {
   // std::cerr << "Setting initializer for " <<
   // priority << " " << tag << std::endl;
   getInits()[priority].push_back(std::make_pair(tag, init));

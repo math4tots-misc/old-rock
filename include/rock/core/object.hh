@@ -1,7 +1,6 @@
 #ifndef rock_core_object_hh
 #define rock_core_object_hh
 
-#include <functional>
 #include <set>
 #include <vector>
 

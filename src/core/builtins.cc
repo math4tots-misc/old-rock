@@ -1,6 +1,5 @@
 #include "rock/core/all.hh"
 
-#include <functional>
 #include <iostream>
 #include <map>
 #include <vector>
