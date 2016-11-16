@@ -45,7 +45,7 @@ Reference load(const std::string &uri) {
 
 void declareFunc(
     Scope *scope, const std::string &name,
-    std::function<Reference(const Args&)> f) {
+    Reference(*f)(const Args&)) {
   scope->declare(name, Function::from(name, f));
 }
 

@@ -9,8 +9,8 @@ namespace rock {
 
 class NativeFunction final: public Function {
 public:
-  std::function<Reference(const Args&)> function;
-  NativeFunction(const std::string&, std::function<Reference(const Args&)>);
+  Reference(*function)(const Args&);
+  NativeFunction(const std::string&, Reference(*)(const Args&));
   std::string debug() const override;
   Reference invoke(const Args&) override;
 };

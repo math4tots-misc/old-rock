@@ -4,7 +4,7 @@ namespace rock {
 
 NativeFunction::NativeFunction(
     const std::string &n,
-    std::function<Reference(const Args&)> f):
+    Reference(*f)(const Args&)):
         Function(n), function(f) {}
 
 std::string NativeFunction::debug() const {
