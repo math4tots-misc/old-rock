@@ -1,17 +1,12 @@
 #ifndef rock_core_object_hh
 #define rock_core_object_hh
 
+#include "rock/core/method.hh"
+
 #include <set>
 #include <vector>
 
 namespace rock {
-
-class Object;
-class Reference;
-class Class;
-
-using Args = std::vector<Reference>;
-using Method = std::function<Reference(Reference, Class*, const Args&)>;
 
 extern Class *classObject;
 
