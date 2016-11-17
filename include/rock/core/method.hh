@@ -12,16 +12,17 @@ class Class;
 using Args = std::vector<Reference>;
 
 class Method final {
-  using Implementation = Reference(*)(void*,Reference,Class*,const Args&);
+  // using Implementation = Reference(*)(void*,Reference,Class*,const Args&);
+  using Implementation = std::function<Reference(Reference,Class*,const Args&)>;
 
-  void *data;
+  // void *data;
   Implementation impl;
 
 public:
   Method() = default;
 
   template <class T>
-  Method(T functor);
+  Method(T functor): impl(functor) {}
 
   // Method(Reference(*)(Reference,Class*,const Args&));
   //

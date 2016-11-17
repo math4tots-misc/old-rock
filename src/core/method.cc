@@ -6,7 +6,7 @@ namespace rock {
 //     data(d), impl(f) {}
 
 Reference Method::operator()(Reference r, Class *c, const Args &args) {
-  return impl(data, r, c, args);
+  return impl(r, c, args);
 }
 
 Method::operator bool() const {
