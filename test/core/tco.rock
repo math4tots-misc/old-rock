@@ -1,7 +1,7 @@
 def addrep(t, a, n) =
   if n == 0 then t else addrep(t + a, a, n-1)
 
-print(addrep(0, 1, 100000))
+assert(addrep(0, 5, 10000) == 50000)
 
 # Currently this test fails, presumably because we don't do TCO
 # print(addrep(0, 1, 100000))
