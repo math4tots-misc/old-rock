@@ -22,6 +22,20 @@ __declare('Iterator', class Iterator {
   def map(f) =
     Iterator(\. this.more(), \. f(this.next()))
 
+  def foldl(init, f) {
+    while this.more() {
+      init = f(init, this.next())
+    }
+    init
+  }
+
+  def reduce(f) {
+    if not this.more() {
+      error("Cannot reduce an empty iterable")
+    }
+    this.foldl(this.next(), f)
+  }
+
   def to(klass) =
     if Class.of(klass).hasMethod('fromIterable') {
       klass.fromIterable(this)

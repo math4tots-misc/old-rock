@@ -1,1 +1,4 @@
 assert(Range(0, 4).__iter().map(\i. i + 1).to(List) == L(1, 2, 3, 4))
+
+print(Range(1000000, 2000000).__iter().reduce(\a b. a + b))
+
